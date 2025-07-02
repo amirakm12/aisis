@@ -46,6 +46,8 @@ from src.agents.context_aware_restoration import ContextAwareRestorationAgent
 from src.agents.adaptive_enhancement import AdaptiveEnhancementAgent
 from src.agents.vision_language import VisionLanguageAgent
 from src.agents.style_transfer import StyleTransferAgent
+from .context_panel import ContextPanel
+from .context_manager import ContextManager
 
 class AsyncWorker(QThread):
     """Worker thread for async operations"""
@@ -158,6 +160,10 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("AISIS - AI Creative Studio")
         self.setMinimumSize(QSize(1280, 720))
         
+        # Context management
+        self.context_manager = ContextManager()
+        self.context_panel = ContextPanel(self.context_manager)
+        
         # Use MultiAgentOrchestrator for advanced reasoning
         self.orchestrator = MultiAgentOrchestrator(meta_agent=LLMMetaAgent())
         # Register all real agents
@@ -204,6 +210,12 @@ class MainWindow(QMainWindow):
     def _setup_ui(self):
         """Setup UI components"""
         # Central widget and main layout
+        main_widget = QWidget()
+        main_layout = QHBoxLayout()
+        main_widget.setLayout(main_layout)
+        # Add context panel as sidebar
+        main_layout.addWidget(self.context_panel, 1)
+        # Add the rest of the main UI (e.g., editor, chat, etc.)
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout(central_widget)
@@ -313,6 +325,9 @@ class MainWindow(QMainWindow):
         self.chat_input.returnPressed.connect(self._on_chat_input)
         self.chat_input.setToolTip("Send a text command to the orchestrator")
         layout.addWidget(self.chat_input)
+        
+        main_layout.addWidget(central_widget)
+        self.setCentralWidget(main_widget)
     
     def _initialize_async(self):
         """Initialize async components"""
@@ -765,3 +780,11 @@ class MainWindow(QMainWindow):
             # Optionally, use dlg.get_feedback() for further learning
         worker = threading.Thread(target=lambda: on_done(do_tot()), daemon=True)
         worker.start()
+
+    # Example hook: update context and progress from operations
+    def update_context(self, event):
+        self.context_panel.update_context(event)
+    def set_progress(self, value, text=None):
+        self.context_panel.set_progress(value, text)
+    def set_state(self, state):
+        self.context_panel.set_state(state)
