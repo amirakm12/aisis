@@ -1,0 +1,74 @@
+# AISIS Enhanced Requirements
+# Core dependencies for the advanced AI image system
+
+# PyQt6 for modern UI
+PyQt6>=6.4.0
+
+# PyTorch for AI models
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+
+# Transformers for local models
+transformers>=4.30.0
+diffusers>=0.20.0
+accelerate>=0.20.0
+
+# HuggingFace Hub for model downloading
+huggingface-hub>=0.15.0
+
+# Image processing
+Pillow>=9.5.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+
+# Logging and utilities
+loguru>=0.7.0
+tqdm>=4.65.0
+
+# Async support
+aiofiles>=23.0.0
+asyncio-mqtt>=0.11.0
+
+# Configuration and data handling
+pydantic>=2.0.0
+pyyaml>=6.0
+
+# Development and testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+black>=23.0.0
+flake8>=6.0.0
+
+# Optional: GPU acceleration
+# cuda-python>=12.0.0  # Uncomment if CUDA is available
+
+# Optional: Advanced features
+# sentence-transformers>=2.2.0  # For text processing
+# openai-whisper>=20231117  # For audio processing
+# mediapipe>=0.10.0  # For face detection
+
+# System utilities
+psutil>=5.9.0
+pathlib2>=2.3.7
+
+# Network and API
+requests>=2.31.0
+httpx>=0.24.0
+
+# Data serialization
+msgpack>=1.0.5
+orjson>=3.9.0
+
+# Optional: Cloud integrations
+# google-cloud-storage>=2.10.0
+# boto3>=1.28.0  # AWS
+# azure-storage-blob>=12.17.0
+
+# Optional: Database support
+# sqlalchemy>=2.0.0
+# alembic>=1.11.0
+
+# Optional: Monitoring and metrics
+# prometheus-client>=0.17.0
+# structlog>=23.1.0 
