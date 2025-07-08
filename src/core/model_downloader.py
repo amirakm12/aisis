@@ -10,7 +10,6 @@ import aiohttp
 import aiofiles
 from pathlib import Path
 from typing import Optional, Callable, Dict, Any
-from tqdm.asyncio import tqdm
 from loguru import logger
 from dataclasses import dataclass
 from datetime import datetime
@@ -35,6 +34,7 @@ class ModelDownloader:
         self.storage_dir.mkdir(parents=True, exist_ok=True)
         self.temp_dir = storage_dir / ".temp"
         self.temp_dir.mkdir(exist_ok=True)
+        # NOTE: The following dictionaries are not thread-safe. If accessed from multiple threads, use appropriate locking.
         self._active_downloads: Dict[str, asyncio.Task] = {}
         self._progress_callbacks: Dict[str, Callable[[DownloadProgress], None]] = {}
 

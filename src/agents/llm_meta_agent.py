@@ -47,4 +47,7 @@ class LLMMetaAgent(BaseAgent):
 
     async def _cleanup(self) -> None:
         # No resources to clean up for LLMManager stub
-        pass 
+        pass
+
+    async def initialize(self):
+        return True 

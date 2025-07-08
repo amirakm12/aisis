@@ -10,13 +10,10 @@ from typing import Any, Dict, Optional
 from loguru import logger
 
 
-class AgentStatus(Enum):
-    """Agent status states"""
-    IDLE = "idle"
-    INITIALIZING = "initializing"
-    PROCESSING = "processing"
-    ERROR = "error"
-    COMPLETED = "completed"
+class AgentStatus:
+    IDLE = 'IDLE'
+    RUNNING = 'RUNNING'
+    ERROR = 'ERROR'
 
 
 class BaseAgent(ABC):
@@ -45,7 +42,7 @@ class BaseAgent(ABC):
             return
 
         try:
-            self.status = AgentStatus.INITIALIZING
+            self.status = AgentStatus.RUNNING
             await self._initialize()
             self.initialized = True
             self.status = AgentStatus.IDLE
@@ -75,9 +72,9 @@ class BaseAgent(ABC):
             raise RuntimeError(f"Agent {self.name} not initialized")
 
         try:
-            self.status = AgentStatus.PROCESSING
+            self.status = AgentStatus.RUNNING
             result = await self._process(task)
-            self.status = AgentStatus.COMPLETED
+            self.status = AgentStatus.IDLE
             self._results[id(task)] = result
             return result
         except Exception as e:
@@ -85,8 +82,6 @@ class BaseAgent(ABC):
             self.error = str(e)
             logger.error(f"Error in agent {self.name}: {e}")
             raise
-        finally:
-            self.status = AgentStatus.IDLE
 
     @abstractmethod
     async def _process(self, task: Dict[str, Any]) -> Dict[str, Any]:
@@ -131,7 +126,7 @@ class BaseAgent(ABC):
         return self._feedback_history
 
     def __str__(self) -> str:
-        return f"{self.name} ({self.status.value})"
+        return f"{self.name} ({self.status})"
 
     def __repr__(self) -> str:
         return (

@@ -129,4 +129,7 @@ class MultiAgentOrchestrator:
             'all_solutions': solutions,
             'critiques': critiques,
             'user_feedback': user_feedback
-        } 
+        }
+
+    async def initialize(self):
+        return True 

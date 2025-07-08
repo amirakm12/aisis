@@ -296,5 +296,31 @@ def create_test_image(size=(512, 512)):
         np.random.randint(0, 255, (*size, 3), dtype=np.uint8)
     )
 
+class DummyAgent:
+    def __init__(self):
+        self.name = "Dummy"
+    async def _process(self, task):
+        time.sleep(0.01)  # Simulate work
+        return {"status": "success"}
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("n", [1, 10, 50])
+async def test_agent_stress(n):
+    agent = DummyAgent()
+    results = []
+    for _ in range(n):
+        result = await agent._process({})
+        results.append(result)
+    assert all(r["status"] == "success" for r in results)
+
+@pytest.mark.asyncio
+def test_agent_performance_benchmark():
+    agent = DummyAgent()
+    start = time.time()
+    for _ in range(100):
+        agent._process({})
+    duration = time.time() - start
+    assert duration < 5  # Should complete quickly
+
 if __name__ == "__main__":
     pytest.main([__file__])

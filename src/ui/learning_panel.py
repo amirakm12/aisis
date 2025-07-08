@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTextEdit, QPushButton, QListWidget
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QProgressBar, QPushButton, QTextEdit
 
 class LearningPanel(QWidget):
     """
@@ -7,13 +7,19 @@ class LearningPanel(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         layout = QVBoxLayout(self)
+        self.status_label = QLabel("Learning Status: Idle")
+        self.progress = QProgressBar()
+        self.metrics = QTextEdit()
+        self.metrics.setReadOnly(True)
+        self.feedback = QTextEdit()
+        self.feedback.setPlaceholderText("Enter feedback for the agent/model...")
+        self.retrain_btn = QPushButton("Retrain")
+        layout.addWidget(self.status_label)
+        layout.addWidget(self.progress)
+        layout.addWidget(QLabel("Recent Metrics:"))
+        layout.addWidget(self.metrics)
+        layout.addWidget(QLabel("User Feedback:"))
+        layout.addWidget(self.feedback)
+        layout.addWidget(self.retrain_btn)
         self.setLayout(layout)
-        self.feedback_input = QTextEdit()
-        self.submit_feedback = QPushButton("Submit Feedback")
-        self.status_list = QListWidget()
-        layout.addWidget(QLabel("Submit Feedback:"))
-        layout.addWidget(self.feedback_input)
-        layout.addWidget(self.submit_feedback)
-        layout.addWidget(QLabel("Federated Learning Status:"))
-        layout.addWidget(self.status_list)
-        # TODO: Connect feedback and status to FederatedLearningManager 
+        # TODO: Connect retrain_btn to retraining logic, update progress/metrics from backend 

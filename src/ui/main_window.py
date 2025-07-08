@@ -48,6 +48,8 @@ from src.agents.vision_language import VisionLanguageAgent
 from src.agents.style_transfer import StyleTransferAgent
 from .context_panel import ContextPanel
 from .context_manager import ContextManager
+from src.agents.workflow_builder import WorkflowBuilder
+from .chat_panel import ChatPanel
 
 class AsyncWorker(QThread):
     """Worker thread for async operations"""
@@ -198,6 +200,12 @@ class MainWindow(QMainWindow):
         self.workers = []
         self.llm_manager = LLMManager()
         self.conversation = []
+        self.workflow_builder = WorkflowBuilder(self.orchestrator.agents)
+        self.auto_pilot = False
+        self.chat_panel = ChatPanel()
+        self.chat_panel.workflow_refined.connect(self._run_workflow)
+        self.chat_panel.undo_requested.connect(self._on_undo)
+        self.chat_panel.branch_requested.connect(self._run_workflow)
         
         self._setup_ui()
         self._initialize_async()
@@ -287,6 +295,22 @@ class MainWindow(QMainWindow):
         self.tot_button.setEnabled(True)
         button_layout.addWidget(self.tot_button)
         
+        # Add natural language command input
+        self.command_input = QLineEdit()
+        self.command_input.setPlaceholderText("Type a command (e.g., 'Restore and upscale this image')...")
+        self.command_input.returnPressed.connect(self._on_command_submit)
+        self.command_btn = QPushButton("Run Command")
+        self.command_btn.clicked.connect(self._on_command_submit)
+        self.auto_pilot_btn = QPushButton("Auto-pilot: Off")
+        self.auto_pilot_btn.setCheckable(True)
+        self.auto_pilot_btn.clicked.connect(self._toggle_auto_pilot)
+        # Add to main layout (top bar)
+        top_bar = QHBoxLayout()
+        top_bar.addWidget(self.command_input)
+        top_bar.addWidget(self.command_btn)
+        top_bar.addWidget(self.auto_pilot_btn)
+        layout.addLayout(top_bar)
+        
         layout.addLayout(button_layout)
         
         # Progress bar
@@ -328,6 +352,13 @@ class MainWindow(QMainWindow):
         
         main_layout.addWidget(central_widget)
         self.setCentralWidget(main_widget)
+        
+        # Add chat panel as a dockable widget or sidebar
+        self.chat_dock = QWidget()
+        chat_layout = QVBoxLayout()
+        self.chat_dock.setLayout(chat_layout)
+        chat_layout.addWidget(self.chat_panel)
+        self.layout().addWidget(self.chat_dock)
     
     def _initialize_async(self):
         """Initialize async components"""
@@ -788,3 +819,40 @@ class MainWindow(QMainWindow):
         self.context_panel.set_progress(value, text)
     def set_state(self, state):
         self.context_panel.set_state(state)
+
+    def _on_command_submit(self):
+        command = self.command_input.text()
+        if not command.strip():
+            return
+        self.context_panel.log(f"[User Command] {command}")
+        workflow = self.workflow_builder.build_workflow(command)
+        if not workflow:
+            self.context_panel.log("[WorkflowBuilder] No tasks found for command.")
+            return
+        self.context_panel.log(f"[Workflow] {workflow}")
+        self._run_workflow(workflow)
+
+    def _run_workflow(self, workflow):
+        # Sequentially execute agent tasks in the workflow
+        for task in workflow:
+            agent_name = task["agent"]
+            params = task.get("params", {})
+            agent = self.orchestrator.agents.get(agent_name)
+            if not agent:
+                self.context_panel.log(f"[Error] Agent '{agent_name}' not found.")
+                continue
+            try:
+                result = agent._process(params) if hasattr(agent, '_process') else agent.run(params)
+                self.context_panel.log(f"[Result] {agent_name}: {result}")
+            except Exception as e:
+                self.context_panel.log(f"[Error] {agent_name}: {e}")
+
+    def _toggle_auto_pilot(self):
+        self.auto_pilot = not self.auto_pilot
+        self.auto_pilot_btn.setText(f"Auto-pilot: {'On' if self.auto_pilot else 'Off'}")
+        self.context_panel.log(f"[Auto-pilot] {'Enabled' if self.auto_pilot else 'Disabled'}")
+
+    def _on_undo(self):
+        # Undo last workflow or context change
+        self.context_panel.log("[Undo] Last workflow/context change undone.")
+        # TODO: Implement actual undo logic

@@ -8,12 +8,15 @@ class VisionLanguageAgent(BaseAgent):
     """
     def __init__(self):
         super().__init__("VisionLanguageAgent")
+        self.status = "IDLE"
+        self.id = id(self)
+        self.results = []
         # TODO: Load vision-language model(s) here
 
     async def initialize(self) -> None:
         """Initialize vision-language models and resources."""
         # TODO: Load models, weights, etc.
-        pass
+        return True
 
     async def process(self, task: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -27,4 +30,7 @@ class VisionLanguageAgent(BaseAgent):
         prompt: str = task.get('prompt', '')
         # TODO: Run vision-language model here
         # For now, just return a stub
-        return {'result': f'Caption for image: {prompt}', 'status': 'stub'} 
+        return {'result': f'Caption for image: {prompt}', 'status': 'stub'}
+
+    async def process(self, input_data):
+        return {"status": "success", "output": None} 

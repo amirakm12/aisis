@@ -1,6 +1,6 @@
 """
 UI component tests for AISIS
-Tests the Qt-based user interface components and interactions
+                         Tests the Qt-based user interface components and interactions
 """
 
 import pytest
@@ -9,6 +9,16 @@ from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QApplication
 
 from src.ui.main_window import MainWindow
+from src.ui.agent_explain_dialog import AgentExplainDialog
+from src.ui.learning_panel import LearningPanel
+from src.ui.model_zoo_dialog import ModelZooDialog
+from src.ui.settings_panel import SettingsDialog
+from src.ui.loading_screen import LoadingScreen
+from src.ui.onboarding_dialog import OnboardingDialog
+from src.ui.notifications import Notification
+from src.ui.plugin_manager_dialog import PluginManagerDialog
+from src.ui.tour_dialog import TourDialog
+from src.ui.crash_reporting_dialog import CrashReportingDialog
 
 @pytest.fixture
 def app(qtbot):
@@ -130,5 +140,105 @@ def test_window_responsiveness(main_window, qtbot):
     assert main_window.size().width() >= 1280
     assert main_window.size().height() >= 720
 
+def test_agent_explain_dialog_shows_doc(qtbot, app):
+    class DummyAgent:
+        __doc__ = "Test agent doc"
+    dialog = AgentExplainDialog(agent_registry={"Dummy": DummyAgent()})
+    qtbot.addWidget(dialog)
+    dialog.show()
+    assert "Test agent doc" in dialog.explanation.toPlainText()
+
+def test_learning_panel(qtbot, app):
+    panel = LearningPanel()
+    qtbot.addWidget(panel)
+    panel.show()
+    assert panel.status_label.text() == "Learning Status: Idle"
+
+def test_model_zoo_dialog(qtbot, app):
+    class DummyModelZoo:
+        def list_models(self):
+            return [{"name": "ModelA", "type": "vision", "version": "1.0", "status": "available"}]
+    dialog = ModelZooDialog(DummyModelZoo())
+    qtbot.addWidget(dialog)
+    dialog.show()
+    assert dialog.model_list.count() == 1
+
+def test_settings_panel(qtbot, app):
+    config = {"ui.theme": "dark", "paths.models_dir": "models", "gpu.use_cuda": True}
+    dialog = SettingsDialog(config)
+    qtbot.addWidget(dialog)
+    dialog.show()
+    assert dialog.theme_box.text() == "dark"
+
+def test_loading_screen(qtbot, app):
+    screen = LoadingScreen("Loading...")
+    qtbot.addWidget(screen)
+    screen.show()
+    assert screen.label.text() == "Loading..."
+
+def test_onboarding_dialog(qtbot, app):
+    dialog = OnboardingDialog()
+    qtbot.addWidget(dialog)
+    dialog.show()
+    assert dialog.windowTitle() == "Welcome to AISIS!"
+
+def test_notification(qtbot, app):
+    notif = Notification("Test notification", duration=100, parent=None)
+    qtbot.addWidget(notif)
+    notif.show()
+    assert notif.isVisible()
+
+def test_plugin_manager_dialog(qtbot, app):
+    class DummyPluginManager:
+        pass
+    dialog = PluginManagerDialog(DummyPluginManager())
+    qtbot.addWidget(dialog)
+    dialog.show()
+    assert dialog.windowTitle() == "Plugin Manager"
+
+def test_tour_dialog(qtbot, app):
+    dialog = TourDialog()
+    qtbot.addWidget(dialog)
+    dialog.show()
+    assert dialog.windowTitle() == "Welcome Tour"
+
+def test_crash_reporting_dialog(qtbot, app):
+    config = {"crash_reporting.opt_in": False}
+    dialog = CrashReportingDialog(config)
+    qtbot.addWidget(dialog)
+    dialog.show()
+    assert dialog.windowTitle() == "Crash Reporting"
+
+def test_plugin_sandbox_success():
+                             assert run_plugin_in_sandbox(DummyPlugin) == "ok"
+
+@pytest.mark.asyncio
+async def test_agent_process_error():
+    agent = DummyAgent()
+    with pytest.raises(ValueError):
+        await agent._process({"fail": True})
+
+def test_plugin_agent_integration():
+    class AgentPlugin:
+        def run(self):
+            class DummyAgent:
+                def process(self):
+                    return "agent result"
+            agent = DummyAgent()
+            return agent.process()
+    result = run_plugin_in_sandbox(AgentPlugin)
+    assert result == "agent result"
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("n", [1, 10, 50])
+async def test_agent_stress(n):
+    agent = DummyAgent()
+    results = []
+    for _ in range(n):
+        result = await agent._process({})
+        results.append(result)
+    assert all(r["status"] == "success" for r in results)
+
 if __name__ == "__main__":
     pytest.main([__file__])
+                         

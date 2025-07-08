@@ -18,6 +18,9 @@ from src.agents.image_restoration import ImageRestorationAgent
 from src.agents.style_aesthetic import StyleAestheticAgent
 from src.agents.semantic_editing import SemanticEditingAgent
 from src.ui.main_window import MainWindow
+from src.ui.agent_explain_dialog import AgentExplainDialog
+from src.ui.settings_panel import SettingsDialog
+from src.plugins.sandbox import run_plugin_in_sandbox
 
 @pytest.fixture
 async def initialized_system():
@@ -246,6 +249,34 @@ async def test_performance_benchmarking(initialized_system):
     # Calculate metrics
     avg_time_per_task = total_time / len(tasks)
     assert avg_time_per_task < 5.0  # Should process each task within 5 seconds
+
+@pytest.mark.parametrize("theme", ["dark", "light"])
+def test_settings_theme_change(qtbot, theme):
+    config = {"ui.theme": theme, "paths.models_dir": "models", "gpu.use_cuda": True}
+    dialog = SettingsDialog(config)
+    qtbot.addWidget(dialog)
+    dialog.show()
+    dialog.theme_box.setText(theme)
+    assert dialog.theme_box.text() == theme
+
+def test_plugin_agent_integration():
+    class AgentPlugin:
+        def run(self):
+            class DummyAgent:
+                def process(self):
+                    return "agent result"
+            agent = DummyAgent()
+            return agent.process()
+    result = run_plugin_in_sandbox(AgentPlugin)
+    assert result == "agent result"
+
+def test_agent_explain_dialog_integration(qtbot):
+    class DummyAgent:
+        __doc__ = "Integration doc"
+    dialog = AgentExplainDialog(agent_registry={"Dummy": DummyAgent()})
+    qtbot.addWidget(dialog)
+    dialog.show()
+    assert "Integration doc" in dialog.explanation.toPlainText()
 
 def create_test_image(size=(256, 256)):
     """Create a test image"""
