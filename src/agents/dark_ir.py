@@ -2,6 +2,7 @@ from .base_agent import BaseAgent
 import numpy as np
 import torch
 from typing import Dict, Any
+import os
 
 # Integrated from https://github.com/cidautai/DarkIR cloned to temp/DarkIR
 # Note: Ensure dependencies are installed: pip install -r temp/DarkIR/requirements.txt
@@ -16,11 +17,16 @@ class DarkIRAgent(BaseAgent):
         self.model.eval()
 
     def load_model(self):
-        # TODO: Adapt from temp/DarkIR/archs/retinexformer.py and load weights
-        # Example: from temp.DarkIR.archs.retinexformer import RetinexFormer
-        # model = RetinexFormer()
-        # load checkpoints as in inference.py
-        return None  # Placeholder
+        from temp.DarkIR.archs.retinexformer import RetinexFormer
+        model = RetinexFormer()
+        # Load weights - assume weights are downloaded to a path, e.g., 'weights/darkir.pth'
+        path_weights = 'weights/darkir.pth'  # TODO: Download or provide path
+        if os.path.exists(path_weights):
+            checkpoints = torch.load(path_weights, map_location='cpu', weights_only=False)
+            weights = checkpoints['params']
+            weights = {'module.' + key: value for key, value in weights.items()}
+            model.load_state_dict(weights)
+        return model
 
     async def _process(self, task: Dict[str, Any]) -> Dict[str, Any]:
         input_image = task.get('image')
