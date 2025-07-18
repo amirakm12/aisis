@@ -12,10 +12,11 @@ from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QFileDialog, QProgressBar,
     QStatusBar, QMessageBox, QListWidget, QListWidgetItem,
-    QDialog, QFormLayout, QLineEdit, QComboBox, QDialogButtonBox, QTextEdit
+    QDialog, QFormLayout, QLineEdit, QComboBox, QDialogButtonBox, QTextEdit,
+    QSplitter, QGraphicsView, QCheckBox
 )
 from PySide6.QtCore import Qt, QSize, Signal, Slot, QThread, QTime
-from PySide6.QtGui import QPixmap, QImage, QPainter, QPen, QColor, QMouseEvent
+from PySide6.QtGui import QPixmap, QImage, QPainter, QPen, QColor, QMouseEvent, QPalette, QApplication
 from loguru import logger
 
 from ..core.voice_manager import voice_manager
@@ -155,6 +156,51 @@ class MainWindow(QMainWindow):
     
     def __init__(self):
         super().__init__()
+        self.setWindowTitle('Aisis Revolutionary Restoration App')
+        self.setGeometry(100, 100, 1200, 800)
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        layout = QHBoxLayout(central_widget)
+        # Sidebar
+        sidebar = QVBoxLayout()
+        self.agent_selector = QComboBox()
+        self.agent_selector.addItems(['Select Agent'] + list(orchestrator.agents.keys()))
+        sidebar.addWidget(QLabel('Restoration Agent:'))
+        sidebar.addWidget(self.agent_selector)
+        self.ai_suggest_btn = QPushButton('AI Suggest')
+        sidebar.addWidget(self.ai_suggest_btn)
+        self.dark_mode_toggle = QCheckBox('Dark Mode')
+        self.dark_mode_toggle.stateChanged.connect(self.toggle_dark_mode)
+        sidebar.addWidget(self.dark_mode_toggle)
+        layout.addLayout(sidebar)
+        # Split view
+        splitter = QSplitter(Qt.Horizontal)
+        self.before_view = QGraphicsView()
+        self.after_view = QGraphicsView()
+        splitter.addWidget(self.before_view)
+        splitter.addWidget(self.after_view)
+        layout.addWidget(splitter)
+        # Bottom buttons
+        button_layout = QHBoxLayout()
+        process_btn = QPushButton('Process')
+        process_btn.clicked.connect(self.process_image)
+        button_layout.addWidget(process_btn)
+        layout.addLayout(button_layout)
+    def toggle_dark_mode(self, state):
+        palette = QPalette()
+        if state == Qt.Checked:
+            palette.setColor(QPalette.Window, QColor(53, 53, 53))
+            palette.setColor(QPalette.WindowText, Qt.white)
+        else:
+            palette.setColor(QPalette.Window, Qt.white)
+            palette.setColor(QPalette.WindowText, Qt.black)
+        QApplication.setPalette(palette)
+    def process_image(self):
+        selected = self.agent_selector.currentText()
+        if selected != 'Select Agent':
+            # TODO: Load image and process with selected agent
+            pass
+        
         self.setWindowTitle("AISIS - AI Creative Studio")
         self.setMinimumSize(QSize(1280, 720))
         
