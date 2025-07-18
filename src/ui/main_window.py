@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
     QPushButton, QLabel, QFileDialog, QProgressBar,
     QStatusBar, QMessageBox, QListWidget, QListWidgetItem,
     QDialog, QFormLayout, QLineEdit, QComboBox, QDialogButtonBox, QTextEdit,
-    QSplitter, QGraphicsView, QCheckBox
+    QSplitter, QGraphicsView, QCheckBox, QGraphicsScene, QGraphicsRectItem, QGraphicsLineItem, QInputDialog
 )
 from PySide6.QtCore import Qt, QSize, Signal, Slot, QThread, QTime
 from PySide6.QtGui import QPixmap, QImage, QPainter, QPen, QColor, QMouseEvent, QPalette, QApplication
@@ -196,10 +196,16 @@ class MainWindow(QMainWindow):
             palette.setColor(QPalette.WindowText, Qt.black)
         QApplication.setPalette(palette)
     def process_image(self):
+        if not self.image_path:
+            QMessageBox.warning(self, 'No Image', 'Load an image first!')
+            return
         selected = self.agent_selector.currentText()
-        if selected != 'Select Agent':
-            # TODO: Load image and process with selected agent
-            pass
+        if selected == 'Select Agent':
+            return
+        # Simulate processing
+        pixmap = QPixmap(self.image_path)
+        self.after_scene.clear()
+        self.after_scene.addPixmap(pixmap)  # TODO: Actual processing
         
         self.setWindowTitle("AISIS - AI Creative Studio")
         self.setMinimumSize(QSize(1280, 720))
@@ -265,7 +271,7 @@ class MainWindow(QMainWindow):
         button_layout = QHBoxLayout()
         
         self.open_button = QPushButton("Open Image")
-        self.open_button.clicked.connect(self.open_image)
+        self.open_button.clicked.connect(self.load_image)
         button_layout.addWidget(self.open_button)
         
         self.voice_button = QPushButton("Start Voice")
@@ -391,41 +397,14 @@ class MainWindow(QMainWindow):
         logger.error(f"Initialization error: {error}")
         QMessageBox.critical(self, "Error", f"Initialization failed: {error}")
     
-    def open_image(self):
-        """Open image file dialog"""
-        file_path, _ = QFileDialog.getOpenFileName(
-            self,
-            "Open Image",
-            str(Path.home()),
-            "Images (*.png *.jpg *.jpeg)"
-        )
-        
-        if file_path:
-            self.load_image(Path(file_path))
-    
-    def load_image(self, path: Path):
-        """Load and display image"""
-        if not path.exists():
-            logger.error(f"Image not found: {path}")
-            return
-        
-        pixmap = QPixmap(str(path))
-        if pixmap.isNull():
-            logger.error(f"Failed to load image: {path}")
-            return
-        
-        # Scale pixmap to fit label while maintaining aspect ratio
-        scaled = pixmap.scaled(
-            self.image_label.size(),
-            Qt.KeepAspectRatio,
-            Qt.SmoothTransformation
-        )
-        
-        self.image_label.setPixmap(scaled)
-        self.current_image = path
-        self.save_button.setEnabled(True)
-        self.status_bar.showMessage(f"Loaded: {path.name}")
-    
+    def load_image(self):
+        self.image_path, _ = QFileDialog.getOpenFileName(self, 'Open Image', '', 'Images (*.png *.jpg *.bmp)')
+        if self.image_path:
+            pixmap = QPixmap(self.image_path)
+            self.before_scene.clear()
+            self.before_scene.addPixmap(pixmap)
+            self.after_scene.clear()
+            self.after_scene.addPixmap(pixmap)
     def save_image(self):
         """Save image file dialog"""
         if not self.current_image:
@@ -817,3 +796,29 @@ class MainWindow(QMainWindow):
             # Optionally, use dlg.get_feedback() for further learning
         worker = threading.Thread(target=lambda: on_done(do_tot()), daemon=True)
         worker.start()
+
+    def ai_suggest(self):
+        if not self.image_path:
+            return
+        # Placeholder AI suggestion
+        suggestion = 'Recommended: DarkIR for low-light'
+        QMessageBox.information(self, 'AI Suggestion', suggestion)
+
+    def show_agent_flow(self):
+        dialog = QDialog(self)
+        dialog.setWindowTitle('Agent Flow Graph')
+        layout = QVBoxLayout(dialog)
+        graph_view = QGraphicsView()
+        scene = QGraphicsScene()
+        # Example nodes
+        node1 = QGraphicsRectItem(0, 0, 100, 50)
+        node1.setBrush(QColor('lightblue'))
+        scene.addItem(node1)
+        node2 = QGraphicsRectItem(150, 0, 100, 50)
+        node2.setBrush(QColor('lightgreen'))
+        scene.addItem(node2)
+        line = QGraphicsLineItem(100, 25, 150, 25)
+        scene.addItem(line)
+        graph_view.setScene(scene)
+        layout.addWidget(graph_view)
+        dialog.exec_()
