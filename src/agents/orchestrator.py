@@ -31,6 +31,14 @@ from .forensic_analysis import ForensicAnalysisAgent
 from .context_aware_restoration import ContextAwareRestorationAgent
 from .adaptive_enhancement import AdaptiveEnhancementAgent
 from .hyper_orchestrator import HyperOrchestrator
+from .cat_air import CatAIRAgent
+from .invert2restore import Invert2RestoreAgent
+from .raim import RaimAgent
+from .dark_ir import DarkIRAgent
+from .reelmind import ReelmindAgent
+from .mamba_ir_v2 import MambaIRv2Agent
+from .zip_ir import ZipIRAgent
+from .dream_clear import DreamClearAgent
 
 class OrchestratorAgent(BaseAgent):
     def __init__(self):
@@ -70,6 +78,14 @@ class OrchestratorAgent(BaseAgent):
             self.agents['self_critique'] = SelfCritiqueAgent()
             self.agents['context_aware_restoration'] = ContextAwareRestorationAgent()
             self.agents['adaptive_enhancement'] = AdaptiveEnhancementAgent()
+            self.agents['cat_air'] = CatAIRAgent()
+            self.agents['invert2restore'] = Invert2RestoreAgent()
+            self.agents['raim'] = RaimAgent()
+            self.agents['dark_ir'] = DarkIRAgent()
+            self.agents['reelmind'] = ReelmindAgent()
+            self.agents['mamba_ir_v2'] = MambaIRv2Agent()
+            self.agents['zip_ir'] = ZipIRAgent()
+            self.agents['dream_clear'] = DreamClearAgent()
             
             # Initialize all agents
             for name, agent in self.agents.items():
