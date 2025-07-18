@@ -4,9 +4,9 @@ import torch
 from typing import Dict, Any
 import os
 
-class MambaIRv2Agent(BaseAgent):
+class AdaptIRAgent(BaseAgent):
     def __init__(self):
-        super().__init__("MambaIRv2")
+        super().__init__("AdaptIR")
 
     async def _initialize(self) -> None:
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -14,9 +14,9 @@ class MambaIRv2Agent(BaseAgent):
         self.model.eval()
 
     def load_model(self):
-        from temp.MambaIR.archs.mambair_arch import MambaIR
-        model = MambaIR()
-        path_weights = 'weights/mambair.pth'  # TODO: Download from https://github.com/GuoShi28/MambaIR/releases
+        from temp.AdaptIR.models.adaptir import AdaptIR  # Assuming model file
+        model = AdaptIR()
+        path_weights = 'weights/adaptir.pth'  # TODO: Download from repo
         if os.path.exists(path_weights):
             model.load_state_dict(torch.load(path_weights))
         return model

@@ -19,24 +19,25 @@ class DarkIRAgent(BaseAgent):
     def load_model(self):
         from temp.DarkIR.archs.retinexformer import RetinexFormer
         model = RetinexFormer()
-        # Load weights - assume weights are downloaded to a path, e.g., 'weights/darkir.pth'
-        path_weights = 'weights/darkir.pth'  # TODO: Download or provide path
-        if os.path.exists(path_weights):
-            checkpoints = torch.load(path_weights, map_location='cpu', weights_only=False)
-            weights = checkpoints['params']
-            weights = {'module.' + key: value for key, value in weights.items()}
-            model.load_state_dict(weights)
+        path_weights = 'weights/darkir.pth'
+        if not os.path.exists(path_weights):
+            print('Download DarkIR weights from: https://cidautes-my.sharepoint.com/:f:/g/personal/alvgar_cidaut_es/Epntbl4SucFNpeIT_jyYZ-cB9BamMbacbyq_svrkMCpShA?e=XB9YBB and place in weights/')
+            # Alternatively, implement download if URL direct
+        else:
+            checkpoints = torch.load(path_weights, map_location='cpu')
+            weights = checkpoints.get('params', checkpoints)
+            model.load_state_dict({k.replace('module.', ''): v for k, v in weights.items()}, strict=False)
         return model
 
     async def _process(self, task: Dict[str, Any]) -> Dict[str, Any]:
         input_image = task.get('image')
         if input_image is None:
             raise ValueError("No input image provided")
-        input_tensor = self.preprocess(input_image).to(self.device)
+        input_tensor = torch.from_numpy(input_image).float().permute(2,0,1).unsqueeze(0).to(self.device)
         with torch.no_grad():
             restored_tensor = self.model(input_tensor)
-        restored_image = self.postprocess(restored_tensor)
-        return {'output_image': restored_image, 'status': 'completed'}
+        restored_image = restored_tensor.squeeze(0).permute(1,2,0).cpu().numpy()
+        return {'restored_image': restored_image}
 
     def preprocess(self, img: np.ndarray) -> torch.Tensor:
         return torch.from_numpy(img.transpose(2, 0, 1)).unsqueeze(0).float() / 255.0

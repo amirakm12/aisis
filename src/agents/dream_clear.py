@@ -2,6 +2,7 @@ from .base_agent import BaseAgent
 import numpy as np
 import torch
 from typing import Dict, Any
+import os
 
 # Integrated from https://github.com/shallowdream204/DreamClear cloned to temp/DreamClear
 # Note: Ensure dependencies are installed: pip install -r temp/DreamClear/requirements.txt
@@ -16,18 +17,22 @@ class DreamClearAgent(BaseAgent):
         self.model.eval()
 
     def load_model(self):
-        # TODO: Adapt from temp/DreamClear/test.py or train_dreamclear.py
-        return None  # Placeholder
+        from temp.DreamClear.models.dreamclear import DreamClear
+        model = DreamClear()
+        path_weights = 'weights/dreamclear-1024.pth'
+        if os.path.exists(path_weights):
+            model.load_state_dict(torch.load(path_weights))
+        return model
 
     async def _process(self, task: Dict[str, Any]) -> Dict[str, Any]:
         input_image = task.get('image')
         if input_image is None:
             raise ValueError("No input image provided")
-        input_tensor = self.preprocess(input_image).to(self.device)
+        input_tensor = torch.from_numpy(input_image).float().permute(2,0,1).unsqueeze(0).to(self.device)
         with torch.no_grad():
             restored_tensor = self.model(input_tensor)
-        restored_image = self.postprocess(restored_tensor)
-        return {'output_image': restored_image, 'status': 'completed'}
+        restored_image = restored_tensor.squeeze(0).permute(1,2,0).cpu().numpy()
+        return {'restored_image': restored_image}
 
     def preprocess(self, img: np.ndarray) -> torch.Tensor:
         return torch.from_numpy(img.transpose(2, 0, 1)).unsqueeze(0).float() / 255.0

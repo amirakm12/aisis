@@ -39,6 +39,19 @@ from .reelmind import ReelmindAgent
 from .mamba_ir_v2 import MambaIRv2Agent
 from .zip_ir import ZipIRAgent
 from .dream_clear import DreamClearAgent
+from .unirestore import UniRestoreAgent
+from .restore_var import RestoreVARAgent
+from .vmamba_ir import VmambaIRAgent
+from .urwkv import URWKVAgent
+from .instruct_restore import InstructRestoreAgent
+from .tair import TAIRAgent
+from .dpir import DPIRAgent
+from .internal_detail_preserving import InternalDetailPreservingAgent
+from .hybrid_transformer_cnn import HybridTransformerCNNAgent
+from .restormer import RestormerAgent
+from .swin_ir import SwinIRAgent
+from .lm4lv import LM4LVAgent
+from .adapt_ir import AdaptIRAgent
 
 class OrchestratorAgent(BaseAgent):
     def __init__(self):
@@ -86,6 +99,19 @@ class OrchestratorAgent(BaseAgent):
             self.agents['mamba_ir_v2'] = MambaIRv2Agent()
             self.agents['zip_ir'] = ZipIRAgent()
             self.agents['dream_clear'] = DreamClearAgent()
+            self.agents['unirestore'] = UniRestoreAgent()
+            self.agents['restore_var'] = RestoreVARAgent()
+            self.agents['vmamba_ir'] = VmambaIRAgent()
+            self.agents['urwkv'] = URWKVAgent()
+            self.agents['instruct_restore'] = InstructRestoreAgent()
+            self.agents['tair'] = TAIRAgent()
+            self.agents['dpir'] = DPIRAgent()
+            self.agents['internal_detail_preserving'] = InternalDetailPreservingAgent()
+            self.agents['hybrid_transformer_cnn'] = HybridTransformerCNNAgent()
+            self.agents['restormer'] = RestormerAgent()
+            self.agents['swin_ir'] = SwinIRAgent()
+            self.agents['lm4lv'] = LM4LVAgent()
+            self.agents['adapt_ir'] = AdaptIRAgent()
             
             # Initialize all agents
             for name, agent in self.agents.items():
@@ -115,7 +141,27 @@ class OrchestratorAgent(BaseAgent):
                 'tile_stitching',              # Large image handling
                 'feedback_loop',               # Quality feedback
                 'self_critique',               # Self-assessment
-                'meta_correction'              # Final corrections
+                'meta_correction',              # Final corrections
+                'raim',
+                'cat_air',
+                'invert2restore',
+                'unirestore',
+                'restore_var',
+                'zip_ir',
+                'vmamba_ir',
+                'dark_ir',
+                'urwkv',
+                'instruct_restore',
+                'tair',
+                'dpir',
+                'internal_detail_preserving',
+                'hybrid_transformer_cnn',
+                'restormer',
+                'swin_ir',
+                'lm4lv',
+                'adapt_ir',
+                'mamba_ir_v2',
+                'dream_clear',
             ]
             
             logger.info(f"Orchestrator initialized with {len(self.agents)} agents")

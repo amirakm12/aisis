@@ -1,0 +1,18 @@
+Searching for RAIM NTIRE 2025 Restore-Any-Image
+Searching for Cat-AIR Task-aware all-in-one restoration
+Searching for Invert2Restore Zero-shot degradation-blind diffusion
+Searching for UniRestore Unified perceptual task-oriented diffusion CVPR 2025
+Searching for RestoreVAR Visual autoregressive restoration model
+Searching for ZipIR Latent pyramid diffusion ultra-high-res images
+Searching for VmambaIR State-space model backbone
+Searching for DarkIR All-in-one low-light denoise deblur recovery
+Searching for URWKV Multi-state low-light deblur unified model
+Searching for InstructRestore Instruction-guided region-specific repair
+Searching for TAIR Text-Aware IR preserving visual textual fidelity
+Searching for DPIR Dual-Prompting diffusion transformer restoration
+Searching for Internal Detail-Preserving Diffusion High-fidelity priors
+Searching for Hybrid Transformer-CNN Unified architecture high benchmark
+Searching for Restormer Efficient transformer high-res restoration
+Searching for SwinIR Swin-Transformer restoration baseline model
+Searching for LM4LV LLMRA LLM-driven multi-modal restoration assistants
+Searching for AdaptIR Parameter-efficient multi-task adaptation

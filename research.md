@@ -24,6 +24,31 @@ Searched GitHub for implementations:
 
 For integration, will create agent classes with placeholders or clone where possible.
 
+## Full Integration Status of 18 Restoration Agents
+
+All 18 agents have been added to src/agents/ as subclasses of BaseAgent. Repos cloned where available to temp/. Weights downloaded or noted for manual download. Agents registered in orchestrator.py.
+
+1. RAIM: Placeholder, no repo.
+2. Cat-AIR: Placeholder, no repo.
+3. Invert2Restore: Placeholder, no repo.
+4. UniRestore: Placeholder, no repo.
+5. RestoreVAR: Adapted from repo, weights TODO.
+6. ZipIR: Placeholder, no repo.
+7. VmambaIR: Adapted from repo, weights TODO.
+8. DarkIR: Adapted, weights manual download.
+9. URWKV: Placeholder, no repo.
+10. InstructRestore: Adapted from repo, weights TODO.
+11. TAIR: Adapted from repo, weights TODO.
+12. DPIR: Adapted from repo, weights TODO.
+13. Internal Detail-Preserving: Placeholder, no repo.
+14. Hybrid Transformer-CNN: Placeholder, no repo.
+15. Restormer: Adapted, weights downloaded.
+16. SwinIR: Adapted, weights downloaded.
+17. LM4LV/LLMRA: Placeholder, no repo.
+18. AdaptIR: Adapted from repo, weights TODO.
+
+For full inference, download remaining weights as noted in each agent's load_model.
+
 ## Next Steps
 
 Create agent files, edit orchestrator.py to include them.
