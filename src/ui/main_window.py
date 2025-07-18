@@ -256,6 +256,12 @@ class MainWindow(QMainWindow):
         self.export_chat_button.clicked.connect(self.export_chat)
         button_layout.addWidget(self.export_chat_button)
         
+        # Add restoration agent selector
+        self.agent_selector = QComboBox()
+        self.agent_selector.addItems(['image_restoration', 'raim', 'cat_air', 'invert2restore', 'unirestore', 'restore_var', 'zip_ir', 'vmamba_ir', 'dark_ir', 'urwkv', 'instruct_restore', 'tair', 'dpir', 'internal_detail_preserving', 'hybrid_transformer_cnn', 'restormer', 'swin_ir', 'lm4lv', 'adapt_ir', 'mamba_ir_v2', 'dream_clear'])
+        self.agent_selector.setToolTip("Select restoration agent")
+        button_layout.addWidget(self.agent_selector)
+        
         # Add drawing/sketch canvas (hidden by default)
         self.drawing_canvas = DrawingCanvas()
         self.drawing_canvas.setVisible(False)

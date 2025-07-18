@@ -21,12 +21,11 @@ class DarkIRAgent(BaseAgent):
         model = RetinexFormer()
         path_weights = 'weights/darkir.pth'
         if not os.path.exists(path_weights):
-            print('Download DarkIR weights from: https://cidautes-my.sharepoint.com/:f:/g/personal/alvgar_cidaut_es/Epntbl4SucFNpeIT_jyYZ-cB9BamMbacbyq_svrkMCpShA?e=XB9YBB and place in weights/')
-            # Alternatively, implement download if URL direct
-        else:
-            checkpoints = torch.load(path_weights, map_location='cpu')
-            weights = checkpoints.get('params', checkpoints)
-            model.load_state_dict({k.replace('module.', ''): v for k, v in weights.items()}, strict=False)
+            print('DarkIR weights require manual download from SharePoint link: https://cidautes-my.sharepoint.com/:f:/g/personal/alvgar_cidaut_es/Epntbl4SucFNpeIT_jyYZ-cB9BamMbacbyq_svrkMCpShA?e=XB9YBB - please download and place in weights/')
+            return model
+        checkpoints = torch.load(path_weights, map_location='cpu')
+        weights = checkpoints.get('params', checkpoints)
+        model.load_state_dict({k.replace('module.', ''): v for k, v in weights.items()}, strict=False)
         return model
 
     async def _process(self, task: Dict[str, Any]) -> Dict[str, Any]:

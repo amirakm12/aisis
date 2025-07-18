@@ -8,6 +8,9 @@ from enum import Enum
 from typing import Any, Dict, Optional
 # If 'loguru' is not installed, run: pip install loguru
 from loguru import logger
+import numpy as np
+import torch
+import cv2
 
 
 class AgentStatus(Enum):
@@ -38,6 +41,12 @@ class BaseAgent(ABC):
         Override in subclasses to specify supported tasks, modalities, etc.
         """
         return {"tasks": [], "modalities": [], "description": ""}
+
+    def preprocess(self, image: np.ndarray) -> torch.Tensor:
+        # Standardized preprocessing: normalize, resize if needed, to tensor
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) if image.shape[-1] == 3 else image
+        tensor = torch.from_numpy(image / 255.0).float().permute(2,0,1).unsqueeze(0)
+        return tensor.to(self.device)
 
     async def initialize(self) -> None:
         """Initialize agent resources"""

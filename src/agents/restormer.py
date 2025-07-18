@@ -16,9 +16,11 @@ class RestormerAgent(BaseAgent):
     def load_model(self):
         from temp.Restormer.basicsr.models.archs.restormer_arch import Restormer
         model = Restormer()
-        path_weights = 'weights/restormer-real-rain-streaks.pth'
-        if os.path.exists(path_weights):
-            model.load_state_dict(torch.load(path_weights)['params'])
+        path_weights = ['weights/restormer-deraining.pth', 'weights/restormer_motion_deblurring.pth']
+        for pw in path_weights:
+            if os.path.exists(pw):
+                model.load_state_dict(torch.load(pw)['params'], strict=False)
+                break
         return model
 
     async def _process(self, task: Dict[str, Any]) -> Dict[str, Any]:

@@ -94,9 +94,9 @@ class PaintLayerDecompositionAgent(BaseAgent):
         class PigmentIdentifier(nn.Module):
             def __init__(self):
                 super().__init__()
-                self.conv = nn.Conv2d(3, 64, 3, padding=1)
-                self.pool = nn.AdaptiveAvgPool2d(1)
-                self.fc = nn.Linear(64, len(self.pigment_database))
+                self.conv = nn.Conv2d(3, 64, kernel_size=3, padding=1)
+                self.fc = nn.Linear(64, len(self.pigment_database))  # Output size = number of pigments
+                self.pigment_database = {}  # Placeholder
             
             def forward(self, x):
                 x = torch.relu(self.conv(x))

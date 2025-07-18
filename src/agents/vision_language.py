@@ -27,4 +27,11 @@ class VisionLanguageAgent(BaseAgent):
         prompt: str = task.get('prompt', '')
         # TODO: Run vision-language model here
         # For now, just return a stub
-        return {'result': f'Caption for image: {prompt}', 'status': 'stub'} 
+        return {'result': f'Caption for image: {prompt}', 'status': 'stub'}
+
+    async def _initialize(self):
+        pass
+    async def _process(self, task):
+        return {'result': 'Caption'}
+    async def _cleanup(self):
+        pass 

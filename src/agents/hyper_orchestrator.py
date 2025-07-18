@@ -15,7 +15,6 @@ except ImportError:
     AutoTokenizer = None
 
 from .base_agent import BaseAgent
-from .orchestrator import OrchestratorAgent
 
 class HyperOrchestrator(BaseAgent):
     def __init__(self, llm_model_name: str = "mixtral-8x7b-instruct-v0.1"):
@@ -23,13 +22,15 @@ class HyperOrchestrator(BaseAgent):
         self.llm_model_name = llm_model_name
         self.llm = None
         self.tokenizer = None
-        self.base_orchestrator = OrchestratorAgent()
+        self.base_orchestrator = None # Initialize to None
         self.is_initialized = False
 
     async def _initialize(self) -> None:
         """Initialize the LLM and base orchestrator"""
+        from .orchestrator import OrchestratorAgent  # Import here
         try:
             logger.info(f"Initializing HyperOrchestrator with LLM: {self.llm_model_name}")
+            self.base_orchestrator = OrchestratorAgent()
             await self.base_orchestrator.initialize()
             if AutoModelForCausalLM and AutoTokenizer:
                 self.tokenizer = AutoTokenizer.from_pretrained(self.llm_model_name)
@@ -109,7 +110,8 @@ class HyperOrchestrator(BaseAgent):
             return ["image_restoration"]
 
     async def _cleanup(self) -> None:
-        await self.base_orchestrator.cleanup()
+        if self.base_orchestrator:
+            await self.base_orchestrator.cleanup()
         self.llm = None
         self.tokenizer = None
         self.is_initialized = False 
