@@ -10,7 +10,7 @@ import numpy as np
 from PIL import Image
 
 from src.agents.base_agent import BaseAgent, AgentStatus
-from src.agents.orchestrator import HyperOrchestrator, ReasoningMode
+from src.agents.hyper_orchestrator import HyperOrchestrator, ReasoningMode
 from src.agents.image_restoration import ImageRestorationAgent
 from src.agents.style_aesthetic import StyleAestheticAgent
 from src.agents.semantic_editing import SemanticEditingAgent

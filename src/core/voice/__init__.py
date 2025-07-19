@@ -8,9 +8,9 @@ from .bark_tts import BarkTTS, bark_tts
 
 __all__ = [
     "WhisperASR",
-    "VoiceActivityDetector", 
+    "VoiceActivityDetector",
     "BarkTTS",
     "whisper_asr",
     "vad",
-    "bark_tts"
+    "bark_tts",
 ]

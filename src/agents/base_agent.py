@@ -6,12 +6,14 @@ Provides core functionality for all AISIS agents
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any, Dict, Optional
+
 # If 'loguru' is not installed, run: pip install loguru
 from loguru import logger
 
 
 class AgentStatus(Enum):
     """Agent status states"""
+
     IDLE = "idle"
     INITIALIZING = "initializing"
     PROCESSING = "processing"
@@ -21,6 +23,7 @@ class AgentStatus(Enum):
 
 class BaseAgent(ABC):
     """Base class for all AISIS agents"""
+
     version: str = "1.0.0"
 
     def __init__(self, name: str):

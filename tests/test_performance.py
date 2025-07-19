@@ -15,7 +15,7 @@ from pathlib import Path
 
 from src.core.config import config
 from src.core.gpu_utils import gpu_manager
-from src.agents.orchestrator import HyperOrchestrator
+from src.agents.hyper_orchestrator import HyperOrchestrator
 from src.agents.image_restoration import ImageRestorationAgent
 from src.agents.style_aesthetic import StyleAestheticAgent
 from src.agents.semantic_editing import SemanticEditingAgent

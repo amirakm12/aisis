@@ -18,4 +18,4 @@ class SecurityManager:
 
     def check_permissions(self, user_id: str, action: str) -> bool:
         # TODO: Check if user has permission for action
-        return True 
+        return True

@@ -1,9 +1,19 @@
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton, QCheckBox, QListWidget
+from PySide6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QCheckBox,
+    QListWidget,
+)
+
 
 class SecurityDialog(QDialog):
     """
     Dialog for user authentication, plugin sandboxing, and permission management.
     """
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Security & Permissions")
@@ -23,4 +33,4 @@ class SecurityDialog(QDialog):
         layout.addWidget(self.sandbox_checkbox)
         layout.addWidget(QLabel("Permissions:"))
         layout.addWidget(self.permission_list)
-        # TODO: Connect UI to SecurityManager 
+        # TODO: Connect UI to SecurityManager

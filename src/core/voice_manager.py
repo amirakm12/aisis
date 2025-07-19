@@ -11,12 +11,16 @@ from .voice.bark_tts import BarkTTS
 from .voice.faster_whisper_asr import FasterWhisperASR
 from typing import Callable, Optional
 
+
 class VoiceManager:
     """Manages voice input/output and streaming ASR for AISIS."""
+
     def __init__(self) -> None:
         self.asr: Optional[FasterWhisperASR] = None
         self.tts = BarkTTS()
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device(
+            "cuda" if torch.cuda.is_available() else "cpu"
+        )
         self.initialized = False
         self.last_command: Optional[str] = None
         self.is_listening = False
@@ -26,7 +30,7 @@ class VoiceManager:
         if not self.initialized:
             self.asr = FasterWhisperASR(
                 model_size="small",
-                device="cuda" if torch.cuda.is_available() else "cpu"
+                device="cuda" if torch.cuda.is_available() else "cpu",
             )
             self.asr.initialize()
             await self.tts.initialize()
@@ -40,13 +44,17 @@ class VoiceManager:
             raise ValueError("audio_path must be a valid file path.")
         return await self.asr.transcribe_file(str(audio_path))
 
-    async def synthesize(self, text: str, output_path: Path = None, voice_name: str = None) -> Path:
+    async def synthesize(
+        self, text: str, output_path: Path = None, voice_name: str = None
+    ) -> Path:
         """Synthesize text to speech using Bark TTS"""
         if not self.initialized:
             await self.initialize()
         if not text or not isinstance(text, str):
             raise ValueError("text must be a non-empty string.")
-        audio_array = await self.tts.generate_speech(text, voice_name=voice_name)
+        audio_array = await self.tts.generate_speech(
+            text, voice_name=voice_name
+        )
         if output_path is None:
             output_path = self.tts.cache_dir / f"response_{hash(text)}.wav"
         self.tts.save_audio(audio_array, str(output_path))
@@ -56,7 +64,7 @@ class VoiceManager:
         self,
         on_command: Optional[Callable[[str], None]] = None,
         on_audio_level: Optional[Callable[[float], None]] = None,
-        on_partial_transcript: Optional[Callable[[str], None]] = None
+        on_partial_transcript: Optional[Callable[[str], None]] = None,
     ) -> None:
         """
         Start a real-time voice command loop using streaming ASR.
@@ -104,13 +112,13 @@ class VoiceManager:
                 sample_rate,
                 chunk_size,
                 on_partial=on_partial,
-                on_final=on_final
+                on_final=on_final,
             )
             with sd.InputStream(
                 samplerate=sample_rate,
                 channels=1,
                 callback=audio_callback,
-                blocksize=chunk_size
+                blocksize=chunk_size,
             ):
                 while self.is_listening:
                     time.sleep(0.1)
@@ -144,5 +152,6 @@ class VoiceManager:
             raise ImportError(
                 f"[VoiceManager] Missing dependency: {e}. Please install all requirements."
             )
+
 
 voice_manager = VoiceManager()

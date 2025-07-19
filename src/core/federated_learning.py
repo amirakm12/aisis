@@ -13,7 +13,9 @@ class FederatedLearningManager:
         self.agent_updates: Dict[str, Any] = {}
 
     def add_feedback(self, agent_name: str, feedback: Dict[str, Any]):
-        self.feedback_history.append({'agent': agent_name, 'feedback': feedback})
+        self.feedback_history.append(
+            {"agent": agent_name, "feedback": feedback}
+        )
 
     def aggregate_feedback(self):
         # TODO: Aggregate feedback for each agent
@@ -25,4 +27,4 @@ class FederatedLearningManager:
 
     def federated_round(self):
         # TODO: Coordinate a federated learning round (local update, aggregation, global update)
-        pass 
+        pass

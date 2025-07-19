@@ -1,10 +1,23 @@
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QTextEdit, QPushButton, QFileDialog, QTabWidget, QWidget, QHBoxLayout
+from PySide6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QLabel,
+    QLineEdit,
+    QTextEdit,
+    QPushButton,
+    QFileDialog,
+    QTabWidget,
+    QWidget,
+    QHBoxLayout,
+)
+
 
 class AgentInvocationDialog(QDialog):
     """
     Dialog for providing input (image, text, sketch) to an agent for invocation.
     Supports both automated and manual agent invocation.
     """
+
     def __init__(self, agent_name, parent=None):
         super().__init__(parent)
         self.setWindowTitle(f"Invoke Agent: {agent_name}")
@@ -30,13 +43,18 @@ class AgentInvocationDialog(QDialog):
         # Sketch input tab (stub)
         sketch_tab = QWidget()
         sketch_layout = QVBoxLayout(sketch_tab)
-        sketch_layout.addWidget(QLabel("Sketch Input: (integrate with DrawingCanvas)"))
+        sketch_layout.addWidget(
+            QLabel("Sketch Input: (integrate with DrawingCanvas)")
+        )
         self.tabs.addTab(sketch_tab, "Sketch")
         layout.addWidget(self.tabs)
         self.submit_button = QPushButton("Submit")
         layout.addWidget(self.submit_button)
         # TODO: Connect submit_button to agent invocation logic
+
     def browse_image(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Select Image", "", "Images (*.png *.jpg *.jpeg)")
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Select Image", "", "Images (*.png *.jpg *.jpeg)"
+        )
         if file_path:
-            self.image_path.setText(file_path) 
+            self.image_path.setText(file_path)

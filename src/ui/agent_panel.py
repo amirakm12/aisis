@@ -1,10 +1,21 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QPushButton, QTextEdit, QHBoxLayout, QCheckBox
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QListWidget,
+    QLabel,
+    QPushButton,
+    QTextEdit,
+    QHBoxLayout,
+    QCheckBox,
+)
+
 
 class AgentPanel(QWidget):
     """
     Panel for listing, selecting, invoking, chaining, and explaining agents.
     Default: automated agent selection/chaining, but user can override.
     """
+
     def __init__(self, orchestrator, parent=None):
         super().__init__(parent)
         self.orchestrator = orchestrator
@@ -41,4 +52,6 @@ class AgentPanel(QWidget):
     def show_agent_info(self, current, previous):
         if current:
             agent = self.orchestrator.agents[current.text()]
-            self.info_box.setText(str(agent.__doc__ or agent.__class__.__name__)) 
+            self.info_box.setText(
+                str(agent.__doc__ or agent.__class__.__name__)
+            )

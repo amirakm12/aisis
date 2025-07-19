@@ -3,6 +3,7 @@ import json
 from typing import Any, Dict
 from pathlib import Path
 
+
 class Config:
     """
     Configuration management for AISIS.
@@ -32,9 +33,9 @@ class Config:
             elif isinstance(obj, Path):
                 return str(obj)
             return obj
-        
+
         serializable_data = convert_paths(self.data)
-        
+
         with open(self.config_path, "w") as f:
             json.dump(serializable_data, f, indent=4)
 
@@ -63,32 +64,32 @@ class Config:
             "ui": {
                 "theme": "dark",
                 "window_size": [1280, 720],
-            }
+            },
         }
 
     def get(self, key: str, default: Any = None) -> Any:
         """Get value using dot notation (e.g., 'voice.sample_rate')"""
-        keys = key.split('.')
+        keys = key.split(".")
         value = self.data
-        
+
         for k in keys:
             if isinstance(value, dict) and k in value:
                 value = value[k]
             else:
                 return default
-        
+
         return value
 
     def set(self, key: str, value: Any):
         """Set value using dot notation"""
-        keys = key.split('.')
+        keys = key.split(".")
         data = self.data
-        
+
         for k in keys[:-1]:
             if k not in data:
                 data[k] = {}
             data = data[k]
-        
+
         data[keys[-1]] = value
         self.save()
 
@@ -96,23 +97,30 @@ class Config:
         """Support attribute-style access for nested config"""
         if name in self.data:
             return ConfigDict(self.data[name])
-        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
+        raise AttributeError(
+            f"'{self.__class__.__name__}' object has no attribute '{name}'"
+        )
+
 
 class ConfigDict:
     """Helper class for nested config access"""
+
     def __init__(self, data: Dict[str, Any]):
         self._data = data
-    
+
     def __getattr__(self, name: str) -> Any:
         if name in self._data:
             value = self._data[name]
             if isinstance(value, dict):
                 return ConfigDict(value)
             return value
-        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
-    
+        raise AttributeError(
+            f"'{self.__class__.__name__}' object has no attribute '{name}'"
+        )
+
     def __getitem__(self, key: str) -> Any:
         return self._data[key]
+
 
 # Global config instance
 config = Config()

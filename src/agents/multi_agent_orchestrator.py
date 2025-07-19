@@ -7,6 +7,7 @@ class MultiAgentOrchestrator:
     Orchestrates multiple agents (vision, language, audio, 3D, etc.), manages
     communication, negotiation, and self-improvement via a meta-agent (LLM).
     """
+
     def __init__(self, meta_agent: Optional[BaseAgent] = None):
         self.agents: Dict[str, BaseAgent] = {}
         self.meta_agent = meta_agent  # LLM for critique/planning
@@ -18,7 +19,7 @@ class MultiAgentOrchestrator:
         self.agents[name] = agent
 
     def send_message(
-        self, sender: str, receiver: str, message: Dict[e the sucess rate str, Any]
+        self, sender: str, receiver: str, message: Dict[str, Any]
     ) -> Any:
         """
         Send a message from one agent to another
@@ -41,14 +42,13 @@ class MultiAgentOrchestrator:
             agent = self.agents.get(agent_name)
             if agent:
                 result = await agent.process(result)
-                self.history.append({'agent': agent_name, 'result': result})
+                self.history.append({"agent": agent_name, "result": result})
                 # Meta-agent critique (Tree-of-Thought)
                 if self.meta_agent:
-                    critique = await self.meta_agent.process({
-                        'history': self.history,
-                        'current': result
-                    })
-                    result['meta_critique'] = critique
+                    critique = await self.meta_agent.process(
+                        {"history": self.history, "current": result}
+                    )
+                    result["meta_critique"] = critique
             else:
                 raise ValueError(f"Agent '{agent_name}' not found.")
         return result
@@ -57,7 +57,7 @@ class MultiAgentOrchestrator:
         """
         Integrate user or system feedback for self-improvement.
         """
-        self.history.append({'feedback': feedback})
+        self.history.append({"feedback": feedback})
         # TODO: Use feedback to update agent strategies or parameters
 
     def negotiate(
@@ -68,16 +68,16 @@ class MultiAgentOrchestrator:
         """
         if not self.meta_agent:
             raise RuntimeError("Meta-agent (LLM) required for negotiation.")
-        debate = {'agents': agent_names, 'context': context}
+        debate = {"agents": agent_names, "context": context}
         # TODO: Implement negotiation protocol (e.g., LLM debate)
-        return self.meta_agent.process({'debate': debate})
+        return self.meta_agent.process({"debate": debate})
 
     async def tree_of_thought_reasoning(
         self,
         task: Dict[str, Any],
         agent_names: list,
         num_solutions: int = 3,
-        ask_user: bool = False
+        ask_user: bool = False,
     ) -> Dict[str, Any]:
         """
         Tree-of-Thought Reasoning Loop:
@@ -102,20 +102,17 @@ class MultiAgentOrchestrator:
             if not agent:
                 raise ValueError(f"Agent '{agent_name}' not found.")
             result = await agent.process(task)
-            solutions.append({
-                'agent': agent_name,
-                'result': result
-            })
+            solutions.append({"agent": agent_name, "result": result})
         # 2. Critique and rank with meta-agent
         if not self.meta_agent:
             raise RuntimeError("Meta-agent (LLM) required for critique.")
         critique_input = {
-            'solutions': solutions,
-            'task': task,
-            'instruction': (
+            "solutions": solutions,
+            "task": task,
+            "instruction": (
                 "Critique and rank the solutions. "
                 "Return the best one and explain why."
-            )
+            ),
         }
         critique = await self.meta_agent.process(critique_input)
         critiques.append(critique)
@@ -123,10 +120,10 @@ class MultiAgentOrchestrator:
         user_feedback = None
         if ask_user:
             # TODO: Integrate with UI for user feedback
-            user_feedback = {'feedback': 'user feedback stub'}
+            user_feedback = {"feedback": "user feedback stub"}
         return {
-            'best_solution': critique.get('llm_response'),
-            'all_solutions': solutions,
-            'critiques': critiques,
-            'user_feedback': user_feedback
-        } 
+            "best_solution": critique.get("llm_response"),
+            "all_solutions": solutions,
+            "critiques": critiques,
+            "user_feedback": user_feedback,
+        }

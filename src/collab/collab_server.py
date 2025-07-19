@@ -9,14 +9,16 @@ class CollaborationServer:
     Handles user authentication, session management, and message broadcasting.
     """
 
-    def __init__(self, host: str = 'localhost', port: int = 8765):
+    def __init__(self, host: str = "localhost", port: int = 8765):
         self.host = host
         self.port = port
-        self.active_sessions: Dict[str, Set[websockets.WebSocketServerProtocol]] = {}
+        self.active_sessions: Dict[
+            str, Set[websockets.WebSocketServerProtocol]
+        ] = {}
 
     async def handler(self, websocket, path):
         # TODO: Authenticate user, join session, handle messages
-        session_id = path.strip('/')
+        session_id = path.strip("/")
         if session_id not in self.active_sessions:
             self.active_sessions[session_id] = set()
         self.active_sessions[session_id].add(websocket)
@@ -39,4 +41,4 @@ class CollaborationServer:
 
 
 if __name__ == "__main__":
-    CollaborationServer().run() 
+    CollaborationServer().run()

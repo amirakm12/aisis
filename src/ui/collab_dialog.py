@@ -1,9 +1,20 @@
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QPushButton, QListWidget, QTextEdit, QLabel, QHBoxLayout
+from PySide6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QLineEdit,
+    QPushButton,
+    QListWidget,
+    QTextEdit,
+    QLabel,
+    QHBoxLayout,
+)
+
 
 class CollaborationDialog(QDialog):
     """
     Dialog for joining/creating a collaboration session, showing participants, and live chat.
     """
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Collaboration Session")
@@ -27,4 +38,4 @@ class CollaborationDialog(QDialog):
         chat_input_layout.addWidget(self.message_input)
         chat_input_layout.addWidget(self.send_button)
         layout.addLayout(chat_input_layout)
-        # TODO: Connect buttons to backend collaboration logic 
+        # TODO: Connect buttons to backend collaboration logic

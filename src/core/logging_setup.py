@@ -11,6 +11,14 @@ def setup_logging(log_file: str = "aisis.log") -> None:
         setup_logging()
     """
     logger.remove()
-    logger.add(sys.stderr, level="INFO", format="<green>{time}</green> <level>{message}</level>")
-    logger.add(log_file, rotation="10 MB", level="DEBUG",
-               format="{time} {level} {message}") 
+    logger.add(
+        sys.stderr,
+        level="INFO",
+        format="<green>{time}</green> <level>{message}</level>",
+    )
+    logger.add(
+        log_file,
+        rotation="10 MB",
+        level="DEBUG",
+        format="{time} {level} {message}",
+    )

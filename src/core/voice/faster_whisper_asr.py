@@ -2,11 +2,13 @@ from faster_whisper import WhisperModel
 import numpy as np
 import threading
 
+
 class FasterWhisperASR:
     """
     Streaming ASR using faster-whisper. Supports real-time chunked transcription
     and partial transcript emission.
     """
+
     def __init__(self, model_size="small", device="auto"):
         self.model_size = model_size
         self.device = device
@@ -17,10 +19,18 @@ class FasterWhisperASR:
         self.final_callback = None
 
     def initialize(self):
-        self.model = WhisperModel(self.model_size, device=self.device, compute_type="float16")
+        self.model = WhisperModel(
+            self.model_size, device=self.device, compute_type="float16"
+        )
 
-    def transcribe_stream(self, audio_queue, sample_rate, chunk_size,
-                         on_partial=None, on_final=None):
+    def transcribe_stream(
+        self,
+        audio_queue,
+        sample_rate,
+        chunk_size,
+        on_partial=None,
+        on_final=None,
+    ):
         """
         Start streaming transcription from an audio queue.
         on_partial: callback for partial transcript (str)
@@ -32,7 +42,7 @@ class FasterWhisperASR:
         self.thread = threading.Thread(
             target=self._stream_loop,
             args=(audio_queue, sample_rate, chunk_size),
-            daemon=True
+            daemon=True,
         )
         self.thread.start()
 
@@ -51,7 +61,7 @@ class FasterWhisperASR:
                         beam_size=1,
                         word_timestamps=True,
                         vad_filter=True,
-                        vad_parameters={"min_speech_duration_ms": 250}
+                        vad_parameters={"min_speech_duration_ms": 250},
                     )
                     partial = " ".join([seg.text for seg in segments])
                     if self.partial_callback:
@@ -66,4 +76,5 @@ class FasterWhisperASR:
         if self.thread:
             self.thread.join()
 
-# TODO: Add more advanced VAD, language selection, and error handling as needed. 
+
+# TODO: Add more advanced VAD, language selection, and error handling as needed.
