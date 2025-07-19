@@ -6,6 +6,7 @@ class LLMManager:
     Offline LLM manager using llama-cpp-python. Loads a local Llama model and
     generates responses.
     """
+
     def __init__(self, model_path=None):
         # TODO: Set the correct path to your local Llama model file (.gguf)
         self.model_path = model_path or "models/llama-2-7b-chat.gguf"
@@ -25,4 +26,4 @@ class LLMManager:
         # TODO: Use history for multi-turn conversation
         full_prompt = prompt
         response = self.llm(full_prompt, max_tokens=max_tokens)
-        return response["choices"][0]["text"].strip() 
+        return response["choices"][0]["text"].strip()

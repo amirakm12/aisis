@@ -11,9 +11,9 @@ from typing import Optional, Dict, Union
 def is_com_object(obj) -> bool:
     # Check for COM object by class name and 'Quit' attribute, not a Popen
     return (
-        hasattr(obj, 'Quit') and
-        obj.__class__.__name__ == 'CDispatch' and
-        not isinstance(obj, subprocess.Popen)
+        hasattr(obj, "Quit")
+        and obj.__class__.__name__ == "CDispatch"
+        and not isinstance(obj, subprocess.Popen)
     )
 
 
@@ -22,6 +22,7 @@ class CrossAppAutomation:
     Automates launching, controlling, and exchanging data between creative apps.
     Supports Photoshop (via COM), GIMP (via Python-fu), and Blender (via bpy).
     """
+
     def __init__(self):
         self.processes: Dict[str, Union[subprocess.Popen, object]] = {}
 
@@ -31,6 +32,7 @@ class CrossAppAutomation:
         """
         try:
             import win32com.client  # type: ignore
+
             ps_app = win32com.client.Dispatch("Photoshop.Application")
             ps_app.Visible = True
             self.processes["photoshop"] = ps_app  # COM object
@@ -121,4 +123,4 @@ if __name__ == "__main__":
     print("Launching Blender...")
     automation.launch_blender()
     input("Press Enter to close all apps...")
-    automation.close_all() 
+    automation.close_all()

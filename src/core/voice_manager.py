@@ -11,8 +11,10 @@ from .voice.bark_tts import BarkTTS
 from .voice.faster_whisper_asr import FasterWhisperASR
 from typing import Callable, Optional
 
+
 class VoiceManager:
     """Manages voice input/output and streaming ASR for AISIS."""
+
     def __init__(self) -> None:
         self.asr: Optional[FasterWhisperASR] = None
         self.tts = BarkTTS()
@@ -25,8 +27,7 @@ class VoiceManager:
         """Initialize voice models asynchronously."""
         if not self.initialized:
             self.asr = FasterWhisperASR(
-                model_size="small",
-                device="cuda" if torch.cuda.is_available() else "cpu"
+                model_size="small", device="cuda" if torch.cuda.is_available() else "cpu"
             )
             self.asr.initialize()
             await self.tts.initialize()
@@ -56,7 +57,7 @@ class VoiceManager:
         self,
         on_command: Optional[Callable[[str], None]] = None,
         on_audio_level: Optional[Callable[[float], None]] = None,
-        on_partial_transcript: Optional[Callable[[str], None]] = None
+        on_partial_transcript: Optional[Callable[[str], None]] = None,
     ) -> None:
         """
         Start a real-time voice command loop using streaming ASR.
@@ -73,9 +74,7 @@ class VoiceManager:
         self._check_dependencies()
 
         if not self.initialized:
-            raise RuntimeError(
-                "Voice system not initialized. Call initialize() first."
-            )
+            raise RuntimeError("Voice system not initialized. Call initialize() first.")
 
         self.is_listening = True
         audio_queue = queue.Queue()
@@ -100,17 +99,10 @@ class VoiceManager:
         def listen_loop():
             print("[Voice] Listening for commands. Press Ctrl+C to stop.")
             self.asr.transcribe_stream(
-                audio_queue,
-                sample_rate,
-                chunk_size,
-                on_partial=on_partial,
-                on_final=on_final
+                audio_queue, sample_rate, chunk_size, on_partial=on_partial, on_final=on_final
             )
             with sd.InputStream(
-                samplerate=sample_rate,
-                channels=1,
-                callback=audio_callback,
-                blocksize=chunk_size
+                samplerate=sample_rate, channels=1, callback=audio_callback, blocksize=chunk_size
             ):
                 while self.is_listening:
                     time.sleep(0.1)
@@ -144,5 +136,6 @@ class VoiceManager:
             raise ImportError(
                 f"[VoiceManager] Missing dependency: {e}. Please install all requirements."
             )
+
 
 voice_manager = VoiceManager()

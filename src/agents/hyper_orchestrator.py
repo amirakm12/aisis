@@ -15,7 +15,7 @@ except ImportError:
     AutoTokenizer = None
 
 from .base_agent import BaseAgent
-from .orchestrator import OrchestratorAgent
+
 
 class HyperOrchestrator(BaseAgent):
     def __init__(self, llm_model_name: str = "mixtral-8x7b-instruct-v0.1"):
@@ -36,7 +36,9 @@ class HyperOrchestrator(BaseAgent):
                 self.llm = AutoModelForCausalLM.from_pretrained(self.llm_model_name)
                 logger.info("LLM loaded successfully")
             else:
-                logger.warning("Transformers not available or LLM model not installed. Using fallback mode.")
+                logger.warning(
+                    "Transformers not available or LLM model not installed. Using fallback mode."
+                )
             self.is_initialized = True
         except Exception as e:
             logger.error(f"Failed to initialize HyperOrchestrator: {e}")
@@ -68,7 +70,7 @@ class HyperOrchestrator(BaseAgent):
                 "status": "success",
                 "final_output": current_image,
                 "agent_sequence": agent_sequence,
-                "agent_reports": agent_reports
+                "agent_reports": agent_reports,
             }
         except Exception as e:
             logger.error(f"HyperOrchestrator failed: {e}")
@@ -89,6 +91,7 @@ class HyperOrchestrator(BaseAgent):
             response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
             # Extract Python list from response (very basic parsing)
             import ast
+
             try:
                 agent_sequence = ast.literal_eval(response.split("[")[-1].split("]")[0])
                 if isinstance(agent_sequence, str):
@@ -101,7 +104,13 @@ class HyperOrchestrator(BaseAgent):
             # Fallback: simple keyword-based selection
             instruction = instruction.lower() if instruction else ""
             if "restore" in instruction:
-                return ["forensic_analysis", "material_recognition", "damage_classifier", "image_restoration", "meta_correction"]
+                return [
+                    "forensic_analysis",
+                    "material_recognition",
+                    "damage_classifier",
+                    "image_restoration",
+                    "meta_correction",
+                ]
             if "style" in instruction or "aesthetic" in instruction:
                 return ["style_aesthetic", "adaptive_enhancement"]
             if "text" in instruction:
@@ -112,4 +121,4 @@ class HyperOrchestrator(BaseAgent):
         await self.base_orchestrator.cleanup()
         self.llm = None
         self.tokenizer = None
-        self.is_initialized = False 
+        self.is_initialized = False

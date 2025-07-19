@@ -7,10 +7,12 @@ import os
 import importlib.util
 from .plugin_base import PluginBase
 
+
 class PluginManager:
     """
     Manages plugins for AISIS: discovery, loading, and execution.
     """
+
     def __init__(self, plugins_dir=None, context=None):
         self.plugins_dir = plugins_dir or os.path.join(os.path.dirname(__file__))
         self.context = context or {}
@@ -22,7 +24,11 @@ class PluginManager:
         Discover and load all plugins in the plugins directory.
         """
         for fname in os.listdir(self.plugins_dir):
-            if not fname.endswith('.py') or fname in ('plugin_manager.py', 'plugin_base.py', 'marketplace.py'):
+            if not fname.endswith(".py") or fname in (
+                "plugin_manager.py",
+                "plugin_base.py",
+                "marketplace.py",
+            ):
                 continue
             plugin_path = os.path.join(self.plugins_dir, fname)
             plugin_name = os.path.splitext(fname)[0]
@@ -32,7 +38,11 @@ class PluginManager:
                 spec.loader.exec_module(module)
                 for attr in dir(module):
                     obj = getattr(module, attr)
-                    if isinstance(obj, type) and issubclass(obj, PluginBase) and obj is not PluginBase:
+                    if (
+                        isinstance(obj, type)
+                        and issubclass(obj, PluginBase)
+                        and obj is not PluginBase
+                    ):
                         self.plugins[plugin_name] = obj(self.context)
 
     def list_plugins(self):
@@ -56,4 +66,4 @@ class PluginManager:
         results = {}
         for name, plugin in self.plugins.items():
             results[name] = plugin.run(*args, **kwargs)
-        return results 
+        return results

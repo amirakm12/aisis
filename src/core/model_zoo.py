@@ -15,7 +15,7 @@ class ModelZoo:
 
     def list_models(self, model_type: str = None) -> List[str]:
         if model_type:
-            return [k for k, v in self.registry.items() if v.get('type') == model_type]
+            return [k for k, v in self.registry.items() if v.get("type") == model_type]
         return list(self.registry.keys())
 
     def get_model_info(self, name: str) -> Dict:
@@ -27,4 +27,4 @@ class ModelZoo:
 
     def switch_model(self, name: str):
         # TODO: Switch active model for a given task/agent
-        pass 
+        pass
