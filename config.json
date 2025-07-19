@@ -25,5 +25,13 @@
             1280,
             720
         ]
+    },
+    "agents": {
+        "core_restoration": ["image_restoration", "denoising", "super_resolution", "color_correction", "tile_stitching", "perspective_correction", "auto_retouch", "enhanced_image_restoration", "mamba_ir"],
+        "contextual_intelligence": ["context_aware_restoration", "adaptive_enhancement", "semantic_editing", "style_aesthetic", "vision_language"],
+        "forensic_scientific": ["forensic_analysis", "damage_classifier", "hyperspectral_recovery", "paint_layer_decomposition", "material_recognition", "neural_radiance", "text_recovery"],
+        "creative_generatives": ["generative"],
+        "quality_command": ["feedback_loop", "self_critique", "meta_correction"],
+        "orchestration_meta": ["orchestrator", "llm_meta_agent", "multi_agent_orchestrator", "hyper_orchestrator"]
     }
 }

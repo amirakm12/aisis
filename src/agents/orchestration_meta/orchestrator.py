@@ -7,7 +7,11 @@ import asyncio
 from typing import Dict, Any, List, Optional
 from loguru import logger
 
-from .base_agent import BaseAgent
+import json
+import importlib
+from pathlib import Path
+
+from src.agents.base_agent import BaseAgent
 from .image_restoration import ImageRestorationAgent
 from .style_aesthetic import StyleAestheticAgent
 from .semantic_editing import SemanticEditingAgent
@@ -39,37 +43,23 @@ class OrchestratorAgent(BaseAgent):
         self.restoration_pipeline = []
         
     async def _initialize(self) -> None:
-        """Initialize all restoration agents"""
+        """Initialize all restoration agents dynamically from config"""
         try:
-            logger.info("Initializing comprehensive restoration pipeline...")
+            logger.info("Initializing comprehensive restoration pipeline dynamically...")
             
-            # Core restoration agents
-            self.agents['image_restoration'] = ImageRestorationAgent()
-            self.agents['style_aesthetic'] = StyleAestheticAgent()
-            self.agents['semantic_editing'] = SemanticEditingAgent()
-            self.agents['auto_retouch'] = AutoRetouchAgent()
-            self.agents['generative'] = GenerativeAgent()
-            self.agents['neural_radiance'] = NeuralRadianceAgent()
-            self.agents['denoising'] = DenoisingAgent()
-            self.agents['super_resolution'] = SuperResolutionAgent()
-            self.agents['color_correction'] = ColorCorrectionAgent()
-            self.agents['tile_stitching'] = TileStitchingAgent()
-            self.agents['text_recovery'] = TextRecoveryAgent()
-            self.agents['feedback_loop'] = FeedbackLoopAgent()
-            self.agents['perspective_correction'] = PerspectiveCorrectionAgent()
+            # Load config
+            config_path = Path(__file__).parent.parent.parent.parent / 'config.json'
+            with open(config_path, 'r') as f:
+                config = json.load(f)
             
-            # Scientific and forensic agents
-            self.agents['material_recognition'] = MaterialRecognitionAgent()
-            self.agents['damage_classifier'] = DamageClassifierAgent()
-            self.agents['hyperspectral_recovery'] = HyperspectralRecoveryAgent()
-            self.agents['paint_layer_decomposition'] = PaintLayerDecompositionAgent()
-            self.agents['forensic_analysis'] = ForensicAnalysisAgent()
-            
-            # Advanced AI agents
-            self.agents['meta_correction'] = MetaCorrectionAgent()
-            self.agents['self_critique'] = SelfCritiqueAgent()
-            self.agents['context_aware_restoration'] = ContextAwareRestorationAgent()
-            self.agents['adaptive_enhancement'] = AdaptiveEnhancementAgent()
+            self.agents = {}
+            for category, agent_names in config.get('agents', {}).items():
+                for agent_name in agent_names:
+                    module_path = f"src.agents.{category}.{agent_name}"
+                    mod = importlib.import_module(module_path)
+                    class_name = ''.join(word.capitalize() for word in agent_name.split('_')) + 'Agent'
+                    agent_class = getattr(mod, class_name)
+                    self.agents[agent_name] = agent_class()
             
             # Initialize all agents
             for name, agent in self.agents.items():
