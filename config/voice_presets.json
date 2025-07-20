@@ -1,0 +1,12 @@
+{
+  "professional": {
+    "name": "professional",
+    "description": "Professional, clear voice",
+    "voice_id": "v2/en_speaker_6"
+  },
+  "friendly": {
+    "name": "friendly",
+    "description": "Warm, friendly voice",
+    "voice_id": "v2/en_speaker_9"
+  }
+}
