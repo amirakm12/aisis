@@ -111,9 +111,10 @@ class BarkTTS:
         self,
         text: str,
         voice_name: Optional[str] = None,
-        use_cache: bool = True
+        use_cache: bool = True,
+        emotion: str = "neutral"  # New param for emotive TTS
     ) -> np.ndarray:
-        """Generate speech from text using Bark"""
+        """Generate speech from text using Bark with emotion"""
         if not self.is_initialized:
             await self.initialize()
         
@@ -122,6 +123,16 @@ class BarkTTS:
             self.set_voice(voice_name)
         elif self.current_voice is None:
             self.set_voice("default")
+        
+        # Adjust temps based on emotion
+        text_temp = 0.7
+        waveform_temp = 0.7
+        if emotion == "excited":
+            text_temp = 0.9
+            waveform_temp = 0.9
+        elif emotion == "calm":
+            text_temp = 0.5
+            waveform_temp = 0.5
         
         # Check cache
         cache_key = self._get_cache_key(text, self.current_voice["name"])
@@ -135,8 +146,8 @@ class BarkTTS:
                 audio_array = generate_audio(
                     text,
                     history_prompt=self.current_voice["voice_id"],
-                    text_temp=0.7,
-                    waveform_temp=0.7
+                    text_temp=text_temp,
+                    waveform_temp=waveform_temp
                 )
             
             # Cache the generated audio

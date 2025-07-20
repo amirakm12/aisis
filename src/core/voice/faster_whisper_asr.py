@@ -7,7 +7,7 @@ class FasterWhisperASR:
     Streaming ASR using faster-whisper. Supports real-time chunked transcription
     and partial transcript emission.
     """
-    def __init__(self, model_size="small", device="auto"):
+    def __init__(self, model_size="large-v3", device="auto"):
         self.model_size = model_size
         self.device = device
         self.model = None
@@ -47,8 +47,8 @@ class FasterWhisperASR:
                     buffer = buffer[chunk_size:]
                     segments, info = self.model.transcribe(
                         process_chunk,
-                        language="en",
-                        beam_size=1,
+                        language=None,  # Auto-detect language for multilingual
+                        beam_size=5,
                         word_timestamps=True,
                         vad_filter=True,
                         vad_parameters={"min_speech_duration_ms": 250}

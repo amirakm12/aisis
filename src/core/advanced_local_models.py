@@ -96,6 +96,36 @@ class AdvancedLocalModelManager:
                 capabilities=["image_understanding", "visual_reasoning", "captioning"],
                 memory_requirement="10GB",
                 performance_score=0.75
+            ),
+            ModelConfig(
+                name="stable-diffusion-3-medium",
+                type=ModelType.VISION,
+                url="https://huggingface.co/stabilityai/stable-diffusion-3-medium",
+                local_path="stable-diffusion-3-medium",
+                description="Advanced image generation model with improved quality",
+                capabilities=["image_generation", "image_editing", "inpainting", "hyper_realistic_synthesis"],
+                memory_requirement="16GB",
+                performance_score=0.95
+            ),
+            ModelConfig(
+                name="clip-vit-huge-patch14-336",
+                type=ModelType.VISION,
+                url="https://huggingface.co/openai/clip-vit-huge-patch14-336",
+                local_path="clip-vit-huge-patch14-336",
+                description="Large CLIP model for semantic understanding and inpainting",
+                capabilities=["semantic_understanding", "image_text_matching", "context_driven_editing"],
+                memory_requirement="8GB",
+                performance_score=0.92
+            ),
+            ModelConfig(
+                name="flux-schnell",
+                type=ModelType.VISION,
+                url="https://huggingface.co/black-forest-labs/FLUX.1-schnell",
+                local_path="flux-schnell",
+                description="Fast, high-quality text-to-image generation as DALL-E alternative",
+                capabilities=["text_to_image", "generative_creation", "stylization"],
+                memory_requirement="12GB",
+                performance_score=0.93
             )
         ]
         
@@ -141,7 +171,7 @@ class AdvancedLocalModelManager:
             print(f"Failed to download model '{model_name}': {e}")
             return False
     
-    def load_model(self, model_name: str, device: str = "auto") -> Any:
+    def load_model(self, model_name: str) -> Any:
         """
         Load a model into memory for inference.
         Supports intelligent device placement and memory optimization.
@@ -297,6 +327,42 @@ class AdvancedLocalModelManager:
         """Clean up model cache and free memory"""
         self.model_cache.clear()
         torch.cuda.empty_cache()
+
+    def fine_tune_model(self, model_name: str, dataset_path: str, epochs: int = 3, learning_rate: float = 1e-4) -> bool:
+        """Fine-tune a model using PEFT for efficiency."""
+        if model_name not in self.loaded_models:
+            self.load_model(model_name)
+        model = self.loaded_models[model_name]
+        try:
+            from peft import LoraConfig, get_peft_model
+            from transformers import Trainer, TrainingArguments
+            # Assume dataset is in HuggingFace format
+            from datasets import load_dataset
+            dataset = load_dataset(dataset_path)
+            peft_config = LoraConfig(
+                r=16, lora_alpha=32, target_modules=["q_proj", "v_proj"], lora_dropout=0.05, bias="none"
+            )
+            model = get_peft_model(model["model"], peft_config)
+            training_args = TrainingArguments(
+                output_dir="./fine_tuned",
+                num_train_epochs=epochs,
+                per_device_train_batch_size=4,  # Memory efficient
+                gradient_accumulation_steps=4,
+                fp16=True if torch.cuda.is_available() else False,
+                learning_rate=learning_rate,
+                save_strategy="epoch",
+            )
+            trainer = Trainer(
+                model=model["model"],
+                args=training_args,
+                train_dataset=dataset["train"],
+            )
+            trainer.train()
+            model["model"].save_pretrained(f"{self.models_dir}/{model_name}_fine_tuned")
+            return True
+        except Exception as e:
+            print(f"Fine-tuning failed: {e}")
+            return False
 
 
 # Global instance

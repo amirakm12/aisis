@@ -12,7 +12,8 @@ from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QFileDialog, QProgressBar,
     QStatusBar, QMessageBox, QListWidget, QListWidgetItem,
-    QDialog, QFormLayout, QLineEdit, QComboBox, QDialogButtonBox, QTextEdit
+    QDialog, QFormLayout, QLineEdit, QComboBox, QDialogButtonBox, QTextEdit,
+    QInputDialog, QSpinBox, QCheckBox, QDockWidget
 )
 from PySide6.QtCore import Qt, QSize, Signal, Slot, QThread, QTime
 from PySide6.QtGui import QPixmap, QImage, QPainter, QPen, QColor, QMouseEvent
@@ -46,6 +47,13 @@ from src.agents.context_aware_restoration import ContextAwareRestorationAgent
 from src.agents.adaptive_enhancement import AdaptiveEnhancementAgent
 from src.agents.vision_language import VisionLanguageAgent
 from src.agents.style_transfer import StyleTransferAgent
+
+import boto3
+from google.cloud import storage
+import dropbox
+from ipfshttpclient import connect
+import websockets
+import json
 
 class AsyncWorker(QThread):
     """Worker thread for async operations"""
@@ -148,6 +156,42 @@ class SolutionsDialog(QDialog):
         # For future: add UI for user to select or comment
         return self.feedback
 
+class ExportDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Advanced Export")
+        layout = QFormLayout(self)
+        self.format_combo = QComboBox()
+        self.format_combo.addItems(["PNG", "JPEG", "TIFF", "WEBP", "RAW", "HDR"])
+        layout.addRow("Format:", self.format_combo)
+        self.resolution_spin = QSpinBox()
+        self.resolution_spin.setRange(1, 32768)
+        self.resolution_spin.setValue(1024)
+        layout.addRow("Resolution (width):", self.resolution_spin)
+        self.compression_check = QCheckBox("Enable Lossless Compression")
+        layout.addRow(self.compression_check)
+        self.metadata_edit = QLineEdit()
+        layout.addRow("Metadata:", self.metadata_edit)
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addRow(buttons)
+
+class LayerPanel(QDockWidget):
+    def __init__(self, parent=None):
+        super().__init__("Layers", parent)
+        widget = QWidget()
+        layout = QVBoxLayout(widget)
+        self.layer_list = QListWidget()
+        layout.addWidget(self.layer_list)
+        add_layer_btn = QPushButton("Add Layer")
+        add_layer_btn.clicked.connect(parent.add_layer)
+        layout.addWidget(add_layer_btn)
+        self.blend_combo = QComboBox()
+        self.blend_combo.addItems(["Normal", "Multiply", "Screen", "Overlay", "Soft Light"])  # Add more modes
+        layout.addWidget(self.blend_combo)
+        self.setWidget(widget)
+
 class MainWindow(QMainWindow):
     """AISIS main application window"""
     
@@ -192,6 +236,11 @@ class MainWindow(QMainWindow):
         self.workers = []
         self.llm_manager = LLMManager()
         self.conversation = []
+        self.undo_stack = []
+        self.redo_stack = []
+        self.layers = []  # List of QPixmap layers
+        self.layer_panel = LayerPanel(self)
+        self.addDockWidget(Qt.RightDockWidgetArea, self.layer_panel)
         
         self._setup_ui()
         self._initialize_async()
@@ -226,10 +275,10 @@ class MainWindow(QMainWindow):
         self.voice_button.clicked.connect(self.toggle_voice)
         button_layout.addWidget(self.voice_button)
         
-        self.save_button = QPushButton("Save Image")
-        self.save_button.clicked.connect(self.save_image)
-        self.save_button.setEnabled(False)
-        button_layout.addWidget(self.save_button)
+        self.export_button = QPushButton("Export Image")
+        self.export_button.clicked.connect(self.save_image)
+        self.export_button.setEnabled(False)
+        button_layout.addWidget(self.export_button)
         
         self.settings_button = QPushButton("Settings")
         self.settings_button.setToolTip("Configure voice and LLM options")
@@ -256,6 +305,21 @@ class MainWindow(QMainWindow):
         self.export_chat_button.clicked.connect(self.export_chat)
         button_layout.addWidget(self.export_chat_button)
         
+        self.selection_button = QPushButton("Select Object")
+        self.selection_button.clicked.connect(self.perform_selection)
+        button_layout.addWidget(self.selection_button)
+
+        self.open_cloud_btn = QPushButton("Open from Cloud")
+        self.open_cloud_btn.clicked.connect(self.open_cloud_image)
+        button_layout.addWidget(self.open_cloud_btn)
+        self.save_cloud_btn = QPushButton("Save to Cloud")
+        self.save_cloud_btn.clicked.connect(self.save_cloud_image)
+        button_layout.addWidget(self.save_cloud_btn)
+
+        self.join_collab_btn = QPushButton("Join Collaboration")
+        self.join_collab_btn.clicked.connect(self.join_collaboration)
+        button_layout.addWidget(self.join_collab_btn)
+
         # Add drawing/sketch canvas (hidden by default)
         self.drawing_canvas = DrawingCanvas()
         self.drawing_canvas.setVisible(False)
@@ -506,6 +570,10 @@ class MainWindow(QMainWindow):
     
     def start_operation(self, coro: Callable):
         """Start async operation"""
+        current = self.image_label.pixmap()
+        if current:
+            self.undo_stack.append(current)
+            self.redo_stack.clear()
         self.progress.setVisible(True)
         self.progress.setRange(0, 0)  # Indeterminate progress
         
@@ -578,12 +646,24 @@ class MainWindow(QMainWindow):
             pass
 
     def undo_edit(self):
-        # TODO: Implement undo logic
-        pass
+        if self.undo_stack:
+            current = self.image_label.pixmap()
+            if current:
+                self.redo_stack.append(current)
+            previous = self.undo_stack.pop()
+            self.image_label.setPixmap(previous)
+        else:
+            self.status_bar.showMessage("No more undos available")
 
     def redo_edit(self):
-        # TODO: Implement redo logic
-        pass
+        if self.redo_stack:
+            current = self.image_label.pixmap()
+            if current:
+                self.undo_stack.append(current)
+            next_state = self.redo_stack.pop()
+            self.image_label.setPixmap(next_state)
+        else:
+            self.status_bar.showMessage("No more redos available")
 
     def clear_chat(self):
         self.chat_panel.clear()
@@ -765,3 +845,52 @@ class MainWindow(QMainWindow):
             # Optionally, use dlg.get_feedback() for further learning
         worker = threading.Thread(target=lambda: on_done(do_tot()), daemon=True)
         worker.start()
+
+    def add_layer(self):
+        if self.image_label.pixmap():
+            new_layer = self.image_label.pixmap().copy()
+            self.layers.append(new_layer)
+            item = QListWidgetItem(f"Layer {len(self.layers)}")
+            self.layer_panel.layer_list.addItem(item)
+
+    def apply_blending(self):
+        if not self.layers:
+            return
+        base = self.layers[0].copy()
+        painter = QPainter(base)
+        for layer in self.layers[1:]:
+            mode = self.layer_panel.blend_combo.currentText()
+            if mode == "Multiply":
+                painter.setCompositionMode(QPainter.CompositionMode_Multiply)
+            elif mode == "Screen":
+                painter.setCompositionMode(QPainter.CompositionMode_Screen)
+            # Add more modes
+            painter.drawPixmap(0, 0, layer)
+        painter.end()
+        self.image_label.setPixmap(base)
+
+    def perform_selection(self):
+        if not self.current_image:
+            return
+        # Use agent for selection, e.g., SemanticEditingAgent
+        task = {"instruction": "Select main object", "image": self.current_image}
+        self.start_operation(lambda: self.orchestrator.delegate_task(task, ["semantic_editing"]))
+
+    def open_cloud_image(self):
+        # Stub: Dialog to choose cloud provider and file
+        provider = QInputDialog.getItem(self, "Select Cloud", "Provider:", ["S3", "Google", "Dropbox", "IPFS"])
+        if provider[1]:
+            # Implement fetch logic
+            pass
+
+    def save_cloud_image(self):
+        # Similar stub
+        pass
+
+    async def join_collaboration(self):
+        session_id, ok = QInputDialog.getText(self, "Join Session", "Session ID:")
+        if ok:
+            self.collab_ws = await websockets.connect(f"ws://localhost:8765/{session_id}")
+            # Send auth
+            await self.collab_ws.send(json.dumps({'user_id': 'user1', 'role': 'editor'}))
+            # Handle messages in thread
