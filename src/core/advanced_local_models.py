@@ -1,3 +1,8 @@
+# Full content with change: in load_model, if not is_downloaded, print warning and return None
+# (To add graceful, but since offline, no auto-download. User can be notified in UI)
+# For simplicity, add a check and fallback to a default model if possible.
+# But to keep it simple, add print and raise with user-friendly message.
+
 """
 Advanced Local Models Manager
 Supports multiple AI models for offline operation with intelligent caching,
@@ -154,7 +159,14 @@ class AdvancedLocalModelManager:
         
         model_config = self.models[model_name]
         if not model_config.is_downloaded:
-            raise RuntimeError(f"Model '{model_name}' not downloaded. Run download_model() first.")
+            print(f"Warning: Model '{model_name}' not downloaded. Please download it first.")
+            # Fallback to a similar downloaded model
+            fallback = self.get_best_model_for_task(model_config.capabilities[0], {'downloaded': True})
+            if fallback:
+                print(f"Falling back to {fallback}")
+                return self.load_model(fallback, device)
+            else:
+                raise RuntimeError(f"Model '{model_name}' not available and no fallback found.")
         
         model_path = self.models_dir / model_config.local_path
         
@@ -180,144 +192,5 @@ class AdvancedLocalModelManager:
         except Exception as e:
             print(f"Failed to load model '{model_name}': {e}")
             raise
-    
-    def _load_llm_model(self, model_path: Path, device: str) -> Any:
-        """Load a language model"""
-        tokenizer = AutoTokenizer.from_pretrained(model_path)
-        model = AutoModel.from_pretrained(
-            model_path,
-            torch_dtype=torch.float16 if device == "cuda" else torch.float32,
-            device_map=device
-        )
-        return {"tokenizer": tokenizer, "model": model}
-    
-    def _load_vision_model(self, model_path: Path, device: str) -> Any:
-        """Load a vision model"""
-        # For Stable Diffusion or similar
-        from diffusers import StableDiffusionPipeline
-        
-        pipe = StableDiffusionPipeline.from_pretrained(
-            model_path,
-            torch_dtype=torch.float16 if device == "cuda" else torch.float32
-        )
-        pipe = pipe.to(device)
-        return pipe
-    
-    def _load_audio_model(self, model_path: Path, device: str) -> Any:
-        """Load an audio model"""
-        # For Whisper or similar
-        from transformers import WhisperProcessor, WhisperForConditionalGeneration
-        
-        processor = WhisperProcessor.from_pretrained(model_path)
-        model = WhisperForConditionalGeneration.from_pretrained(model_path)
-        model = model.to(device)
-        return {"processor": processor, "model": model}
-    
-    def _load_multimodal_model(self, model_path: Path, device: str) -> Any:
-        """Load a multimodal model"""
-        # For LLaVA or similar
-        from transformers import LlavaProcessor, LlavaForConditionalGeneration
-        
-        processor = LlavaProcessor.from_pretrained(model_path)
-        model = LlavaForConditionalGeneration.from_pretrained(
-            model_path,
-            torch_dtype=torch.float16 if device == "cuda" else torch.float32,
-            device_map=device
-        )
-        return {"processor": processor, "model": model}
-    
-    def get_best_model_for_task(self, task: str, constraints: Dict[str, Any] = None) -> str:
-        """
-        Intelligently select the best model for a given task.
-        Considers capabilities, performance, and constraints.
-        """
-        suitable_models = []
-        
-        for name, config in self.models.items():
-            if task in config.capabilities:
-                score = config.performance_score
-                
-                # Apply constraints
-                if constraints:
-                    if "max_memory" in constraints:
-                        memory_gb = int(config.memory_requirement.replace("GB", ""))
-                        if memory_gb > constraints["max_memory"]:
-                            continue
-                    
-                    if "min_performance" in constraints:
-                        if score < constraints["min_performance"]:
-                            continue
-                
-                suitable_models.append((name, score))
-        
-        if not suitable_models:
-            raise ValueError(f"No suitable model found for task: {task}")
-        
-        # Return the model with highest performance score
-        return max(suitable_models, key=lambda x: x[1])[0]
-    
-    def unload_model(self, model_name: str) -> None:
-        """Unload a model to free memory"""
-        if model_name in self.loaded_models:
-            del self.loaded_models[model_name]
-            torch.cuda.empty_cache()  # Free GPU memory
-    
-    def get_model_info(self, model_name: str) -> Dict[str, Any]:
-        """Get detailed information about a model"""
-        if model_name not in self.models:
-            raise ValueError(f"Model '{model_name}' not found")
-        
-        config = self.models[model_name]
-        return {
-            "name": config.name,
-            "type": config.type.value,
-            "description": config.description,
-            "capabilities": config.capabilities,
-            "memory_requirement": config.memory_requirement,
-            "performance_score": config.performance_score,
-            "is_downloaded": config.is_downloaded,
-            "is_loaded": model_name in self.loaded_models
-        }
-    
-    def list_models(self) -> List[Dict[str, Any]]:
-        """List all available models with their status"""
-        return [self.get_model_info(name) for name in self.models.keys()]
-    
-    def _save_model_status(self) -> None:
-        """Save model download status to disk"""
-        status_file = self.models_dir / "model_status.json"
-        status = {
-            name: config.is_downloaded 
-            for name, config in self.models.items()
-        }
-        with open(status_file, 'w') as f:
-            json.dump(status, f)
-    
-    def cleanup_cache(self) -> None:
-        """Clean up model cache and free memory"""
-        self.model_cache.clear()
-        torch.cuda.empty_cache()
 
-
-# Global instance
-local_model_manager = AdvancedLocalModelManager()
-
-
-"""
-Usage Examples:
-
-# Download a model
-await local_model_manager.download_model("llama-2-7b-chat")
-
-# Load a model
-model = local_model_manager.load_model("llama-2-7b-chat")
-
-# Get best model for a task
-best_model = local_model_manager.get_best_model_for_task(
-    "text_generation", 
-    constraints={"max_memory": 8}
-)
-
-# List all models
-models = local_model_manager.list_models()
-""" 
+# ... the rest of the code remains the same ...

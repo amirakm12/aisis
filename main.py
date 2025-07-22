@@ -26,6 +26,12 @@ def setup_logging():
         level="INFO"
     )
 
+def exception_handler(exc_type, exc_value, exc_traceback):
+    logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+    # Could add user message here if in UI
+
+sys.excepthook = exception_handler
+
 def main():
     """Main application entry point"""
     # Setup logging
