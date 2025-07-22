@@ -46,6 +46,9 @@ from src.agents.context_aware_restoration import ContextAwareRestorationAgent
 from src.agents.adaptive_enhancement import AdaptiveEnhancementAgent
 from src.agents.vision_language import VisionLanguageAgent
 from src.agents.style_transfer import StyleTransferAgent
+from src.agents.preference_feedback_loop import PreferenceFeedbackLoopAgent
+from src.agents.predictive_intent import PredictiveIntentAgent
+from src.agents.art_vision import ArtVisionAgent
 from .context_panel import ContextPanel
 from .context_manager import ContextManager
 from src.agents.workflow_builder import WorkflowBuilder
@@ -194,6 +197,9 @@ class MainWindow(QMainWindow):
             self.orchestrator.register_agent("adaptive_enhancement", AdaptiveEnhancementAgent())
             self.orchestrator.register_agent("vision_language", VisionLanguageAgent())
             self.orchestrator.register_agent("style_transfer", StyleTransferAgent())
+self.orchestrator.register_agent("preference_feedback_loop", PreferenceFeedbackLoopAgent())
+            self.orchestrator.register_agent("predictive_intent", PredictiveIntentAgent())
+            self.orchestrator.register_agent("art_vision", ArtVisionAgent())
         except Exception as e:
             print(f"[ERROR] Failed to register agents: {e}")
         self.current_image: Optional[Path] = None
@@ -275,6 +281,10 @@ class MainWindow(QMainWindow):
         self.export_chat_button.setToolTip("Export chat to a text file")
         self.export_chat_button.clicked.connect(self.export_chat)
         button_layout.addWidget(self.export_chat_button)
+self.online_boost_btn = QPushButton("Online Boost: Off")
+        self.online_boost_btn.setCheckable(True)
+        self.online_boost_btn.clicked.connect(self._toggle_online_boost)
+        button_layout.addWidget(self.online_boost_btn)
         
         # Add drawing/sketch canvas (hidden by default)
         self.drawing_canvas = DrawingCanvas()
@@ -591,6 +601,14 @@ class MainWindow(QMainWindow):
         logger.error(f"Operation error: {error}")
         QMessageBox.warning(self, "Error", f"Operation failed: {error}")
     
+def _toggle_online_boost(self):
+        enabled = self.online_boost_btn.isChecked()
+        reply = QMessageBox.question(self, "Confirm", "Enable online trend boosts? This may use API calls.", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.online_boost_btn.setText(f"Online Boost: {On if enabled else Off}")
+            # Update config or global state
+        else:
+            self.online_boost_btn.setChecked(not enabled)
     def closeEvent(self, event):
         """Handle window close event"""
         # Stop all workers

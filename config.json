@@ -25,5 +25,11 @@
             1280,
             720
         ]
+        "online": {
+        "enable_boosts": false
+    }
+}
+    "online": {
+        "enable_boosts": false
     }
 }
