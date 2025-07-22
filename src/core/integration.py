@@ -6,6 +6,7 @@ class BaseIntegration:
     Abstract base class for external service integrations (cloud, collaboration,
     etc.).
     """
+
     name: str = "base"
 
     def connect(self, credentials: Dict[str, Any]) -> bool:
@@ -81,4 +82,4 @@ How to add a new integration:
 
 This structure supports future plugin/extension loading for third-party
 integrations.
-""" 
+"""

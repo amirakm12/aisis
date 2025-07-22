@@ -1,6 +1,7 @@
 from PySide6.QtGui import QPalette, QColor
 from PySide6.QtWidgets import QApplication
 
+
 class ThemeManager:
     @staticmethod
     def apply_dark(app: QApplication):
@@ -21,4 +22,4 @@ class ThemeManager:
 
     @staticmethod
     def apply_light(app: QApplication):
-        app.setPalette(QPalette()) 
+        app.setPalette(QPalette())

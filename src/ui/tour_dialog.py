@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton
 
+
 class TourDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -12,7 +13,7 @@ class TourDialog(QDialog):
             "The chat panel lets you interact with the AI and refine workflows.",
             "Access the model zoo to download and switch AI models.",
             "Visit settings to customize your experience.",
-            "You're ready to get started!"
+            "You're ready to get started!",
         ]
         self.current_step = 0
         self.label = QLabel(self.steps[self.current_step])
@@ -27,4 +28,4 @@ class TourDialog(QDialog):
         if self.current_step < len(self.steps):
             self.label.setText(self.steps[self.current_step])
         else:
-            self.accept() 
+            self.accept()

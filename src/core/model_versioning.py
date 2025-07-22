@@ -14,6 +14,7 @@ from pathlib import Path
 @dataclass
 class ModelLineage:
     """Tracks the evolution and relationships between model versions"""
+
     parent_version: Optional[str]
     derived_versions: List[str]
     training_data: str
@@ -26,7 +27,7 @@ class ModelLineage:
 
 class ModelVersion:
     """Represents a specific version of a model with semantic versioning"""
-    
+
     def __init__(
         self,
         model_id: str,
@@ -34,7 +35,7 @@ class ModelVersion:
         hash: str,
         url: str,
         metadata: Dict[str, Any],
-        lineage: Optional[ModelLineage] = None
+        lineage: Optional[ModelLineage] = None,
     ):
         self.model_id = model_id
         self._version = semver.VersionInfo.parse(version)
@@ -50,22 +51,22 @@ class ModelVersion:
     def version(self) -> str:
         return str(self._version)
 
-    def bump_major(self) -> 'ModelVersion':
+    def bump_major(self) -> "ModelVersion":
         """Create new version with major version bump"""
         new_version = self._version.bump_major()
         return self._create_new_version(new_version)
 
-    def bump_minor(self) -> 'ModelVersion':
+    def bump_minor(self) -> "ModelVersion":
         """Create new version with minor version bump"""
         new_version = self._version.bump_minor()
         return self._create_new_version(new_version)
 
-    def bump_patch(self) -> 'ModelVersion':
+    def bump_patch(self) -> "ModelVersion":
         """Create new version with patch version bump"""
         new_version = self._version.bump_patch()
         return self._create_new_version(new_version)
 
-    def _create_new_version(self, new_version: semver.VersionInfo) -> 'ModelVersion':
+    def _create_new_version(self, new_version: semver.VersionInfo) -> "ModelVersion":
         """Helper to create new version instance"""
         return ModelVersion(
             model_id=self.model_id,
@@ -81,8 +82,8 @@ class ModelVersion:
                 creation_date=datetime.now(),
                 author=self.lineage.author if self.lineage else "",
                 commit_hash=None,
-                description=""
-            )
+                description="",
+            ),
         )
 
 
@@ -114,7 +115,7 @@ class VersionManager:
                             hash=v["hash"],
                             url=v["url"],
                             metadata=v["metadata"],
-                            lineage=lineage
+                            lineage=lineage,
                         )
                         version.download_date = v.get("download_date")
                         version.last_validated = v.get("last_validated")
@@ -137,7 +138,7 @@ class VersionManager:
                     "metadata": version.metadata,
                     "download_date": version.download_date,
                     "last_validated": version.last_validated,
-                    "performance_metrics": version.performance_metrics
+                    "performance_metrics": version.performance_metrics,
                 }
                 if version.lineage:
                     version_data["lineage"] = {
@@ -148,10 +149,10 @@ class VersionManager:
                         "creation_date": version.lineage.creation_date.isoformat(),
                         "author": version.lineage.author,
                         "commit_hash": version.lineage.commit_hash,
-                        "description": version.lineage.description
+                        "description": version.lineage.description,
                     }
                 data[model_id].append(version_data)
-        
+
         with open(self.versions_file, "w") as f:
             json.dump(data, f, indent=2)
 
@@ -162,7 +163,7 @@ class VersionManager:
         hash: str,
         url: str,
         metadata: Dict[str, Any],
-        lineage: Optional[ModelLineage] = None
+        lineage: Optional[ModelLineage] = None,
     ) -> ModelVersion:
         """Register a new model version"""
         if model_id not in self.versions:
@@ -174,9 +175,9 @@ class VersionManager:
             hash=hash,
             url=url,
             metadata=metadata,
-            lineage=lineage
+            lineage=lineage,
         )
-        
+
         self.versions[model_id][version] = model_version
         self._save_versions()
         return model_version
@@ -189,10 +190,9 @@ class VersionManager:
         """Get the latest version of a model"""
         if model_id not in self.versions or not self.versions[model_id]:
             return None
-        
+
         latest = max(
-            self.versions[model_id].values(),
-            key=lambda v: semver.VersionInfo.parse(v.version)
+            self.versions[model_id].values(), key=lambda v: semver.VersionInfo.parse(v.version)
         )
         return latest
 
@@ -200,7 +200,7 @@ class VersionManager:
         """Get version history for a model"""
         if model_id not in self.versions:
             return []
-        
+
         versions = list(self.versions[model_id].values())
         versions.sort(key=lambda v: semver.VersionInfo.parse(v.version))
         return versions
@@ -209,7 +209,7 @@ class VersionManager:
         """Get the version lineage tree for a model"""
         if model_id not in self.versions:
             return {}
-        
+
         tree = {}
         for version in self.versions[model_id].values():
             if version.lineage:
@@ -217,4 +217,4 @@ class VersionManager:
                 if parent not in tree:
                     tree[parent] = []
                 tree[parent].append(version.version)
-        return tree 
+        return tree

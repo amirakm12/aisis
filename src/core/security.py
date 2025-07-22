@@ -15,18 +15,19 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from loguru import logger
 
+
 class SecurityManager:
     def __init__(self, config_dir: str = "config"):
         self.config_dir = Path(config_dir)
         self.config_dir.mkdir(exist_ok=True)
-        
+
         self.keys_file = self.config_dir / "api_keys.enc"
         self.auth_file = self.config_dir / "auth.json"
         self.salt_file = self.config_dir / "salt"
-        
+
         # Initialize encryption key
         self._init_encryption()
-        
+
         # Load or create salt
         if not self.salt_file.exists():
             self.salt = os.urandom(16)
@@ -49,7 +50,7 @@ class SecurityManager:
         else:
             with open(key_file, "rb") as f:
                 self.encryption_key = f.read()
-        
+
         self.fernet = Fernet(self.encryption_key)
 
     def _hash_password(self, password: str) -> str:
@@ -78,7 +79,7 @@ class SecurityManager:
             users[username] = {
                 "password_hash": self._hash_password(password),
                 "created_at": datetime.now().isoformat(),
-                "last_login": None
+                "last_login": None,
             }
 
             with open(self.auth_file, "w") as f:
@@ -110,7 +111,7 @@ class SecurityManager:
             self.sessions[session_token] = {
                 "username": username,
                 "created_at": datetime.now().isoformat(),
-                "expires_at": (datetime.now() + timedelta(hours=24)).isoformat()
+                "expires_at": (datetime.now() + timedelta(hours=24)).isoformat(),
             }
 
             # Update last login
@@ -131,7 +132,7 @@ class SecurityManager:
 
         session = self.sessions[session_token]
         expires_at = datetime.fromisoformat(session["expires_at"])
-        
+
         if datetime.now() > expires_at:
             del self.sessions[session_token]
             return False
@@ -167,7 +168,7 @@ class SecurityManager:
             self.api_keys[service] = {
                 "key": key,
                 "added_at": datetime.now().isoformat(),
-                "metadata": metadata or {}
+                "metadata": metadata or {},
             }
             self._save_api_keys()
             return True
@@ -225,6 +226,7 @@ class SecurityManager:
     def handle_error(self, error: Exception, context: Dict[str, Any] = None) -> bool:
         """Handle errors with unlimited retries and automatic recovery."""
         from src.core.error_recovery import ErrorRecovery
+
         recovery = ErrorRecovery()
         retries = 0
         max_retries = 1000  # Unlimited for practical purposes
@@ -240,6 +242,7 @@ class SecurityManager:
     def report_crash(self, error: Exception, context: Dict[str, Any] = None) -> str:
         """Report a crash using the error recovery system."""
         from src.core.error_recovery import ErrorRecovery
+
         recovery = ErrorRecovery()
         return recovery._save_crash_report(error, context or {})
 
@@ -252,4 +255,4 @@ class SecurityManager:
         elif level == "ERROR":
             logger.error(message)
         else:
-            logger.info(message) 
+            logger.info(message)

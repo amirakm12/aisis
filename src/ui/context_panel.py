@@ -1,6 +1,21 @@
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QProgressBar, QTextEdit, QPushButton, QLineEdit,
-    QListWidget, QListWidgetItem, QFrame, QComboBox, QScrollArea, QMenu, QAction, QFileDialog, QSizePolicy
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QProgressBar,
+    QTextEdit,
+    QPushButton,
+    QLineEdit,
+    QListWidget,
+    QListWidgetItem,
+    QFrame,
+    QComboBox,
+    QScrollArea,
+    QMenu,
+    QAction,
+    QFileDialog,
+    QSizePolicy,
 )
 from PyQt6.QtCore import Qt, pyqtSignal, QTimer, QDateTime, QSize
 from PyQt6.QtGui import QColor, QPalette, QIcon, QPixmap, QFont, QShortcut, QKeySequence
@@ -8,10 +23,12 @@ from .context_manager import ContextManager
 import os
 import time
 
+
 class ContextPanel(QFrame):
     """
     Advanced Context Panel: modern, interactive, visually rich, and highly usable.
     """
+
     context_updated = pyqtSignal(dict)
     progress_updated = pyqtSignal(int, str)
     state_changed = pyqtSignal(str)
@@ -36,14 +53,16 @@ class ContextPanel(QFrame):
         self.setMaximumWidth(520)
         self.setFrameShape(QFrame.Shape.StyledPanel)
         self.setFrameShadow(QFrame.Shadow.Raised)
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             QFrame#ContextPanel {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #232946, stop:1 #121826);
                 border-radius: 16px;
                 border: 2px solid #6366f1;
                 box-shadow: 0 4px 24px rgba(0,0,0,0.18);
             }
-        """)
+        """
+        )
         self.layout = QVBoxLayout()
         self.layout.setContentsMargins(16, 16, 16, 16)
         self.setLayout(self.layout)
@@ -51,7 +70,9 @@ class ContextPanel(QFrame):
         # Header: user/session info
         header = QHBoxLayout()
         self.avatar = QLabel()
-        self.avatar.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "user.png")).scaled(40, 40))
+        self.avatar.setPixmap(
+            QPixmap(os.path.join(os.path.dirname(__file__), "user.png")).scaled(40, 40)
+        )
         self.avatar.setFixedSize(40, 40)
         header.addWidget(self.avatar)
         self.username = QLabel("User: Guest")
@@ -83,7 +104,9 @@ class ContextPanel(QFrame):
         # Active agent/task display
         agent_layout = QHBoxLayout()
         self.agent_icon = QLabel()
-        self.agent_icon.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "agent.png")).scaled(24, 24))
+        self.agent_icon.setPixmap(
+            QPixmap(os.path.join(os.path.dirname(__file__), "agent.png")).scaled(24, 24)
+        )
         self.agent_icon.setFixedSize(24, 24)
         agent_layout.addWidget(self.agent_icon)
         self.agent_label = QLabel("Active Agent: None")
@@ -107,10 +130,12 @@ class ContextPanel(QFrame):
         self.layout.addLayout(steps_layout)
         self.progress_bar = QProgressBar()
         self.progress_bar.setValue(0)
-        self.progress_bar.setMaximum(len(self.progress_steps)-1)
+        self.progress_bar.setMaximum(len(self.progress_steps) - 1)
         self.progress_bar.setTextVisible(False)
         self.progress_bar.setFixedHeight(12)
-        self.progress_bar.setStyleSheet("QProgressBar {background: #232946; border-radius: 6px;} QProgressBar::chunk {background: #6366f1; border-radius: 6px;}")
+        self.progress_bar.setStyleSheet(
+            "QProgressBar {background: #232946; border-radius: 6px;} QProgressBar::chunk {background: #6366f1; border-radius: 6px;}"
+        )
         self.layout.addWidget(self.progress_bar)
 
         # Search/filter for context/logs
@@ -243,7 +268,9 @@ class ContextPanel(QFrame):
         if step is not None and 0 <= step < len(self.progress_steps):
             self.progress_bar.setValue(step)
             for i, lbl in enumerate(self.progress_step_labels):
-                lbl.setStyleSheet("color: #6366f1; font-weight: bold;" if i == step else "color: #94a3b8;")
+                lbl.setStyleSheet(
+                    "color: #6366f1; font-weight: bold;" if i == step else "color: #94a3b8;"
+                )
         else:
             self.progress_bar.setValue(value)
         if text:
@@ -252,7 +279,11 @@ class ContextPanel(QFrame):
 
     def set_state(self, state: str, agent: str = None):
         self.agent_status.setText(state)
-        color = "#22c55e" if state.lower() == "active" else ("#ef4444" if state.lower() == "error" else "#94a3b8")
+        color = (
+            "#22c55e"
+            if state.lower() == "active"
+            else ("#ef4444" if state.lower() == "error" else "#94a3b8")
+        )
         self.agent_status.setStyleSheet(f"color: {color}; font-weight: bold;")
         if agent:
             self.agent_label.setText(f"Active Agent: {agent}")
@@ -280,7 +311,9 @@ class ContextPanel(QFrame):
         self._update_recent_actions()
 
     def export_context(self):
-        fname, _ = QFileDialog.getSaveFileName(self, "Export Context", "context.txt", "Text Files (*.txt)")
+        fname, _ = QFileDialog.getSaveFileName(
+            self, "Export Context", "context.txt", "Text Files (*.txt)"
+        )
         if fname:
             with open(fname, "w") as f:
                 f.write(f"[Workspace] {self.workspace_name}\n")
@@ -324,7 +357,9 @@ class ContextPanel(QFrame):
     def _update_notifications(self):
         if self.notifications:
             msg, level = self.notifications[-1]
-            color = "#ef4444" if level == "error" else ("#f59e0b" if level == "warning" else "#22c55e")
+            color = (
+                "#ef4444" if level == "error" else ("#f59e0b" if level == "warning" else "#22c55e")
+            )
             self.notif_label.setText(f"<span style='color:{color}'>{msg}</span>")
         else:
             self.notif_label.clear()
@@ -332,9 +367,13 @@ class ContextPanel(QFrame):
     def toggle_high_contrast(self):
         self.high_contrast = not self.high_contrast
         if self.high_contrast:
-            self.setStyleSheet("QFrame#ContextPanel { background: #000; color: #fff; border: 2px solid #fff; }")
+            self.setStyleSheet(
+                "QFrame#ContextPanel { background: #000; color: #fff; border: 2px solid #fff; }"
+            )
         else:
-            self.setStyleSheet("QFrame#ContextPanel { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #232946, stop:1 #121826); border-radius: 16px; border: 2px solid #6366f1; box-shadow: 0 4px 24px rgba(0,0,0,0.18); }")
+            self.setStyleSheet(
+                "QFrame#ContextPanel { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #232946, stop:1 #121826); border-radius: 16px; border: 2px solid #6366f1; box-shadow: 0 4px 24px rgba(0,0,0,0.18); }"
+            )
 
     def keyPressEvent(self, event):
         # Keyboard navigation for accessibility
@@ -345,4 +384,4 @@ class ContextPanel(QFrame):
         elif event.key() == Qt.Key_H and event.modifiers() & Qt.ControlModifier:
             self.toggle_high_contrast()
         else:
-            super().keyPressEvent(event) 
+            super().keyPressEvent(event)

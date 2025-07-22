@@ -5,6 +5,7 @@ class BaseDeviceAdapter:
     """
     Abstract base class for device adapters (desktop, tablet, mobile, etc.).
     """
+
     name: str = "base"
 
     def get_capabilities(self) -> Dict[str, Any]:
@@ -111,4 +112,4 @@ How to extend:
 
 This structure supports future expansion for device-specific features and
 platforms.
-""" 
+"""

@@ -8,6 +8,7 @@ class LLMMetaAgent(BaseAgent):
     Meta-agent powered by an offline LLM (Llama) for critique,
     planning, and negotiation.
     """
+
     def __init__(self, model_path: str = "models/llama-2-7b-chat.gguf"):
         super().__init__("LLMMetaAgent")
         self.llm_manager = LLMManager(model_path)
@@ -50,4 +51,4 @@ class LLMMetaAgent(BaseAgent):
         pass
 
     async def initialize(self):
-        return True 
+        return True

@@ -18,6 +18,7 @@ from datetime import datetime
 @dataclass
 class DownloadProgress:
     """Download progress information"""
+
     total_size: int
     downloaded: int
     speed: float  # bytes/second
@@ -45,11 +46,11 @@ class ModelDownloader:
         url: str,
         expected_hash: str,
         chunk_size: int = 8192,
-        progress_callback: Optional[Callable[[DownloadProgress], None]] = None
+        progress_callback: Optional[Callable[[DownloadProgress], None]] = None,
     ) -> bool:
         """
         Download a model with resume capability and progress tracking
-        
+
         Args:
             model_id: Unique identifier for the model
             version: Version string
@@ -57,7 +58,7 @@ class ModelDownloader:
             expected_hash: Expected SHA-256 hash of the file
             chunk_size: Download chunk size in bytes
             progress_callback: Optional callback for progress updates
-        
+
         Returns:
             bool: True if download successful, False otherwise
         """
@@ -72,13 +73,7 @@ class ModelDownloader:
         try:
             # Start download task
             task = asyncio.create_task(
-                self._download_with_resume(
-                    model_id,
-                    version,
-                    url,
-                    expected_hash,
-                    chunk_size
-                )
+                self._download_with_resume(model_id, version, url, expected_hash, chunk_size)
             )
             self._active_downloads[download_id] = task
             return await task
@@ -92,12 +87,7 @@ class ModelDownloader:
             self._progress_callbacks.pop(download_id, None)
 
     async def _download_with_resume(
-        self,
-        model_id: str,
-        version: str,
-        url: str,
-        expected_hash: str,
-        chunk_size: int
+        self, model_id: str, version: str, url: str, expected_hash: str, chunk_size: int
     ) -> bool:
         """Internal method to handle download with resume capability"""
         temp_file = self.temp_dir / f"{model_id}-{version}.part"
@@ -115,7 +105,7 @@ class ModelDownloader:
 
         # Get file size and resume position
         initial_size = temp_file.stat().st_size if temp_file.exists() else 0
-        headers = {'Range': f'bytes={initial_size}-'} if initial_size > 0 else {}
+        headers = {"Range": f"bytes={initial_size}-"} if initial_size > 0 else {}
 
         try:
             async with aiohttp.ClientSession() as session:
@@ -124,11 +114,11 @@ class ModelDownloader:
                         logger.error(f"Failed to download {download_id}: {response.status}")
                         return False
 
-                    total_size = int(response.headers.get('content-length', 0))
+                    total_size = int(response.headers.get("content-length", 0))
                     if initial_size > 0:
                         total_size += initial_size
 
-                    mode = 'ab' if initial_size > 0 else 'wb'
+                    mode = "ab" if initial_size > 0 else "wb"
                     async with aiofiles.open(temp_file, mode) as f:
                         downloaded = initial_size
                         start_time = datetime.now()
@@ -142,14 +132,14 @@ class ModelDownloader:
                                 elapsed = (datetime.now() - start_time).total_seconds()
                                 speed = downloaded / elapsed if elapsed > 0 else 0
                                 eta = (total_size - downloaded) / speed if speed > 0 else 0
-                                
+
                                 progress = DownloadProgress(
                                     total_size=total_size,
                                     downloaded=downloaded,
                                     speed=speed,
                                     eta=eta,
                                     status="downloading",
-                                    timestamp=datetime.now()
+                                    timestamp=datetime.now(),
                                 )
                                 self._progress_callbacks[download_id](progress)
 
@@ -175,7 +165,7 @@ class ModelDownloader:
 
         try:
             sha256_hash = hashlib.sha256()
-            async with aiofiles.open(file_path, 'rb') as f:
+            async with aiofiles.open(file_path, "rb") as f:
                 while chunk := await f.read(8192):
                     sha256_hash.update(chunk)
             return sha256_hash.hexdigest() == expected_hash
@@ -205,7 +195,7 @@ class ModelDownloader:
             speed=0.0,  # Cannot calculate without active download
             eta=0.0,
             status="pending" if not task.cancelled() else "cancelled",
-            timestamp=datetime.now()
+            timestamp=datetime.now(),
         )
 
     async def cancel_download(self, model_id: str, version: str) -> bool:
@@ -256,4 +246,4 @@ class ModelDownloader:
             try:
                 self.temp_dir.rmdir()
             except Exception as e:
-                logger.error(f"Error removing temp directory: {e}") 
+                logger.error(f"Error removing temp directory: {e}")

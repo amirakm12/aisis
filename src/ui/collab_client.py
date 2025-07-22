@@ -2,10 +2,19 @@ import asyncio
 import websockets
 import json
 from PyQt5.QtCore import QObject, pyqtSignal, Qt
-from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QApplication)
+from PyQt5.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QMessageBox,
+    QApplication,
+)
 import sys
 import threading
 from collab import AutomergeCollab
+
 
 class CollabClient(QObject):
     context_received = pyqtSignal(dict)
@@ -28,7 +37,7 @@ class CollabClient(QObject):
         while self.running:
             try:
                 if self.ws is None:
-                                             break
+                    break
                 msg = await self.ws.recv()
                 data = json.loads(msg)
                 if data.get("type") == "context":
@@ -57,26 +66,27 @@ class CollabClient(QObject):
         if self.ws:
             await self.ws.close()
 
+
 class CollabClientPanel(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle('Collaboration Panel')
+        self.setWindowTitle("Collaboration Panel")
         self.setMinimumWidth(350)
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
-        self.status_label = QLabel('Not connected')
+        self.status_label = QLabel("Not connected")
         self.layout.addWidget(self.status_label)
 
         self.ip_input = QLineEdit()
-        self.ip_input.setPlaceholderText('Relay server IP (e.g., 192.168.1.10)')
+        self.ip_input.setPlaceholderText("Relay server IP (e.g., 192.168.1.10)")
         self.layout.addWidget(self.ip_input)
 
         self.port_input = QLineEdit()
-        self.port_input.setPlaceholderText('Port (default: 9009)')
+        self.port_input.setPlaceholderText("Port (default: 9009)")
         self.layout.addWidget(self.port_input)
 
-        self.connect_btn = QPushButton('Connect')
+        self.connect_btn = QPushButton("Connect")
         self.connect_btn.clicked.connect(self.connect_to_relay)
         self.layout.addWidget(self.connect_btn)
 
@@ -87,30 +97,33 @@ class CollabClientPanel(QWidget):
         ip = self.ip_input.text().strip()
         port = self.port_input.text().strip()
         if not ip:
-            QMessageBox.warning(self, 'Input Error', 'Please enter the relay server IP.')
+            QMessageBox.warning(self, "Input Error", "Please enter the relay server IP.")
             return
         try:
             port = int(port) if port else 9009
         except ValueError:
-            QMessageBox.warning(self, 'Input Error', 'Port must be a number.')
+            QMessageBox.warning(self, "Input Error", "Port must be a number.")
             return
-        self.status_label.setText('Connecting...')
-        self.collab = AutomergeCollab(doc_id='default', on_remote_change=self.on_remote_change)
+        self.status_label.setText("Connecting...")
+        self.collab = AutomergeCollab(doc_id="default", on_remote_change=self.on_remote_change)
         try:
-            threading.Thread(target=self.collab.connect_to_relay, args=(ip, port), daemon=True).start()
-            self.status_label.setText(f'Connected to {ip}:{port}')
+            threading.Thread(
+                target=self.collab.connect_to_relay, args=(ip, port), daemon=True
+            ).start()
+            self.status_label.setText(f"Connected to {ip}:{port}")
             self.connected = True
         except Exception as e:
-            self.status_label.setText('Connection failed')
-            QMessageBox.critical(self, 'Connection Error', str(e))
+            self.status_label.setText("Connection failed")
+            QMessageBox.critical(self, "Connection Error", str(e))
             self.connected = False
 
     def on_remote_change(self):
         # This method is called when a remote change is received
-        self.status_label.setText('Received update from collaborator!')
+        self.status_label.setText("Received update from collaborator!")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app = QApplication(sys.argv)
     panel = CollabClientPanel()
     panel.show()
-    sys.exit(app.exec_()) 
+    sys.exit(app.exec_())

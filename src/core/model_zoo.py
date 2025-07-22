@@ -10,6 +10,7 @@ from enum import Enum
 
 try:
     from loguru import logger
+
     HAS_LOGGER = True
 except ImportError:
     HAS_LOGGER = False
@@ -21,13 +22,16 @@ from .model_registry import ModelRegistry, ModelType
 from .model_benchmarking import ModelBenchmarker, BenchmarkConfig, BenchmarkType
 from .error_recovery import error_recovery
 
+
 class ModelStatus(Enum):
     """Model status in the zoo"""
+
     AVAILABLE = "available"  # Model is registered but not downloaded
     DOWNLOADED = "downloaded"  # Model is downloaded but not loaded
     LOADED = "loaded"  # Model is loaded in memory
     ACTIVE = "active"  # Model is currently in use
     ERROR = "error"  # Model has an error
+
 
 class ModelZoo:
     """
@@ -64,7 +68,7 @@ class ModelZoo:
                     version=model_config.version,
                     url=model_config.url,
                     hash=model_config.hash,
-                    metadata=model_config.metadata
+                    metadata=model_config.metadata,
                 )
 
             # Download model
@@ -122,6 +126,7 @@ class ModelZoo:
                 import torch
                 import transformers
                 import diffusers
+
                 HAS_ML_DEPS = True
             except ImportError:
                 HAS_ML_DEPS = False
@@ -175,7 +180,9 @@ class ModelZoo:
             return False
 
     @error_recovery.with_recovery({"module": "model_zoo"})
-    async def benchmark_model(self, model_id: str, config: Optional[BenchmarkConfig] = None) -> bool:
+    async def benchmark_model(
+        self, model_id: str, config: Optional[BenchmarkConfig] = None
+    ) -> bool:
         """Run benchmarks on a model"""
         try:
             # Get model info
@@ -191,25 +198,16 @@ class ModelZoo:
             # Use default config if none provided
             if not config:
                 config = BenchmarkConfig(
-                    type=BenchmarkType.INFERENCE_SPEED,
-                    num_runs=100,
-                    warmup_runs=10,
-                    device="auto"
+                    type=BenchmarkType.INFERENCE_SPEED, num_runs=100, warmup_runs=10, device="auto"
                 )
 
             # Run benchmarks
             result = await self.benchmarker.run_benchmark(
-                model=model,
-                model_id=model_id,
-                version=model_config.version,
-                config=config
+                model=model, model_id=model_id, version=model_config.version, config=config
             )
 
             # Update registry with benchmark timestamp
-            self.registry.update_model_status(
-                model_id=model_id,
-                last_benchmarked=result.timestamp
-            )
+            self.registry.update_model_status(model_id=model_id, last_benchmarked=result.timestamp)
 
             return True
 
@@ -225,11 +223,11 @@ class ModelZoo:
                 return ModelStatus.ACTIVE
             if model_id in self.loaded_models:
                 return ModelStatus.LOADED
-            
+
             model_config = self.registry.get_model(model_id)
             if not model_config:
                 raise ValueError(f"Model {model_id} not found in registry")
-            
+
             if model_config.is_downloaded:
                 return ModelStatus.DOWNLOADED
             return ModelStatus.AVAILABLE
@@ -241,59 +239,60 @@ class ModelZoo:
         self,
         model_type: Optional[ModelType] = None,
         task: Optional[str] = None,
-        status: Optional[ModelStatus] = None
+        status: Optional[ModelStatus] = None,
     ) -> List[Dict[str, Any]]:
         """List models with optional filtering"""
         models = []
-        
+
         # Get models from registry
         model_ids = self.registry.list_models(model_type=model_type)
-        
+
         for model_id in model_ids:
             model_config = self.registry.get_model(model_id)
             if not model_config:
                 continue
-                
+
             # Filter by task
             if task and task not in model_config.capabilities:
                 continue
-                
+
             # Get current status
             current_status = self.get_model_status(model_id)
-            
+
             # Filter by status
             if status and current_status != status:
                 continue
-                
+
             # Get benchmark results if available
-            latest_benchmark = self.benchmarker.get_latest_benchmark(
-                model_id,
-                model_config.version
+            latest_benchmark = self.benchmarker.get_latest_benchmark(model_id, model_config.version)
+
+            models.append(
+                {
+                    "id": model_id,
+                    "name": model_config.name,
+                    "type": model_config.model_type.value,
+                    "version": model_config.version,
+                    "capabilities": model_config.capabilities,
+                    "status": current_status.value,
+                    "last_benchmarked": model_config.last_benchmarked,
+                    "performance_metrics": latest_benchmark.metrics if latest_benchmark else None,
+                }
             )
-            
-            models.append({
-                "id": model_id,
-                "name": model_config.name,
-                "type": model_config.model_type.value,
-                "version": model_config.version,
-                "capabilities": model_config.capabilities,
-                "status": current_status.value,
-                "last_benchmarked": model_config.last_benchmarked,
-                "performance_metrics": latest_benchmark.metrics if latest_benchmark else None
-            })
-            
+
         return models
 
     def cleanup(self) -> None:
         """Clean up loaded models and free memory"""
         self.loaded_models.clear()
         self.active_models.clear()
-        
+
         try:
             import torch
+
             torch.cuda.empty_cache()
         except ImportError:
             pass
 
+
 # Global instance
-model_zoo = ModelZoo() 
+model_zoo = ModelZoo()

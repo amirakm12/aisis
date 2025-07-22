@@ -1,5 +1,17 @@
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QTabWidget, QWidget, QFormLayout, QLineEdit, QCheckBox, QPushButton, QFileDialog, QMessageBox
+from PySide6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QTabWidget,
+    QWidget,
+    QFormLayout,
+    QLineEdit,
+    QCheckBox,
+    QPushButton,
+    QFileDialog,
+    QMessageBox,
+)
 import json
+
 
 class SettingsDialog(QDialog):
     def __init__(self, config, parent=None):
@@ -35,7 +47,9 @@ class SettingsDialog(QDialog):
         pass
 
     def export_settings(self):
-        path, _ = QFileDialog.getSaveFileName(self, "Export Settings", "settings.json", "JSON Files (*.json)")
+        path, _ = QFileDialog.getSaveFileName(
+            self, "Export Settings", "settings.json", "JSON Files (*.json)"
+        )
         if path:
             try:
                 with open(path, "w") as f:
@@ -51,7 +65,9 @@ class SettingsDialog(QDialog):
                 with open(path, "r") as f:
                     imported = json.load(f)
                 # TODO: Validate and apply imported settings
-                QMessageBox.information(self, "Import", "Settings imported. Please restart the app.")
+                QMessageBox.information(
+                    self, "Import", "Settings imported. Please restart the app."
+                )
             except Exception as e:
                 QMessageBox.critical(self, "Import Error", str(e))
-        # TODO: Connect save_btn to config update logic 
+        # TODO: Connect save_btn to config update logic

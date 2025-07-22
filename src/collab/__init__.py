@@ -1,1 +1,1 @@
-from .automerge_collab import AutomergeCollab 
+from .automerge_collab import AutomergeCollab

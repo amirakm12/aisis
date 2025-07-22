@@ -1,6 +1,15 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QListWidget, QListWidgetItem
+from PyQt6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLineEdit,
+    QPushButton,
+    QListWidget,
+    QListWidgetItem,
+)
 from PyQt6.QtCore import Qt, pyqtSignal
 from src.agents.llm_client import LLMClient
+
 
 class ChatPanel(QWidget):
     """
@@ -8,6 +17,7 @@ class ChatPanel(QWidget):
     Displays chat history, supports workflow refinement, undo, and branching.
     Integrates with LLMClient for AI responses and suggestions.
     """
+
     message_sent = pyqtSignal(str)
     workflow_refined = pyqtSignal(list)
     undo_requested = pyqtSignal()
@@ -75,6 +85,7 @@ class ChatPanel(QWidget):
             if m["sender"] == "ai" and "workflow" in m["text"]:
                 # Extract steps from message
                 import re, json
+
                 match = re.search(r"\[(.*)\]", m["text"])
                 if match:
                     try:
@@ -84,4 +95,4 @@ class ChatPanel(QWidget):
                         return
                     except Exception:
                         pass
-        self.add_message("No workflow to branch from.", sender="ai") 
+        self.add_message("No workflow to branch from.", sender="ai")

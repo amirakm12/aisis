@@ -15,6 +15,7 @@ from enum import Enum
 
 class ModelType(Enum):
     """Types of AI models"""
+
     LLM = "llm"  # Language models
     VISION = "vision"  # Computer vision models
     AUDIO = "audio"  # Audio processing models
@@ -29,6 +30,7 @@ class ModelType(Enum):
 
 class ModelProvider(Enum):
     """Model providers/sources"""
+
     HUGGINGFACE = "huggingface"
     PYTORCH = "pytorch"
     ONNX = "onnx"
@@ -39,6 +41,7 @@ class ModelProvider(Enum):
 @dataclass
 class ModelConfig:
     """Configuration for a registered model"""
+
     name: str
     model_type: ModelType
     provider: ModelProvider
@@ -89,12 +92,16 @@ class ModelRegistry:
                         parameters=config["parameters"],
                         metadata=config["metadata"],
                         is_downloaded=config["is_downloaded"],
-                        last_validated=datetime.fromisoformat(config["last_validated"])
-                        if config.get("last_validated")
-                        else None,
-                        last_benchmarked=datetime.fromisoformat(config["last_benchmarked"])
-                        if config.get("last_benchmarked")
-                        else None
+                        last_validated=(
+                            datetime.fromisoformat(config["last_validated"])
+                            if config.get("last_validated")
+                            else None
+                        ),
+                        last_benchmarked=(
+                            datetime.fromisoformat(config["last_benchmarked"])
+                            if config.get("last_benchmarked")
+                            else None
+                        ),
                     )
         except Exception as e:
             logger.error(f"Error loading model registry: {e}")
@@ -118,22 +125,18 @@ class ModelRegistry:
                 "parameters": config.parameters,
                 "metadata": config.metadata,
                 "is_downloaded": config.is_downloaded,
-                "last_validated": config.last_validated.isoformat()
-                if config.last_validated
-                else None,
-                "last_benchmarked": config.last_benchmarked.isoformat()
-                if config.last_benchmarked
-                else None
+                "last_validated": (
+                    config.last_validated.isoformat() if config.last_validated else None
+                ),
+                "last_benchmarked": (
+                    config.last_benchmarked.isoformat() if config.last_benchmarked else None
+                ),
             }
-        
+
         with open(self.config_file, "w") as f:
             json.dump(data, f, indent=2)
 
-    def register_model(
-        self,
-        model_id: str,
-        config: ModelConfig
-    ) -> None:
+    def register_model(self, model_id: str, config: ModelConfig) -> None:
         """Register a new model or update existing registration"""
         self.models[model_id] = config
         self._save_registry()
@@ -155,7 +158,7 @@ class ModelRegistry:
         model_type: Optional[ModelType] = None,
         provider: Optional[ModelProvider] = None,
         capability: Optional[str] = None,
-        downloaded_only: bool = False
+        downloaded_only: bool = False,
     ) -> List[str]:
         """List models with optional filtering"""
         models = []
@@ -176,7 +179,7 @@ class ModelRegistry:
         model_id: str,
         is_downloaded: Optional[bool] = None,
         last_validated: Optional[datetime] = None,
-        last_benchmarked: Optional[datetime] = None
+        last_benchmarked: Optional[datetime] = None,
     ) -> bool:
         """Update model status information"""
         if model_id not in self.models:
@@ -193,10 +196,7 @@ class ModelRegistry:
         self._save_registry()
         return True
 
-    def get_model_requirements(
-        self,
-        model_ids: Union[str, List[str]]
-    ) -> Dict[str, str]:
+    def get_model_requirements(self, model_ids: Union[str, List[str]]) -> Dict[str, str]:
         """Get combined requirements for specified models"""
         if isinstance(model_ids, str):
             model_ids = [model_ids]
@@ -205,7 +205,7 @@ class ModelRegistry:
         for model_id in model_ids:
             if model_id not in self.models:
                 continue
-            
+
             model_reqs = self.models[model_id].requirements
             for package, version in model_reqs.items():
                 if package not in requirements:
@@ -220,10 +220,7 @@ class ModelRegistry:
         return requirements
 
     def find_models_by_capability(
-        self,
-        capability: str,
-        model_type: Optional[ModelType] = None,
-        downloaded_only: bool = False
+        self, capability: str, model_type: Optional[ModelType] = None, downloaded_only: bool = False
     ) -> List[str]:
         """Find models that have a specific capability"""
         models = []
@@ -236,19 +233,13 @@ class ModelRegistry:
                 models.append(model_id)
         return models
 
-    def get_model_dependencies(
-        self,
-        model_id: str
-    ) -> Dict[str, List[str]]:
+    def get_model_dependencies(self, model_id: str) -> Dict[str, List[str]]:
         """Get model dependencies and related models"""
         if model_id not in self.models:
             return {}
 
         config = self.models[model_id]
-        dependencies = {
-            "requirements": list(config.requirements.keys()),
-            "related_models": []
-        }
+        dependencies = {"requirements": list(config.requirements.keys()), "related_models": []}
 
         # Find related models with similar capabilities
         for capability in config.capabilities:
@@ -303,12 +294,12 @@ class ModelRegistry:
                             "provider": config.provider.value,
                             "version": config.version,
                             "capabilities": config.capabilities,
-                            "is_downloaded": config.is_downloaded
+                            "is_downloaded": config.is_downloaded,
                         }
                         for model_id, config in self.models.items()
                     },
                     f,
-                    indent=2
+                    indent=2,
                 )
             return True
         except Exception as e:
@@ -341,12 +332,12 @@ class ModelRegistry:
                         capabilities=config["capabilities"],
                         parameters=config.get("parameters", {}),
                         metadata=config.get("metadata", {}),
-                        is_downloaded=config.get("is_downloaded", False)
+                        is_downloaded=config.get("is_downloaded", False),
                     )
-            
+
             self._save_registry()
             return True
 
         except Exception as e:
             logger.error(f"Error importing registry: {e}")
-            return False 
+            return False

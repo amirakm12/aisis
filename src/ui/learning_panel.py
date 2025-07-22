@@ -1,9 +1,11 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QProgressBar, QPushButton, QTextEdit
 
+
 class LearningPanel(QWidget):
     """
     Panel for federated learning, feedback submission, and status display.
     """
+
     def __init__(self, parent=None):
         super().__init__(parent)
         layout = QVBoxLayout(self)
@@ -22,4 +24,4 @@ class LearningPanel(QWidget):
         layout.addWidget(self.feedback)
         layout.addWidget(self.retrain_btn)
         self.setLayout(layout)
-        # TODO: Connect retrain_btn to retraining logic, update progress/metrics from backend 
+        # TODO: Connect retrain_btn to retraining logic, update progress/metrics from backend

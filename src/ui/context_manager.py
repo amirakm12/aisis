@@ -21,4 +21,4 @@ class ContextManager:
 
     def adapt_ui(self, ui):
         # TODO: Adapt UI layout/components based on context
-        pass 
+        pass

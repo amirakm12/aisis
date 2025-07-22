@@ -4,6 +4,7 @@ import socket
 import pickle
 from typing import Callable, Optional
 
+
 class AutomergeCollab:
     def __init__(self, doc_id: str, on_remote_change: Optional[Callable] = None):
         self.doc_id = doc_id
@@ -84,7 +85,7 @@ class AutomergeCollab:
             except Exception as e:
                 print(f"Failed to send to {ip}:{port}: {e}")
 
-    def listen_for_changes(self, host='0.0.0.0', port=9009):
+    def listen_for_changes(self, host="0.0.0.0", port=9009):
         def _listen():
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 s.bind((host, port))
@@ -95,6 +96,7 @@ class AutomergeCollab:
                         data = conn.recv(4096)
                         if data:
                             self.handle_incoming_change(data)
+
         thread = threading.Thread(target=_listen, daemon=True)
         thread.start()
 
@@ -103,4 +105,4 @@ class AutomergeCollab:
             state = pickle.loads(change_bytes)
             self.load_state(state)
         except Exception as e:
-            print(f"Error handling incoming change: {e}") 
+            print(f"Error handling incoming change: {e}")

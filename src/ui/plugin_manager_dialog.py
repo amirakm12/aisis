@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QPushButton, QHBoxLayout
 
+
 class PluginManagerDialog(QDialog):
     def __init__(self, plugin_manager, parent=None):
         super().__init__(parent)
@@ -14,4 +15,4 @@ class PluginManagerDialog(QDialog):
         layout.addWidget(self.plugin_list)
         layout.addLayout(btn_layout)
         self.setLayout(layout)
-        # TODO: Populate and connect logic as needed 
+        # TODO: Populate and connect logic as needed

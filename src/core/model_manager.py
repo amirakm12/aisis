@@ -16,6 +16,7 @@ try:
     import requests
     from tqdm import tqdm
     from loguru import logger
+
     HAS_DEPENDENCIES = True
 except ImportError:
     HAS_DEPENDENCIES = False
@@ -27,6 +28,7 @@ except ImportError:
 
 from .error_recovery import error_recovery
 
+
 class ModelVersion:
     def __init__(self, version: str, hash: str, url: str, metadata: Dict[str, Any]):
         self.version = version
@@ -36,6 +38,7 @@ class ModelVersion:
         self.download_date: Optional[float] = None
         self.last_validated: Optional[float] = None
         self.performance_metrics: Dict[str, Any] = {}
+
 
 class ModelManager:
     def __init__(self, models_dir: str = "models"):
@@ -49,20 +52,13 @@ class ModelManager:
         self.versions_file = self.models_dir / "versions.json"
         self.versions: Dict[str, Dict[str, ModelVersion]] = {}
         self.load_versions()
-        
+
         # Register model-specific error handlers
+        error_recovery.register_recovery_handler("ModelDownloadError", self._handle_download_error)
         error_recovery.register_recovery_handler(
-            "ModelDownloadError",
-            self._handle_download_error
+            "ModelValidationError", self._handle_validation_error
         )
-        error_recovery.register_recovery_handler(
-            "ModelValidationError",
-            self._handle_validation_error
-        )
-        error_recovery.register_recovery_handler(
-            "ModelLoadError",
-            self._handle_load_error
-        )
+        error_recovery.register_recovery_handler("ModelLoadError", self._handle_load_error)
 
     def _handle_download_error(self, error: Exception, context: Dict[str, Any]) -> bool:
         """Handle model download errors"""
@@ -76,13 +72,13 @@ class ModelManager:
             model_path = self.models_dir / f"{model_id}-{version}"
             if model_path.exists():
                 os.remove(model_path)
-            
+
             # Try alternative download URL if available
             model_version = self.versions[model_id][version]
             if "backup_url" in model_version.metadata:
                 model_version.url = model_version.metadata["backup_url"]
                 return True
-            
+
             return False
         except Exception:
             return False
@@ -128,8 +124,9 @@ class ModelManager:
                             version=v["version"],
                             hash=v["hash"],
                             url=v["url"],
-                            metadata=v["metadata"]
-                        ) for v in versions
+                            metadata=v["metadata"],
+                        )
+                        for v in versions
                     }
 
     @error_recovery.with_recovery({"module": "model_manager"})
@@ -137,13 +134,10 @@ class ModelManager:
         """Save model versions to versions.json"""
         data = {
             model_id: [
-                {
-                    "version": v.version,
-                    "hash": v.hash,
-                    "url": v.url,
-                    "metadata": v.metadata
-                } for v in versions.values()
-            ] for model_id, versions in self.versions.items()
+                {"version": v.version, "hash": v.hash, "url": v.url, "metadata": v.metadata}
+                for v in versions.values()
+            ]
+            for model_id, versions in self.versions.items()
         }
         with open(self.versions_file, "w") as f:
             json.dump(data, f, indent=2)
@@ -161,13 +155,16 @@ class ModelManager:
             # Download with progress bar
             response = requests.get(model_version.url, stream=True)
             total_size = int(response.headers.get("content-length", 0))
-            
-            with open(model_path, "wb") as f, tqdm(
-                desc=f"Downloading {model_id} v{version}",
-                total=total_size,
-                unit="iB",
-                unit_scale=True
-            ) as pbar:
+
+            with (
+                open(model_path, "wb") as f,
+                tqdm(
+                    desc=f"Downloading {model_id} v{version}",
+                    total=total_size,
+                    unit="iB",
+                    unit_scale=True,
+                ) as pbar,
+            ):
                 for data in response.iter_content(chunk_size=1024):
                     size = f.write(data)
                     pbar.update(size)
@@ -180,7 +177,7 @@ class ModelManager:
             else:
                 os.remove(model_path)
                 return False
-                
+
         except Exception as e:
             logger.error(f"Failed to download model {model_id} v{version}: {e}")
             if model_path.exists():
@@ -205,7 +202,7 @@ class ModelManager:
             with open(model_path, "rb") as f:
                 for byte_block in iter(lambda: f.read(4096), b""):
                     sha256_hash.update(byte_block)
-            
+
             # Verify hash
             if sha256_hash.hexdigest() == model_version.hash:
                 model_version.last_validated = time.time()
@@ -238,7 +235,7 @@ class ModelManager:
 
             # Run benchmarks
             metrics = {}
-            
+
             # Measure inference time
             start_time = time.time()
             with torch.no_grad():
@@ -247,7 +244,7 @@ class ModelManager:
                     input_tensor = torch.randn(1, 3, 224, 224).to(device)
                     _ = model(input_tensor)
             inference_time = (time.time() - start_time) / 100
-            
+
             metrics["avg_inference_time"] = inference_time
             metrics["device"] = str(device)
             metrics["timestamp"] = time.time()
@@ -255,7 +252,7 @@ class ModelManager:
             # Save metrics
             model_version.performance_metrics = metrics
             self.save_versions()
-            
+
             return metrics
 
         except Exception as e:
@@ -264,10 +261,7 @@ class ModelManager:
 
     def get_available_models(self) -> Dict[str, List[str]]:
         """Get all available models and their versions"""
-        return {
-            model_id: list(versions.keys())
-            for model_id, versions in self.versions.items()
-        }
+        return {model_id: list(versions.keys()) for model_id, versions in self.versions.items()}
 
     def get_model_info(self, model_id: str, version: str) -> Optional[Dict[str, Any]]:
         """Get detailed information about a specific model version"""
@@ -281,35 +275,30 @@ class ModelManager:
             "metadata": model_version.metadata,
             "download_date": model_version.download_date,
             "last_validated": model_version.last_validated,
-            "performance_metrics": model_version.performance_metrics
+            "performance_metrics": model_version.performance_metrics,
         }
 
     def register_model(
-        self,
-        model_id: str,
-        version: str,
-        url: str,
-        hash: str,
-        metadata: Dict[str, Any]
+        self, model_id: str, version: str, url: str, hash: str, metadata: Dict[str, Any]
     ) -> None:
         """Register a new model version"""
         if model_id not in self.versions:
             self.versions[model_id] = {}
-            
+
         self.versions[model_id][version] = ModelVersion(
-            version=version,
-            hash=hash,
-            url=url,
-            metadata=metadata
+            version=version, hash=hash, url=url, metadata=metadata
         )
-        self.save_versions() 
+        self.save_versions()
+
 
 # Custom exceptions
 class ModelDownloadError(Exception):
     pass
 
+
 class ModelValidationError(Exception):
     pass
 
+
 class ModelLoadError(Exception):
-    pass 
+    pass

@@ -18,6 +18,7 @@ from enum import Enum
 
 class ValidationLevel(Enum):
     """Validation levels for model checks"""
+
     BASIC = "basic"  # Hash and metadata checks
     STANDARD = "standard"  # Basic + model loading and basic inference
     THOROUGH = "thorough"  # Standard + comprehensive testing
@@ -27,6 +28,7 @@ class ValidationLevel(Enum):
 @dataclass
 class ValidationResult:
     """Results of model validation"""
+
     is_valid: bool
     validation_level: ValidationLevel
     checks_passed: List[str]
@@ -50,7 +52,7 @@ class ModelValidator:
         """Load validation results cache"""
         self.validation_cache: Dict[str, Dict[str, ValidationResult]] = {}
         cache_file = self.validation_cache_dir / "validation_results.json"
-        
+
         if cache_file.exists():
             try:
                 with open(cache_file, "r") as f:
@@ -65,7 +67,7 @@ class ModelValidator:
                                 checks_failed=result["checks_failed"],
                                 warnings=result["warnings"],
                                 metadata=result["metadata"],
-                                timestamp=datetime.fromisoformat(result["timestamp"])
+                                timestamp=datetime.fromisoformat(result["timestamp"]),
                             )
             except Exception as e:
                 logger.error(f"Error loading validation cache: {e}")
@@ -75,7 +77,7 @@ class ModelValidator:
         """Save validation results cache"""
         cache_file = self.validation_cache_dir / "validation_results.json"
         data = {}
-        
+
         for model_id, versions in self.validation_cache.items():
             data[model_id] = {}
             for version, result in versions.items():
@@ -86,9 +88,9 @@ class ModelValidator:
                     "checks_failed": result.checks_failed,
                     "warnings": result.warnings,
                     "metadata": result.metadata,
-                    "timestamp": result.timestamp.isoformat()
+                    "timestamp": result.timestamp.isoformat(),
                 }
-        
+
         with open(cache_file, "w") as f:
             json.dump(data, f, indent=2)
 
@@ -99,11 +101,11 @@ class ModelValidator:
         expected_hash: str,
         model_type: str,
         level: ValidationLevel = ValidationLevel.STANDARD,
-        force: bool = False
+        force: bool = False,
     ) -> ValidationResult:
         """
         Validate a model file with comprehensive checks
-        
+
         Args:
             model_id: Unique identifier for the model
             version: Version string
@@ -111,7 +113,7 @@ class ModelValidator:
             model_type: Type of model (e.g., "llm", "vision", etc.)
             level: Validation level to perform
             force: Force revalidation even if cached result exists
-        
+
         Returns:
             ValidationResult containing validation details
         """
@@ -140,7 +142,7 @@ class ModelValidator:
                 checks_failed=checks_failed,
                 warnings=warnings,
                 metadata=metadata,
-                timestamp=datetime.now()
+                timestamp=datetime.now(),
             )
         checks_passed.append("file_exists")
 
@@ -157,7 +159,7 @@ class ModelValidator:
         with open(model_path, "rb") as f:
             for byte_block in iter(lambda: f.read(4096), b""):
                 sha256_hash.update(byte_block)
-        
+
         if sha256_hash.hexdigest() != expected_hash:
             checks_failed.append("hash_match")
         else:
@@ -169,13 +171,11 @@ class ModelValidator:
                 if model_type == "pytorch":
                     model = torch.load(model_path, map_location="cpu")
                     checks_passed.append("model_load")
-                    
+
                     # Basic model structure checks
                     if hasattr(model, "state_dict"):
                         checks_passed.append("has_state_dict")
-                        metadata["num_parameters"] = sum(
-                            p.numel() for p in model.parameters()
-                        )
+                        metadata["num_parameters"] = sum(p.numel() for p in model.parameters())
                     else:
                         checks_failed.append("has_state_dict")
 
@@ -203,7 +203,7 @@ class ModelValidator:
             checks_failed=checks_failed,
             warnings=warnings,
             metadata=metadata,
-            timestamp=datetime.now()
+            timestamp=datetime.now(),
         )
 
         # Update cache
@@ -214,18 +214,12 @@ class ModelValidator:
 
         return result
 
-    def get_validation_status(
-        self,
-        model_id: str,
-        version: str
-    ) -> Optional[ValidationResult]:
+    def get_validation_status(self, model_id: str, version: str) -> Optional[ValidationResult]:
         """Get the cached validation status for a model"""
         return self.validation_cache.get(model_id, {}).get(version)
 
     def clear_validation_cache(
-        self,
-        model_id: Optional[str] = None,
-        version: Optional[str] = None
+        self, model_id: Optional[str] = None, version: Optional[str] = None
     ) -> None:
         """Clear validation cache for specific model or all models"""
         if model_id is None:
@@ -234,5 +228,5 @@ class ModelValidator:
             del self.validation_cache[model_id]
         elif model_id in self.validation_cache and version in self.validation_cache[model_id]:
             del self.validation_cache[model_id][version]
-        
-        self._save_validation_cache() 
+
+        self._save_validation_cache()

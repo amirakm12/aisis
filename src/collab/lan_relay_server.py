@@ -1,8 +1,9 @@
 import socket
 import threading
 
+
 class LANRelayServer:
-    def __init__(self, host='0.0.0.0', port=9009):
+    def __init__(self, host="0.0.0.0", port=9009):
         self.host = host
         self.port = port
         self.clients = []  # List of (conn, addr)
@@ -54,6 +55,7 @@ class LANRelayServer:
                     except Exception as e:
                         print(f"Failed to send to {addr}: {e}")
 
+
 if __name__ == "__main__":
     server = LANRelayServer()
-    server.start() 
+    server.start()

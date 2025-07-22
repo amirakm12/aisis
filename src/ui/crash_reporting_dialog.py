@@ -12,6 +12,7 @@ from src.plugins.sandbox import run_plugin_in_sandbox
 import asyncio
 import websockets
 
+
 class CrashReportingDialog(QDialog):
     def __init__(self, config, parent=None):
         super().__init__(parent)
@@ -85,37 +86,51 @@ class CrashReportingDialog(QDialog):
             response = await ws.recv()
             self.chat_history.addItem(response)
 
-setup_logging(log_level="INFO") 
+
+setup_logging(log_level="INFO")
+
 
 def test_agent_explain_dialog(qtbot):
     from src.ui.agent_explain_dialog import AgentExplainDialog
+
     dialog = AgentExplainDialog(agent_registry={"TestAgent": object()})
     qtbot.addWidget(dialog)
     dialog.show()
-    assert dialog.isVisible() 
+    assert dialog.isVisible()
+
 
 def test_plugin_sandbox():
     from src.plugins.sandbox import run_plugin_in_sandbox
+
     class DummyPlugin:
-        def run(self): return "ok"
-    assert run_plugin_in_sandbox(DummyPlugin) == "ok" 
+        def run(self):
+            return "ok"
+
+    assert run_plugin_in_sandbox(DummyPlugin) == "ok"
+
 
 def test_agent_explain_dialog_shows_doc(qtbot):
     class DummyAgent:
         __doc__ = "Test agent doc"
+
     dialog = AgentExplainDialog(agent_registry={"Dummy": DummyAgent()})
     qtbot.addWidget(dialog)
     dialog.show()
-    assert "Test agent doc" in dialog.explanation.toPlainText() 
+    assert "Test agent doc" in dialog.explanation.toPlainText()
+
 
 def test_plugin_manager_loads_plugins():
     from src.plugins.plugin_manager import PluginManager
+
     pm = PluginManager()
     pm.load_plugins()
-    assert isinstance(pm.plugins, dict) 
+    assert isinstance(pm.plugins, dict)
+
 
 import pytest
+
+
 @pytest.mark.parametrize("size", [(512, 512), (1024, 1024)])
 def test_agent_performance_on_large_images(size):
     # Simulate agent processing on large images
-    pass 
+    pass

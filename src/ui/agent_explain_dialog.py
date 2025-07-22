@@ -1,10 +1,20 @@
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QTextEdit, QComboBox, QPushButton, QApplication
+from PySide6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QLabel,
+    QTextEdit,
+    QComboBox,
+    QPushButton,
+    QApplication,
+)
+
 
 class AgentExplainDialog(QDialog):
     """
     Dialog for showing agent explanations (XAI).
     Displays agent reasoning, choices, and outputs.
     """
+
     def __init__(self, agent_registry, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Agent Explanation")
@@ -15,7 +25,9 @@ class AgentExplainDialog(QDialog):
         self.explanation = QTextEdit()
         self.explanation.setReadOnly(True)
         self.copy_btn = QPushButton("Copy Explanation")
-        self.copy_btn.clicked.connect(lambda: QApplication.clipboard().setText(self.explanation.toPlainText()))
+        self.copy_btn.clicked.connect(
+            lambda: QApplication.clipboard().setText(self.explanation.toPlainText())
+        )
         layout.addWidget(QLabel("Select Agent:"))
         layout.addWidget(self.agent_selector)
         layout.addWidget(self.explanation)
@@ -28,4 +40,4 @@ class AgentExplainDialog(QDialog):
         agent = self.agent_registry[agent_name]
         doc = agent.__doc__ or "No documentation available."
         self.explanation.setText(doc)
-        # TODO: Connect refresh_button to agent.explain() logic 
+        # TODO: Connect refresh_button to agent.explain() logic

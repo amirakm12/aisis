@@ -1,9 +1,20 @@
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QLabel, QPushButton, QTextEdit, QHBoxLayout, QProgressBar
+from PySide6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QListWidget,
+    QLabel,
+    QPushButton,
+    QTextEdit,
+    QHBoxLayout,
+    QProgressBar,
+)
+
 
 class ModelZooDialog(QDialog):
     """
     Dialog for browsing, downloading, and switching models from the Model Zoo.
     """
+
     def __init__(self, model_zoo, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Model Zoo")
@@ -37,6 +48,8 @@ class ModelZooDialog(QDialog):
     def show_details(self, model_name):
         model = next((m for m in self.model_zoo.list_models() if m["name"] == model_name), None)
         if model:
-            self.details.setText(f"Type: {model['type']}\nVersion: {model['version']}\nStatus: {model['status']}")
+            self.details.setText(
+                f"Type: {model['type']}\nVersion: {model['version']}\nStatus: {model['status']}"
+            )
         else:
-            self.details.setText("No details available.") 
+            self.details.setText("No details available.")

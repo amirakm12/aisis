@@ -4,15 +4,24 @@ Handles user authentication and API key management UI
 """
 
 from PyQt6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel,
-    QPushButton, QLineEdit, QTabWidget,
-    QWidget, QFormLayout, QMessageBox,
-    QTableWidget, QTableWidgetItem
+    QDialog,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QLineEdit,
+    QTabWidget,
+    QWidget,
+    QFormLayout,
+    QMessageBox,
+    QTableWidget,
+    QTableWidgetItem,
 )
 from PyQt6.QtCore import Qt
 from typing import Optional, Dict, Any
 
 from src.core.security import SecurityManager
+
 
 class LoginDialog(QDialog):
     def __init__(self, security_manager: SecurityManager, parent=None):
@@ -63,11 +72,7 @@ class LoginDialog(QDialog):
         password = self.password_input.text()
 
         if not username or not password:
-            QMessageBox.warning(
-                self,
-                "Error",
-                "Please enter both username and password"
-            )
+            QMessageBox.warning(self, "Error", "Please enter both username and password")
             return
 
         session_token = self.security_manager.authenticate(username, password)
@@ -75,11 +80,7 @@ class LoginDialog(QDialog):
             self.session_token = session_token
             self.accept()
         else:
-            QMessageBox.warning(
-                self,
-                "Error",
-                "Invalid username or password"
-            )
+            QMessageBox.warning(self, "Error", "Invalid username or password")
 
     def _handle_register(self):
         """Handle register button click"""
@@ -87,25 +88,16 @@ class LoginDialog(QDialog):
         password = self.password_input.text()
 
         if not username or not password:
-            QMessageBox.warning(
-                self,
-                "Error",
-                "Please enter both username and password"
-            )
+            QMessageBox.warning(self, "Error", "Please enter both username and password")
             return
 
         if self.security_manager.create_user(username, password):
             QMessageBox.information(
-                self,
-                "Success",
-                "User registered successfully. You can now log in."
+                self, "Success", "User registered successfully. You can now log in."
             )
         else:
-            QMessageBox.warning(
-                self,
-                "Error",
-                "Username already exists"
-            )
+            QMessageBox.warning(self, "Error", "Username already exists")
+
 
 class APIKeyDialog(QDialog):
     def __init__(self, security_manager: SecurityManager, parent=None):
@@ -167,54 +159,31 @@ class APIKeyDialog(QDialog):
         key = self.key_input.text()
 
         if not service or not key:
-            QMessageBox.warning(
-                self,
-                "Error",
-                "Please enter both service name and API key"
-            )
+            QMessageBox.warning(self, "Error", "Please enter both service name and API key")
             return
 
         if self.security_manager.add_api_key(service, key):
             self.service_input.clear()
             self.key_input.clear()
             self._load_api_keys()
-            QMessageBox.information(
-                self,
-                "Success",
-                f"API key for {service} added successfully"
-            )
+            QMessageBox.information(self, "Success", f"API key for {service} added successfully")
         else:
-            QMessageBox.warning(
-                self,
-                "Error",
-                "Failed to add API key"
-            )
+            QMessageBox.warning(self, "Error", "Failed to add API key")
 
     def _handle_remove_key(self):
         """Handle remove API key button click"""
         selected_items = self.api_key_table.selectedItems()
         if not selected_items:
-            QMessageBox.warning(
-                self,
-                "Error",
-                "Please select an API key to remove"
-            )
+            QMessageBox.warning(self, "Error", "Please select an API key to remove")
             return
 
         service = self.api_key_table.item(selected_items[0].row(), 0).text()
         if self.security_manager.remove_api_key(service):
             self._load_api_keys()
-            QMessageBox.information(
-                self,
-                "Success",
-                f"API key for {service} removed successfully"
-            )
+            QMessageBox.information(self, "Success", f"API key for {service} removed successfully")
         else:
-            QMessageBox.warning(
-                self,
-                "Error",
-                "Failed to remove API key"
-            )
+            QMessageBox.warning(self, "Error", "Failed to remove API key")
+
 
 class SecurityDialog(QDialog):
     def __init__(self, security_manager: SecurityManager, parent=None):
@@ -232,7 +201,7 @@ class SecurityDialog(QDialog):
 
         # Tab widget
         tabs = QTabWidget()
-        
+
         # API Keys tab
         api_keys_tab = APIKeyDialog(self.security_manager)
         tabs.addTab(api_keys_tab, "API Keys")
@@ -251,4 +220,4 @@ class SecurityDialog(QDialog):
         login_dialog = LoginDialog(self.security_manager, self)
         if login_dialog.exec() == QDialog.DialogCode.Accepted:
             return login_dialog.session_token
-        return None 
+        return None
