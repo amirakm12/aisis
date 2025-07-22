@@ -458,6 +458,7 @@ async def main():
     
     # Download models in parallel
     tasks = [
+    download_art_data(),
         download_whisper_models(),
         download_bark_models(),
         download_llm_models(),
