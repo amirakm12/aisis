@@ -12,6 +12,6 @@ def setup_logging(log_level="INFO", log_file="logs/aisis.log"):
         setup_logging()
     """
     logger.remove()
-    logger.add(sys.stderr, level=log_level)
-    logger.add(log_file, rotation="1 week", retention="4 weeks", level=log_level)
+    logger.add(sys.stderr, level=log_level, serialize=True)
+    logger.add(log_file, rotation="1 week", retention="4 weeks", level=log_level, serialize=True)
     logging.basicConfig(level=log_level) 

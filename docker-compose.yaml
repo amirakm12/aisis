@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  aisis:
+    build: .
+    container_name: aisis
+    ports:
+      - "8080:8080"
+      - "8765:8765"
+    volumes:
+      - .:/workspace
+      - ./logs:/workspace/logs
+      - ./models:/workspace/models
+      - ./cache:/workspace/cache
+      - ./outputs:/workspace/outputs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - AISIS_ROOT=/workspace
+    command: python launch.py gui

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aisis-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aisis
+  template:
+    metadata:
+      labels:
+        app: aisis
+    spec:
+      containers:
+      - name: aisis
+        image: aisis:latest
+        ports:
+        - containerPort: 8080
+        - containerPort: 8765
+        volumeMounts:
+        - mountPath: /workspace/logs
+          name: logs-volume
+      volumes:
+      - name: logs-volume
+        emptyDir: {}

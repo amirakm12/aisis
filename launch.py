@@ -64,6 +64,8 @@ async def launch_gui():
         app = QApplication(sys.argv)
         window = MainWindow()
         window.show()
+        import subprocess
+        subprocess.Popen(["python", "src/core/performance_monitor.py"])
         
         logger.info("AISIS GUI launched successfully")
         return app.exec()
@@ -79,6 +81,8 @@ async def launch_cli():
         
         studio = AISIS()
         await studio.initialize()
+    from src.core.performance_monitor import start_monitoring_server
+    asyncio.create_task(start_monitoring_server())
         
         logger.info("AISIS CLI launched successfully")
         logger.info("Available commands:")
