@@ -15,5 +15,7 @@ jobs:
         run: flake8 src/ tests/
       - name: Test
         run: pytest --cov=src
+      - name: Security scan
+        run: pip install bandit safety && bandit -r src/ && safety check
       - name: Build Docker image
         run: docker build -t aisis .

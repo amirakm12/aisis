@@ -9,6 +9,7 @@ import sys
 import asyncio
 from pathlib import Path
 from loguru import logger
+from src.core.database import init_db
 
 def setup_environment():
     """Setup Python path and environment variables"""
@@ -25,9 +26,12 @@ def setup_environment():
     os.environ["PYTHONPATH"] = f"{src_path}{os.pathsep}{os.environ.get('PYTHONPATH', '')}"
     
     # Create necessary directories
-    directories = ["models", "cache", "logs", "outputs", "temp"]
+    directories = ["models", "cache", "logs", "outputs", "temp", "storage"]
     for directory in directories:
         (project_root / directory).mkdir(exist_ok=True)
+    
+    # Initialize database
+    init_db()
     
     logger.info(f"AISIS environment setup complete")
     logger.info(f"Project root: {project_root}")
@@ -158,4 +162,4 @@ def main():
         return 1
 
 if __name__ == "__main__":
-    sys.exit(main()) 
+    sys.exit(main())

@@ -14,13 +14,26 @@ class PathsConfig(BaseModel):
     cache_dir: str = Field(default="cache")
     textures_db: str = Field(default="textures/textures.sqlite")
 
+class VoiceConfig(BaseModel):
+    whisper_model: str = Field(default="small")
+    tts_engine: str = Field(default="bark")
+    sample_rate: int = Field(default=16000)
+    language: str = Field(default="en")
+    chunk_size: int = Field(default=30)
+
+class LLMConfig(BaseModel):
+    model_name: str = Field(default="mixtral-8x7b")
+    quantized: bool = Field(default=True)
+
 class AISISConfig(BaseModel):
-    ui: UIConfig
+    voice: VoiceConfig
+    llm: LLMConfig
     gpu: GPUConfig
     paths: PathsConfig
+    ui: UIConfig
 
 # Usage:
 # try:
 #     config = AISISConfig(**your_dict)
 # except ValidationError as e:
-#     print(e) 
+#     print(e)

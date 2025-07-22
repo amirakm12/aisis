@@ -209,6 +209,7 @@ class MainWindow(QMainWindow):
         
         self._setup_ui()
         self._initialize_async()
+        self._setup_menu()
     
         # Warn if running in CPU mode
         import torch
@@ -856,3 +857,40 @@ class MainWindow(QMainWindow):
         # Undo last workflow or context change
         self.context_panel.log("[Undo] Last workflow/context change undone.")
         # TODO: Implement actual undo logic
+def _setup_menu(self):
+    menu_bar = self.menuBar()
+    help_menu = menu_bar.addMenu("Help")
+    report_action = help_menu.addAction("Report Bug")
+    report_action.triggered.connect(self.open_bug_report)
+    kb_action = help_menu.addAction("Knowledge Base")
+    kb_action.triggered.connect(self.open_knowledge_base)
+
+def open_bug_report(self):
+    from PySide6.QtWidgets import QDialog, QMessageBox
+    from .bug_report_dialog import BugReportDialog
+    from src.core.database import report_bug
+    dlg = BugReportDialog(self)
+    if dlg.exec() == QDialog.Accepted:
+        description = dlg.description.toPlainText()
+        if description.strip():
+            report_bug(None, description)
+            QMessageBox.information(self, "Success", "Bug reported! Thank you.")
+        else:
+            QMessageBox.warning(self, "Error", "Please provide a description.")
+
+def open_knowledge_base(self):
+    from PySide6.QtWidgets import QDialog, QTextEdit, QVBoxLayout
+    dlg = QDialog(self)
+    dlg.setWindowTitle("Knowledge Base")
+    layout = QVBoxLayout()
+    text = QTextEdit()
+    text.setReadOnly(True)
+    try:
+        with open('docs/knowledge_base.md', 'r') as f:
+            text.setMarkdown(f.read())
+    except Exception as e:
+        text.setText(f"Error loading knowledge base: {e}")
+    layout.addWidget(text)
+    dlg.setLayout(layout)
+    dlg.resize(800, 600)
+    dlg.exec()
