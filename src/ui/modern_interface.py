@@ -291,7 +291,7 @@ class ModernMainWindow(QMainWindow):
     def setup_ui(self):
         """Setup main window UI"""
         self.setWindowTitle("AISIS - Advanced AI Image System")
-        self.setMinimumSize(1200, 800)
+        # self.setMinimumSize(1200, 800)
         
         # Central widget with modern layout
         central_widget = QWidget()
@@ -402,7 +402,7 @@ class ModernMainWindow(QMainWindow):
         layout.addLayout(toolbar)
         
         # Canvas area
-        canvas = QGraphicsView()
+        canvas = TouchGraphicsView()
         canvas.setStyleSheet("background-color: #1e293b; border: 1px solid #334155;")
         layout.addWidget(canvas)
         
@@ -533,3 +533,22 @@ def run_modern_interface():
 
 if __name__ == "__main__":
     run_modern_interface() 
+
+class TouchGraphicsView(QGraphicsView):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
+        self.setTransformationAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
+        self.previous_dist = 0
+
+    def viewportEvent(self, event):
+        if event.type() == QEvent.Type.TouchBegin or event.type() == QEvent.Type.TouchUpdate or event.type() == QEvent.Type.TouchEnd:
+            touch_points = event.touchPoints()
+            if len(touch_points) == 2:
+                current_dist = (touch_points[0].position() - touch_points[1].position()).manhattanLength()
+                if event.type() == QEvent.Type.TouchUpdate and self.previous_dist != 0:
+                    scale_factor = current_dist / self.previous_dist
+                    self.scale(scale_factor, scale_factor)
+                self.previous_dist = current_dist
+                return True
+        return super().viewportEvent(event)
