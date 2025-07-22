@@ -30,7 +30,6 @@ from .self_critique import SelfCritiqueAgent
 from .forensic_analysis import ForensicAnalysisAgent
 from .context_aware_restoration import ContextAwareRestorationAgent
 from .adaptive_enhancement import AdaptiveEnhancementAgent
-from .hyper_orchestrator import HyperOrchestrator
 
 class ReasoningMode:
     TREE_OF_THOUGHT = 'tree_of_thought'

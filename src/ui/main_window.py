@@ -46,6 +46,26 @@ from src.agents.context_aware_restoration import ContextAwareRestorationAgent
 from src.agents.adaptive_enhancement import AdaptiveEnhancementAgent
 from src.agents.vision_language import VisionLanguageAgent
 from src.agents.style_transfer import StyleTransferAgent
+from src.agents.vector_image_restoration import VectorImageRestorationAgent
+from src.agents.vector_style_aesthetic import VectorStyleAestheticAgent
+from src.agents.vector_denoising import VectorDenoisingAgent
+from src.agents.vector_text_recovery import VectorTextRecoveryAgent
+from src.agents.vector_meta_correction import VectorMetaCorrectionAgent
+from src.agents.vector_semantic_editing import VectorSemanticEditingAgent
+from src.agents.vector_auto_retouch import VectorAutoRetouchAgent
+from src.agents.vector_generative import VectorGenerativeAgent
+from src.agents.vector_neural_radiance import VectorNeuralRadianceAgent
+from src.agents.vector_super_resolution import VectorSuperResolutionAgent
+from src.agents.vector_color_correction import VectorColorCorrectionAgent
+from src.agents.vector_tile_stitching import VectorTileStitchingAgent
+from src.agents.vector_feedback_loop import VectorFeedbackLoopAgent
+from src.agents.vector_perspective_correction import VectorPerspectiveCorrectionAgent
+from src.agents.vector_material_recognition import VectorMaterialRecognitionAgent
+from src.agents.vector_damage_classifier import VectorDamageClassifierAgent
+from src.agents.vector_hyperspectral_recovery import VectorHyperspectralRecoveryAgent
+from src.agents.vector_paint_layer_decomposition import VectorPaintLayerDecompositionAgent
+from src.agents.vector_self_critique import VectorSelfCritiqueAgent
+from src.agents.vector_forensic_analysis import VectorForensicAnalysisAgent
 from .context_panel import ContextPanel
 from .context_manager import ContextManager
 from src.agents.workflow_builder import WorkflowBuilder
@@ -194,6 +214,26 @@ class MainWindow(QMainWindow):
             self.orchestrator.register_agent("adaptive_enhancement", AdaptiveEnhancementAgent())
             self.orchestrator.register_agent("vision_language", VisionLanguageAgent())
             self.orchestrator.register_agent("style_transfer", StyleTransferAgent())
+    self.orchestrator.register_agent("vector_image_restoration", VectorImageRestorationAgent())
+    self.orchestrator.register_agent("vector_style_aesthetic", VectorStyleAestheticAgent())
+    self.orchestrator.register_agent("vector_denoising", VectorDenoisingAgent())
+    self.orchestrator.register_agent("vector_text_recovery", VectorTextRecoveryAgent())
+    self.orchestrator.register_agent("vector_meta_correction", VectorMetaCorrectionAgent())
+    self.orchestrator.register_agent("vector_semantic_editing", VectorSemanticEditingAgent())
+    self.orchestrator.register_agent("vector_auto_retouch", VectorAutoRetouchAgent())
+    self.orchestrator.register_agent("vector_generative", VectorGenerativeAgent())
+    self.orchestrator.register_agent("vector_neural_radiance", VectorNeuralRadianceAgent())
+    self.orchestrator.register_agent("vector_super_resolution", VectorSuperResolutionAgent())
+    self.orchestrator.register_agent("vector_color_correction", VectorColorCorrectionAgent())
+    self.orchestrator.register_agent("vector_tile_stitching", VectorTileStitchingAgent())
+    self.orchestrator.register_agent("vector_feedback_loop", VectorFeedbackLoopAgent())
+    self.orchestrator.register_agent("vector_perspective_correction", VectorPerspectiveCorrectionAgent())
+    self.orchestrator.register_agent("vector_material_recognition", VectorMaterialRecognitionAgent())
+    self.orchestrator.register_agent("vector_damage_classifier", VectorDamageClassifierAgent())
+    self.orchestrator.register_agent("vector_hyperspectral_recovery", VectorHyperspectralRecoveryAgent())
+    self.orchestrator.register_agent("vector_paint_layer_decomposition", VectorPaintLayerDecompositionAgent())
+    self.orchestrator.register_agent("vector_self_critique", VectorSelfCritiqueAgent())
+    self.orchestrator.register_agent("vector_forensic_analysis", VectorForensicAnalysisAgent())
         except Exception as e:
             print(f"[ERROR] Failed to register agents: {e}")
         self.current_image: Optional[Path] = None
