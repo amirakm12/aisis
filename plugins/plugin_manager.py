@@ -5,6 +5,7 @@ Future implementation for plugin discovery, loading, and management.
 
 import os
 import importlib.util
+import subprocess
 from .plugin_base import PluginBase
 
 class PluginManager:
@@ -33,6 +34,11 @@ class PluginManager:
                 for attr in dir(module):
                     obj = getattr(module, attr)
                     if isinstance(obj, type) and issubclass(obj, PluginBase) and obj is not PluginBase:
+                        # Install dependencies
+                        self.install_dependencies(obj.dependencies)
+                        # Check version (simple check, can be enhanced)
+                        if obj.__version__ == "0.0.0":
+                            print(f"Warning: Plugin {plugin_name} has default version.")
                         self.plugins[plugin_name] = obj(self.context)
 
     def list_plugins(self):
@@ -46,7 +52,7 @@ class PluginManager:
         Run a specific plugin by name.
         """
         if name not in self.plugins:
-            raise ValueError(f"Plugin '{name}' not found.")
+            raise ValueError(f"Plugin \'{name}\' not found.")
         return self.plugins[name].run(*args, **kwargs)
 
     def run_all(self, *args, **kwargs):
@@ -56,4 +62,11 @@ class PluginManager:
         results = {}
         for name, plugin in self.plugins.items():
             results[name] = plugin.run(*args, **kwargs)
-        return results 
+        return results
+
+    def install_dependencies(self, deps):
+        for dep in deps:
+            try:
+                subprocess.check_call(["pip", "install", dep])
+            except subprocess.CalledProcessError:
+                print(f"Failed to install dependency {dep}")

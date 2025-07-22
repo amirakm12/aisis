@@ -1,8 +1,11 @@
 import multiprocessing
 import traceback
+import resource
 
 def run_plugin_in_sandbox(plugin_cls, *args, **kwargs):
     def target(queue, *args, **kwargs):
+        resource.setrlimit(resource.RLIMIT_CPU, (30, 30))  # 30 seconds CPU time
+        resource.setrlimit(resource.RLIMIT_AS, (1024 * 1024 * 512, 1024 * 1024 * 512))  # 512MB memory
         try:
             plugin = plugin_cls()
             result = plugin.run(*args, **kwargs)

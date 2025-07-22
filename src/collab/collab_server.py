@@ -1,6 +1,7 @@
 import asyncio
 import websockets
 from typing import Dict, Set
+import json
 
 
 class CollaborationServer:
@@ -15,19 +16,30 @@ class CollaborationServer:
         self.active_sessions: Dict[str, Set[websockets.WebSocketServerProtocol]] = {}
 
     async def handler(self, websocket, path):
-        # TODO: Authenticate user, join session, handle messages
         session_id = path.strip('/')
         if session_id not in self.active_sessions:
             self.active_sessions[session_id] = set()
         self.active_sessions[session_id].add(websocket)
+        user = None
         try:
+            message = await websocket.recv()
+            data = json.loads(message)
+            if data.get('type') == 'join':
+                user = data.get('user')
+                await self.broadcast(session_id, json.dumps({'type': 'system', 'message': f"{user} joined"}))
+            else:
+                await websocket.close()
+                return
             async for message in websocket:
-                await self.broadcast(session_id, message)
+                data = json.loads(message)
+                if data.get('type') == 'message':
+                    await self.broadcast(session_id, json.dumps({'type': 'message', 'user': user, 'content': data['content']})) 
         finally:
+            if user:
+                await self.broadcast(session_id, json.dumps({'type': 'system', 'message': f"{user} left"}))
             self.active_sessions[session_id].remove(websocket)
 
     async def broadcast(self, session_id: str, message: str):
-        # Broadcast message to all users in the session
         for ws in self.active_sessions.get(session_id, set()):
             await ws.send(message)
 
