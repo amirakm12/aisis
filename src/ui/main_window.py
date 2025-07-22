@@ -254,6 +254,9 @@ class MainWindow(QMainWindow):
         self.settings_button = QPushButton("Settings")
         self.settings_button.setToolTip("Configure voice and LLM options")
         self.settings_button.clicked.connect(self.open_settings)
+        self.tour_button = QPushButton("Tour")
+        self.tour_button.clicked.connect(self.open_tour)
+        button_layout.addWidget(self.tour_button)
         button_layout.addWidget(self.settings_button)
         
         self.undo_button = QPushButton("Undo")
@@ -617,6 +620,10 @@ class MainWindow(QMainWindow):
             icon = "🟢" if user else "💬"
             self.chat_panel.item(self.chat_panel.count()-1).setText(f"{icon} {prefix}[{timestamp}] {message}")
 
+    def open_tour(self):
+        from .tour_dialog import TourDialog
+        dlg = TourDialog(self)
+        dlg.exec()
     def open_settings(self):
         dlg = SettingsDialog(self)
         if dlg.exec():
@@ -649,6 +656,10 @@ class MainWindow(QMainWindow):
         self.settings_button.setShortcut("Ctrl+,")
         self.clear_chat_button.setShortcut("Ctrl+L")
         self.export_chat_button.setShortcut("Ctrl+E")
+        self.voice_button.setShortcut("Ctrl+V")
+        self.tot_button.setShortcut("Ctrl+T")
+        self.drawing_button.setShortcut("Ctrl+D")
+        self.command_btn.setShortcut("Ctrl+Return")
 
     # Add tooltips to all major UI elements
         self.open_button.setToolTip("Open an image (Ctrl+O)")
@@ -658,6 +669,15 @@ class MainWindow(QMainWindow):
         self.chat_panel.setToolTip("Chat history and conversation")
         self.listening_label.setToolTip("Voice listening status")
         self.waveform_bar.setToolTip("Audio input level")
+        # Add context-sensitive help
+        self.open_button.setWhatsThis("Click to open an image file for editing.")
+        self.save_button.setWhatsThis("Save the current edited image to file.")
+        self.voice_button.setWhatsThis("Toggle voice interaction mode.")
+        self.settings_button.setWhatsThis("Open settings dialog to configure the application.")
+        self.undo_button.setWhatsThis("Undo the last edit action.")
+        self.redo_button.setWhatsThis("Redo the previously undone action.")
+        self.image_label.setWhatsThis("Main area to display and view the image.")
+        self.chat_panel.setWhatsThis("Conversation history with the AI agents.")
 
     # Add thinking animation (stub: can be replaced with spinner/animation)
     def _append_chat(self, message, user=False, thinking=False):

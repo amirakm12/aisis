@@ -43,6 +43,13 @@ def main():
     
     # Set application style
     app.setStyle("Fusion")
+    from src.ui.theme_manager import ThemeManager
+    theme = config.get("ui.theme", "dark")
+    if theme == "dark":
+        ThemeManager.apply_dark(app)
+    else:
+        ThemeManager.apply_light(app)
+
     
     # Enable OpenGL
     try:
