@@ -1,17 +1,23 @@
+import torch
+import torch.nn as nn
 from typing import Dict, Any, List, Optional
 from .base_agent import BaseAgent
 
 
 class MultiAgentOrchestrator:
     """
-    Orchestrates multiple agents (vision, language, audio, 3D, etc.), manages
-    communication, negotiation, and self-improvement via a meta-agent (LLM).
+    Orchestrates multiple agents, using a PyTorch-based task router for managing tasks.
     """
     def __init__(self, meta_agent: Optional[BaseAgent] = None):
         self.agents: Dict[str, BaseAgent] = {}
-        self.meta_agent = meta_agent  # LLM for critique/planning
-        # For feedback/self-improvement
+        self.meta_agent = meta_agent
         self.history: List[Dict[str, Any]] = []
+        # PyTorch-based task router (simple MLP for demonstration)
+        self.router_model = nn.Sequential(
+            nn.Linear(10, 32),  # Assume input is a 10-dim task embedding
+            nn.ReLU(),
+            nn.Linear(32, len(self.agents))  # Output logits for each agent
+        )
 
     def register_agent(self, name: str, agent: BaseAgent) -> None:
         """Register an agent with a unique name."""
@@ -29,13 +35,19 @@ class MultiAgentOrchestrator:
         else:
             raise ValueError(f"Agent '{receiver}' not found.")
 
+    def generate_agent_order(self, task_embedding: torch.Tensor) -> List[str]:
+        """Use PyTorch model to generate agent order based on task embedding."""
+        logits = self.router_model(task_embedding)
+        agent_indices = torch.argsort(logits, descending=True)
+        return [list(self.agents.keys())[i] for i in agent_indices]
+
     async def delegate_task(
-        self, task: Dict[str, Any], agent_order: List[str]
+        self, task: Dict[str, Any], agent_order: Optional[List[str]] = None
     ) -> Any:
-        """
-        Delegate a task through a sequence of agents, allowing negotiation and
-        critique.
-        """
+        if agent_order is None:
+            # Generate dummy embedding for task (in practice, use text embedding or similar)
+            task_embedding = torch.rand(1, 10)  # Placeholder
+            agent_order = self.generate_agent_order(task_embedding)
         result = task
         for agent_name in agent_order:
             agent = self.agents.get(agent_name)

@@ -5,6 +5,7 @@ Specialized agent for upscaling low-resolution images
 
 import torch
 import torch.nn as nn
+import torch.nn.utils.prune as prune
 import torchvision.transforms as T
 from PIL import Image
 import numpy as np
@@ -102,6 +103,7 @@ class SuperResolutionAgent(BaseAgent):
         try:
             model = torch.hub.load('xinntao/Real-ESRGAN', 'real_esrgan', pretrained=True).to(self.device)
             model.eval()
+            self._prune_model(model)
             logger.info("Loaded Real-ESRGAN model.")
             return model
         except Exception as e:
@@ -117,6 +119,7 @@ class SuperResolutionAgent(BaseAgent):
             # ESRGAN uses RRDBNet architecture; use torch.hub for demo weights
             model = torch.hub.load('xinntao/ESRGAN', 'esrgan', pretrained=True).to(self.device)
             model.eval()
+            self._prune_model(model)
             logger.info("Loaded ESRGAN model.")
             return model
         except Exception as e:
@@ -142,6 +145,7 @@ class SuperResolutionAgent(BaseAgent):
             model.load_state_dict(torch.load(weights_path), strict=True)
             model = model.to(self.device)
             model.eval()
+            self._prune_model(model)
             logger.info("Loaded BSRGAN model.")
             return model
         except Exception as e:
@@ -166,6 +170,7 @@ class SuperResolutionAgent(BaseAgent):
             model.load_state_dict(torch.load(weights_path), strict=True)
             model = model.to(self.device)
             model.eval()
+            self._prune_model(model)
             logger.info("Loaded RRDBNet model.")
             return model
         except Exception as e:
@@ -190,6 +195,7 @@ class SuperResolutionAgent(BaseAgent):
             model.load_state_dict(torch.load(weights_path), strict=True)
             model = model.to(self.device)
             model.eval()
+            self._prune_model(model)
             logger.info("Loaded SwinIR model.")
             return model
         except Exception as e:
@@ -214,6 +220,7 @@ class SuperResolutionAgent(BaseAgent):
             model.load_state_dict(torch.load(weights_path), strict=True)
             model = model.to(self.device)
             model.eval()
+            self._prune_model(model)
             logger.info("Loaded Restormer model.")
             return model
         except Exception as e:
@@ -238,6 +245,7 @@ class SuperResolutionAgent(BaseAgent):
             model.load_state_dict(torch.load(weights_path), strict=True)
             model = model.to(self.device)
             model.eval()
+            self._prune_model(model)
             logger.info("Loaded Uformer model.")
             return model
         except Exception as e:
@@ -262,6 +270,7 @@ class SuperResolutionAgent(BaseAgent):
             model.load_state_dict(torch.load(weights_path), strict=True)
             model = model.to(self.device)
             model.eval()
+            self._prune_model(model)
             logger.info("Loaded NAFNet model.")
             return model
         except Exception as e:
@@ -286,6 +295,7 @@ class SuperResolutionAgent(BaseAgent):
             model.load_state_dict(torch.load(weights_path), strict=True)
             model = model.to(self.device)
             model.eval()
+            self._prune_model(model)
             logger.info("Loaded Swin2SR model.")
             return model
         except Exception as e:
@@ -310,6 +320,7 @@ class SuperResolutionAgent(BaseAgent):
             model.load_state_dict(torch.load(weights_path), strict=True)
             model = model.to(self.device)
             model.eval()
+            self._prune_model(model)
             logger.info("Loaded IPT model.")
             return model
         except Exception as e:
@@ -361,6 +372,10 @@ class SuperResolutionAgent(BaseAgent):
     async def _cleanup(self) -> None:
         self.models.clear()
         torch.cuda.empty_cache()
+
+    def _prune_model(self, model: nn.Module, amount: float = 0.2):
+        parameters = [(module, "weight") for module in filter(lambda m: isinstance(m, (nn.Conv2d, nn.Linear)), model.modules())]
+        prune.global_unstructured(parameters, pruning_method=prune.L1Unstructured, amount=amount)
 
 # ----------------------
 # Model Weights/Download Instructions

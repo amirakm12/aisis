@@ -5,6 +5,7 @@ Specialized agent for removing noise, artifacts, and compression artifacts
 
 import torch
 import torch.nn as nn
+import torch.nn.utils.prune as prune
 import torchvision.transforms as T
 from PIL import Image
 import numpy as np
@@ -74,7 +75,9 @@ class DenoisingAgent(BaseAgent):
                 encoded = self.encoder(x)
                 return self.decoder(encoded)
         
-        return GaussianDenoiser().to(self.device)
+        model = GaussianDenoiser().to(self.device)
+        self._prune_model(model)
+        return model
     
     async def _load_salt_pepper_denoiser(self) -> nn.Module:
         """Load salt & pepper noise removal model"""
@@ -86,7 +89,9 @@ class DenoisingAgent(BaseAgent):
             def forward(self, x):
                 return self.conv(x)
         
-        return SaltPepperDenoiser().to(self.device)
+        model = SaltPepperDenoiser().to(self.device)
+        self._prune_model(model)
+        return model
     
     async def _load_jpeg_artifact_remover(self) -> nn.Module:
         """Load JPEG artifact removal model"""
@@ -98,7 +103,9 @@ class DenoisingAgent(BaseAgent):
             def forward(self, x):
                 return self.conv(x)
         
-        return JPEGArtifactRemover().to(self.device)
+        model = JPEGArtifactRemover().to(self.device)
+        self._prune_model(model)
+        return model
     
     async def _load_motion_deblur(self) -> nn.Module:
         """Load motion blur removal model"""
@@ -110,7 +117,9 @@ class DenoisingAgent(BaseAgent):
             def forward(self, x):
                 return self.conv(x)
         
-        return MotionDeblur().to(self.device)
+        model = MotionDeblur().to(self.device)
+        self._prune_model(model)
+        return model
     
     async def _process(self, task: Dict[str, Any]) -> Dict[str, Any]:
         """Process denoising task"""
@@ -209,3 +218,7 @@ class DenoisingAgent(BaseAgent):
         """Cleanup models and resources"""
         self.models.clear()
         torch.cuda.empty_cache() 
+
+    def _prune_model(self, model: nn.Module, amount: float = 0.2):
+        parameters = [(module, "weight") for module in filter(lambda m: 'conv' in m._get_name().lower(), model.modules())]
+        prune.global_unstructured(parameters, pruning_method=prune.L1Unstructured, amount=amount) 

@@ -31,6 +31,13 @@ from .forensic_analysis import ForensicAnalysisAgent
 from .context_aware_restoration import ContextAwareRestorationAgent
 from .adaptive_enhancement import AdaptiveEnhancementAgent
 from .hyper_orchestrator import HyperOrchestrator
+from .vector.vector_agents import (
+    VectorizationAgent, PathSimplificationAgent, BezierOptimizationAgent, ShapeRecognitionAgent,
+    LayerDecompositionVectorAgent, ColorQuantizationAgent, StrokeEnhancementAgent, FillPatternAgent,
+    TextToVectorAgent, ImageToSVGAgent, VectorDenoisingAgent, VectorSuperResolutionAgent,
+    StyleTransferVectorAgent, SemanticVectorEditingAgent, AutoTraceAgent, ContourDetectionAgent,
+    NodeReductionAgent, AlignmentCorrectionAgent, SymmetryEnforcementAgent, ExportOptimizationAgent
+)
 
 class ReasoningMode:
     TREE_OF_THOUGHT = 'tree_of_thought'
@@ -61,6 +68,7 @@ class OrchestratorAgent(BaseAgent):
         super().__init__("OrchestratorAgent")
         self.agents = {}
         self.restoration_pipeline = []
+        self.vector_pipeline = []  # New pipeline for vector workflows
         
     async def _initialize(self) -> None:
         """Initialize all restoration agents"""
@@ -95,6 +103,28 @@ class OrchestratorAgent(BaseAgent):
             self.agents['context_aware_restoration'] = ContextAwareRestorationAgent()
             self.agents['adaptive_enhancement'] = AdaptiveEnhancementAgent()
             
+            # Vector mode agents
+            self.agents['vectorization'] = VectorizationAgent()
+            self.agents['path_simplification'] = PathSimplificationAgent()
+            self.agents['bezier_optimization'] = BezierOptimizationAgent()
+            self.agents['shape_recognition'] = ShapeRecognitionAgent()
+            self.agents['layer_decomposition_vector'] = LayerDecompositionVectorAgent()
+            self.agents['color_quantization'] = ColorQuantizationAgent()
+            self.agents['stroke_enhancement'] = StrokeEnhancementAgent()
+            self.agents['fill_pattern'] = FillPatternAgent()
+            self.agents['text_to_vector'] = TextToVectorAgent()
+            self.agents['image_to_svg'] = ImageToSVGAgent()
+            self.agents['vector_denoising'] = VectorDenoisingAgent()
+            self.agents['vector_super_resolution'] = VectorSuperResolutionAgent()
+            self.agents['style_transfer_vector'] = StyleTransferVectorAgent()
+            self.agents['semantic_vector_editing'] = SemanticVectorEditingAgent()
+            self.agents['auto_trace'] = AutoTraceAgent()
+            self.agents['contour_detection'] = ContourDetectionAgent()
+            self.agents['node_reduction'] = NodeReductionAgent()
+            self.agents['alignment_correction'] = AlignmentCorrectionAgent()
+            self.agents['symmetry_enforcement'] = SymmetryEnforcementAgent()
+            self.agents['export_optimization'] = ExportOptimizationAgent()
+            
             # Initialize all agents
             for name, agent in self.agents.items():
                 logger.info(f"Initializing {name}...")
@@ -124,6 +154,30 @@ class OrchestratorAgent(BaseAgent):
                 'feedback_loop',               # Quality feedback
                 'self_critique',               # Self-assessment
                 'meta_correction'              # Final corrections
+            ]
+            
+            # Define vector pipeline stages
+            self.vector_pipeline = [
+                'vector_denoising',
+                'contour_detection',
+                'shape_recognition',
+                'bezier_optimization',
+                'path_simplification',
+                'node_reduction',
+                'alignment_correction',
+                'symmetry_enforcement',
+                'color_quantization',
+                'stroke_enhancement',
+                'fill_pattern',
+                'text_to_vector',
+                'semantic_vector_editing',
+                'style_transfer_vector',
+                'layer_decomposition_vector',
+                'auto_trace',
+                'image_to_svg',
+                'vector_super_resolution',
+                'vectorization',
+                'export_optimization'
             ]
             
             logger.info(f"Orchestrator initialized with {len(self.agents)} agents")

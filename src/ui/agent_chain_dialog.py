@@ -1,11 +1,13 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QPushButton, QLabel, QHBoxLayout
 
+from .workflow_state_machine import WorkflowStateMachine
+
 class AgentChainDialog(QDialog):
     """
     Dialog for building and running custom agent pipelines (chaining).
     Supports both automated and manual chaining.
     """
-    def __init__(self, agent_names, parent=None):
+    def __init__(self, agent_names, orchestrator, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Agent Pipeline Builder")
         layout = QVBoxLayout(self)
@@ -24,4 +26,12 @@ class AgentChainDialog(QDialog):
         layout.addWidget(QLabel("Pipeline Order:"))
         layout.addWidget(self.pipeline)
         layout.addWidget(self.run_button)
+        self.orchestrator = orchestrator
+        self.state_machine = WorkflowStateMachine(self.orchestrator, self)
+        self.run_button.clicked.connect(self.run_pipeline)
         # TODO: Connect buttons to pipeline logic 
+
+    def run_pipeline(self):
+        pipeline = [self.pipeline.item(i).text() for i in range(self.pipeline.count())]
+        self.state_machine.setup_workflow(pipeline)
+        self.state_machine.start() 
