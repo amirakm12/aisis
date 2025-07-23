@@ -31,6 +31,7 @@ from .forensic_analysis import ForensicAnalysisAgent
 from .context_aware_restoration import ContextAwareRestorationAgent
 from .adaptive_enhancement import AdaptiveEnhancementAgent
 from .hyper_orchestrator import HyperOrchestrator
+from .vector_agents import VectorConversionAgent, VectorDenoisingAgent, VectorStyleTransferAgent, VectorSuperResolutionAgent, VectorTextRecoveryAgent, VectorMaterialRecognitionAgent, VectorDamageClassifierAgent, VectorColorCorrectionAgent, VectorPerspectiveCorrectionAgent, VectorTileStitchingAgent, VectorGenerativeAgent, VectorSemanticEditingAgent, VectorAutoRetouchAgent, VectorAdaptiveEnhancementAgent, VectorForensicAnalysisAgent, VectorHyperspectralRecoveryAgent, VectorPaintLayerDecompositionAgent, VectorSelfCritiqueAgent, VectorMetaCorrectionAgent, VectorNeuralRadianceAgent
 
 class ReasoningMode:
     TREE_OF_THOUGHT = 'tree_of_thought'
@@ -95,6 +96,28 @@ class OrchestratorAgent(BaseAgent):
             self.agents['context_aware_restoration'] = ContextAwareRestorationAgent()
             self.agents['adaptive_enhancement'] = AdaptiveEnhancementAgent()
             
+            # Vector mode agents
+            self.agents['vector_conversion'] = VectorConversionAgent()
+            self.agents['vector_denoising'] = VectorDenoisingAgent()
+            self.agents['vector_style_transfer'] = VectorStyleTransferAgent()
+            self.agents['vector_super_resolution'] = VectorSuperResolutionAgent()
+            self.agents['vector_text_recovery'] = VectorTextRecoveryAgent()
+            self.agents['vector_material_recognition'] = VectorMaterialRecognitionAgent()
+            self.agents['vector_damage_classifier'] = VectorDamageClassifierAgent()
+            self.agents['vector_color_correction'] = VectorColorCorrectionAgent()
+            self.agents['vector_perspective_correction'] = VectorPerspectiveCorrectionAgent()
+            self.agents['vector_tile_stitching'] = VectorTileStitchingAgent()
+            self.agents['vector_generative'] = VectorGenerativeAgent()
+            self.agents['vector_semantic_editing'] = VectorSemanticEditingAgent()
+            self.agents['vector_auto_retouch'] = VectorAutoRetouchAgent()
+            self.agents['vector_adaptive_enhancement'] = VectorAdaptiveEnhancementAgent()
+            self.agents['vector_forensic_analysis'] = VectorForensicAnalysisAgent()
+            self.agents['vector_hyperspectral_recovery'] = VectorHyperspectralRecoveryAgent()
+            self.agents['vector_paint_layer_decomposition'] = VectorPaintLayerDecompositionAgent()
+            self.agents['vector_self_critique'] = VectorSelfCritiqueAgent()
+            self.agents['vector_meta_correction'] = VectorMetaCorrectionAgent()
+            self.agents['vector_neural_radiance'] = VectorNeuralRadianceAgent()
+            
             # Initialize all agents
             for name, agent in self.agents.items():
                 logger.info(f"Initializing {name}...")
@@ -123,7 +146,28 @@ class OrchestratorAgent(BaseAgent):
                 'tile_stitching',              # Large image handling
                 'feedback_loop',               # Quality feedback
                 'self_critique',               # Self-assessment
-                'meta_correction'              # Final corrections
+                'meta_correction',              # Final corrections
+                # Vector mode stages
+                'vector_conversion',
+                'vector_denoising',
+                'vector_style_transfer',
+                'vector_super_resolution',
+                'vector_text_recovery',
+                'vector_material_recognition',
+                'vector_damage_classifier',
+                'vector_color_correction',
+                'vector_perspective_correction',
+                'vector_tile_stitching',
+                'vector_generative',
+                'vector_semantic_editing',
+                'vector_auto_retouch',
+                'vector_adaptive_enhancement',
+                'vector_forensic_analysis',
+                'vector_hyperspectral_recovery',
+                'vector_paint_layer_decomposition',
+                'vector_self_critique',
+                'vector_meta_correction',
+                'vector_neural_radiance'
             ]
             
             logger.info(f"Orchestrator initialized with {len(self.agents)} agents")

@@ -5,6 +5,7 @@ Specialized agent for upscaling low-resolution images
 
 import torch
 import torch.nn as nn
+import torch.nn.utils.prune as prune
 import torchvision.transforms as T
 from PIL import Image
 import numpy as np
@@ -79,15 +80,25 @@ class SuperResolutionAgent(BaseAgent):
         try:
             logger.info("Initializing all 10 super-resolution models...")
             self.models['real_esrgan'] = await self._load_real_esrgan()
+            self.prune_model(self.models['real_esrgan'])
             self.models['esrgan'] = await self._load_esrgan()
+            self.prune_model(self.models['esrgan'])
             self.models['bsrgan'] = await self._load_bsrgan()
+            self.prune_model(self.models['bsrgan'])
             self.models['rrdbnet'] = await self._load_rrdbnet()
+            self.prune_model(self.models['rrdbnet'])
             self.models['swinir'] = await self._load_swinir()
+            self.prune_model(self.models['swinir'])
             self.models['restormer'] = await self._load_restormer()
+            self.prune_model(self.models['restormer'])
             self.models['uformer'] = await self._load_uformer()
+            self.prune_model(self.models['uformer'])
             self.models['nafnet'] = await self._load_nafnet()
+            self.prune_model(self.models['nafnet'])
             self.models['swin2sr'] = await self._load_swin2sr()
+            self.prune_model(self.models['swin2sr'])
             self.models['ipt'] = await self._load_ipt()
+            self.prune_model(self.models['ipt'])
             logger.info("All 10 super-resolution models initialized.")
         except Exception as e:
             logger.error(f"Failed to initialize super-resolution models: {e}")
@@ -361,6 +372,14 @@ class SuperResolutionAgent(BaseAgent):
     async def _cleanup(self) -> None:
         self.models.clear()
         torch.cuda.empty_cache()
+
+    def prune_model(self, model: nn.Module, amount: float = 0.2) -> None:
+        parameters = []
+        for name, module in model.named_modules():
+            if isinstance(module, (nn.Conv2d, nn.Linear)):
+                parameters.append((module, "weight"))
+        if parameters:
+            prune.global_unstructured(parameters, pruning_method=prune.L1Unstructured, amount=amount)
 
 # ----------------------
 # Model Weights/Download Instructions

@@ -5,6 +5,7 @@ Specialized agent for removing noise, artifacts, and compression artifacts
 
 import torch
 import torch.nn as nn
+import torch.nn.utils.prune as prune
 import torchvision.transforms as T
 from PIL import Image
 import numpy as np
@@ -29,15 +30,19 @@ class DenoisingAgent(BaseAgent):
             
             # Gaussian noise removal
             self.models['gaussian_denoise'] = await self._load_gaussian_denoiser()
+            self.prune_model(self.models['gaussian_denoise'])
             
             # Salt & pepper noise removal
             self.models['salt_pepper_denoise'] = await self._load_salt_pepper_denoiser()
+            self.prune_model(self.models['salt_pepper_denoise'])
             
             # JPEG compression artifact removal
             self.models['jpeg_artifact_removal'] = await self._load_jpeg_artifact_remover()
+            self.prune_model(self.models['jpeg_artifact_removal'])
             
             # Motion blur removal
             self.models['motion_deblur'] = await self._load_motion_deblur()
+            self.prune_model(self.models['motion_deblur'])
             
             # Setup transforms
             self.transforms = T.Compose([
@@ -209,3 +214,11 @@ class DenoisingAgent(BaseAgent):
         """Cleanup models and resources"""
         self.models.clear()
         torch.cuda.empty_cache() 
+
+    def prune_model(self, model: nn.Module, amount: float = 0.2) -> None:
+        parameters = []
+        for name, module in model.named_modules():
+            if isinstance(module, (nn.Conv2d, nn.Linear)):
+                parameters.append((module, "weight"))
+        if parameters:
+            prune.global_unstructured(parameters, pruning_method=prune.L1Unstructured, amount=amount) 

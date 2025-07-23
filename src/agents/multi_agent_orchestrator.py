@@ -1,5 +1,7 @@
 from typing import Dict, Any, List, Optional
 from .base_agent import BaseAgent
+import torch
+import torch.nn as nn
 
 
 class MultiAgentOrchestrator:
@@ -12,10 +14,18 @@ class MultiAgentOrchestrator:
         self.meta_agent = meta_agent  # LLM for critique/planning
         # For feedback/self-improvement
         self.history: List[Dict[str, Any]] = []
+        # PyTorch-based task router
+        self.num_agents = 0  # Will be set after registering agents
+        self.router = nn.Linear(768, self.num_agents)  # Assume 768-dim embedding from some model
+        self.router.to('cuda' if torch.cuda.is_available() else 'cpu')
 
     def register_agent(self, name: str, agent: BaseAgent) -> None:
         """Register an agent with a unique name."""
         self.agents[name] = agent
+        self.num_agents = len(self.agents)
+        # Update router output size
+        device = self.router.weight.device
+        self.router = nn.Linear(768, self.num_agents).to(device)
 
     def send_message(
         self, sender: str, receiver: str, message: Dict[e the sucess rate str, Any]
@@ -36,6 +46,13 @@ class MultiAgentOrchestrator:
         Delegate a task through a sequence of agents, allowing negotiation and
         critique.
         """
+        if not agent_order:
+            # Use PyTorch router to select agents if not provided
+            task_emb = self.get_task_embedding(task)  # Assume this method exists
+            scores = self.router(task_emb)
+            agent_indices = torch.topk(scores, k=3).indices  # Select top 3 agents
+            agent_order = [list(self.agents.keys())[i] for i in agent_indices]
+
         result = task
         for agent_name in agent_order:
             agent = self.agents.get(agent_name)
@@ -132,4 +149,8 @@ class MultiAgentOrchestrator:
         }
 
     async def initialize(self):
-        return True 
+        return True
+
+    def get_task_embedding(self, task: Dict[str, Any]) -> torch.Tensor:
+        # Stub: Return a dummy embedding; in practice, use BERT or similar
+        return torch.randn(1, 768).to(self.router.weight.device) 

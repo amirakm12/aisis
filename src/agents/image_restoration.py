@@ -5,6 +5,7 @@ Handles image repair, enhancement, and noise reduction with real AI models
 
 import torch
 import torch.nn as nn
+import torch.nn.utils.prune as prune
 import torchvision.transforms as T
 from PIL import Image
 import numpy as np
@@ -90,14 +91,17 @@ class ImageRestorationAgent(BaseAgent):
             # Load denoising model
             logger.info("Loading denoising model...")
             self.models['denoising'] = await self._load_denoising_model()
+            self.prune_model(self.models['denoising'])
             
             # Load super-resolution model
             logger.info("Loading super-resolution model...")
             self.models['super_resolution'] = await self._load_super_resolution_model()
+            self.prune_model(self.models['super_resolution'])
             
             # Load inpainting model
             logger.info("Loading inpainting model...")
             self.models['inpainting'] = await self._load_inpainting_model()
+            self.prune_model(self.models['inpainting'])
             
             logger.info("Image restoration models initialized successfully")
             
@@ -531,6 +535,14 @@ class ImageRestorationAgent(BaseAgent):
             
         except Exception as e:
             logger.error(f"Error during cleanup: {e}")
+
+    def prune_model(self, model: nn.Module, amount: float = 0.2) -> None:
+        parameters = []
+        for name, module in model.named_modules():
+            if isinstance(module, (nn.Conv2d, nn.Linear)):
+                parameters.append((module, "weight"))
+        if parameters:
+            prune.global_unstructured(parameters, pruning_method=prune.L1Unstructured, amount=amount)
 
     async def initialize(self):
         """Initialize the agent"""

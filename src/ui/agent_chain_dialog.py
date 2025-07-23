@@ -1,4 +1,5 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QPushButton, QLabel, QHBoxLayout
+from .workflow_state_machine import WorkflowStateMachine
 
 class AgentChainDialog(QDialog):
     """
@@ -15,6 +16,7 @@ class AgentChainDialog(QDialog):
         self.add_button = QPushButton("Add to Pipeline")
         self.remove_button = QPushButton("Remove from Pipeline")
         self.run_button = QPushButton("Run Pipeline")
+        self.run_button.clicked.connect(self.run_pipeline)
         layout.addWidget(QLabel("Available Agents:"))
         layout.addWidget(self.available_agents)
         btn_layout = QHBoxLayout()
@@ -25,3 +27,12 @@ class AgentChainDialog(QDialog):
         layout.addWidget(self.pipeline)
         layout.addWidget(self.run_button)
         # TODO: Connect buttons to pipeline logic 
+
+    def run_pipeline(self):
+        pipeline = [self.pipeline.item(i).text() for i in range(self.pipeline.count())]
+        if pipeline:
+            # Assume orchestrator is accessible, e.g., from parent or global
+            from src.agents.orchestrator import OrchestratorAgent
+            orchestrator = OrchestratorAgent()
+            state_machine = WorkflowStateMachine(pipeline, orchestrator, {"image": "path/to/image"}, self)
+            state_machine.start() 
