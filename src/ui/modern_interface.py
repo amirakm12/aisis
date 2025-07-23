@@ -246,6 +246,9 @@ class ModernSidebar(QWidget):
         # Theme toggle
         self.theme_btn = ModernButton("🌙 Dark Mode")
         layout.addWidget(self.theme_btn)
+
+        self.voice_btn = ModernButton("🎤 Start Voice")
+        layout.addWidget(self.voice_btn)
     
     def setup_style(self):
         """Setup sidebar styling"""
@@ -281,7 +284,8 @@ class ModernSidebar(QWidget):
 class ModernMainWindow(QMainWindow):
     """Modern main window with advanced features"""
     
-    def __init__(self):
+    def __init__(self, app):
+        self.app = app
         super().__init__()
         self.theme_manager = ModernThemeManager()
         self.setup_ui()
@@ -309,6 +313,10 @@ class ModernMainWindow(QMainWindow):
         # Main content area
         self.content_stack = QStackedWidget()
         main_layout.addWidget(self.content_stack)
+        
+        self.status_label = QLabel("")
+        self.status_label.setStyleSheet("padding: 10px; color: #94a3b8;")
+        main_layout.addWidget(self.status_label)
         
         # Setup content pages
         self.setup_content_pages()
@@ -481,6 +489,8 @@ class ModernMainWindow(QMainWindow):
         
         # Theme toggle
         self.sidebar.theme_btn.clicked.connect(self.toggle_theme)
+
+        self.sidebar.voice_btn.clicked.connect(self.toggle_voice)
     
     def setup_style(self):
         """Setup main window styling"""
@@ -501,6 +511,16 @@ class ModernMainWindow(QMainWindow):
         # Update theme button text
         btn_text = "🌙 Dark Mode" if new_theme == Theme.LIGHT else "☀️ Light Mode"
         self.sidebar.theme_btn.setText(btn_text)
+
+    def toggle_voice(self):
+        if self.app.voice_interface.listening:
+            self.app.voice_interface.stop_listening()
+            self.sidebar.voice_btn.setText("🎤 Start Voice")
+            self.status_label.setText("")
+        else:
+            self.app.voice_interface.start_listening()
+            self.sidebar.voice_btn.setText("🛑 Stop Voice")
+            self.status_label.setText("Listening...")
 
 
 def create_modern_app() -> QApplication:
@@ -524,7 +544,7 @@ def run_modern_interface():
     app = create_modern_app()
     
     # Create and show main window
-    window = ModernMainWindow()
+    window = ModernMainWindow(app)
     window.show()
     
     # Run the application

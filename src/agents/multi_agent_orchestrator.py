@@ -53,6 +53,13 @@ class MultiAgentOrchestrator:
                 raise ValueError(f"Agent '{agent_name}' not found.")
         return result
 
+    async def process_batch(self, tasks: list, agent_order: list) -> list:
+        results = []
+        for task in tasks:
+            result = await self.delegate_task(task, agent_order)
+            results.append(result)
+        return results
+
     def feedback(self, feedback: Dict[str, Any]) -> None:
         """
         Integrate user or system feedback for self-improvement.

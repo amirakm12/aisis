@@ -10,16 +10,20 @@ import threading
 from pathlib import Path
 from typing import Dict, Any, Optional
 import json
+import psutil
+import time
 
 # Core imports
 from .core.config import config
 from .core.gpu_utils import gpu_manager
 from .core.advanced_local_models import local_model_manager
+from .core.voice.voice_interface import VoiceInterface
 
 # Agent imports
 from .agents import AGENT_REGISTRY, register_agent
 from .agents.enhanced_image_restoration import EnhancedImageRestorationAgent
 from .agents.multi_agent_orchestrator import MultiAgentOrchestrator
+from .agents.vector_conversion_agent import VectorConversionAgent
 
 # UI imports
 from .ui.modern_interface import (
@@ -49,6 +53,7 @@ class AISISApplication:
         self.current_project = None
         self.active_agents = {}
         self.processing_queue = []
+        self.voice_interface = None
         
     async def initialize(self) -> None:
         """Initialize the complete AISIS application"""
@@ -66,9 +71,14 @@ class AISISApplication:
             
             # Initialize integrations
             await self._initialize_integrations()
+
+            self.voice_interface = VoiceInterface(self.handle_voice_command)
+            await self.voice_interface.initialize()
+            print("✅ Voice interface initialized")
             
             self.initialized = True
             print("✅ AISIS Application initialized successfully!")
+            threading.Thread(target=self.monitor_memory, daemon=True).start()
             
         except Exception as e:
             print(f"❌ Failed to initialize AISIS Application: {e}")
@@ -100,6 +110,10 @@ class AISISApplication:
         enhanced_restoration = EnhancedImageRestorationAgent()
         register_agent("enhanced_restoration", enhanced_restoration)
         
+        # Register vector conversion agent
+        vector_agent = VectorConversionAgent()
+        register_agent("vector_conversion", vector_agent)
+        
         # Initialize orchestrator
         self.orchestrator = MultiAgentOrchestrator()
         
@@ -124,7 +138,7 @@ class AISISApplication:
         self.app = create_modern_app()
         
         # Create main window
-        self.main_window = ModernMainWindow()
+        self.main_window = ModernMainWindow(self)
         
         # Apply theme
         self.theme_manager.apply_theme(self.app, Theme.DARK)
@@ -263,6 +277,30 @@ class AISISApplication:
             print(f"❌ Task processing failed: {e}")
             raise
     
+    async def handle_voice_command(self, text: str) -> None:
+        print(f"Processing voice command: {text}")
+        if self.orchestrator.meta_agent:
+            parse_input = {
+                'instruction': f'Parse this command to a list of agent names: {text}',
+                'available_agents': list(self.active_agents.keys())
+            }
+            parse_result = await self.orchestrator.meta_agent.process(parse_input)
+            agent_order = parse_result.get('llm_response', [])
+            if isinstance(agent_order, str):
+                agent_order = agent_order.strip('[]').split(', ')
+            task = {
+                'type': 'image_processing',
+                'input': self.current_project or 'input.jpg',
+                'instructions': text
+            }
+            try:
+                result = await self.orchestrator.delegate_task(task, agent_order)
+                print(f"Workflow result: {result}")
+                self.voice_interface.speak("Workflow completed")
+            except Exception as e:
+                print(f"Error in workflow: {e}")
+                self.voice_interface.speak("Error processing command")
+    
     def show(self) -> None:
         """Show the main application window"""
         if self.main_window:
@@ -306,6 +344,13 @@ class AISISApplication:
         self._save_configuration()
         
         print("✅ Cleanup completed")
+
+    def monitor_memory(self):
+        while True:
+            mem = psutil.virtual_memory()
+            if mem.percent > 80:
+                print("Warning: High memory usage")
+            time.sleep(10)
 
 
 def create_aisis_app() -> AISISApplication:
