@@ -57,6 +57,9 @@ def main():
     # Create and show main window
     try:
         window = MainWindow()
+        from src.ui.eve_entrance_dialog import EveEntranceDialog
+        entrance = EveEntranceDialog(window)
+        entrance.exec()
         window.show()
         
         # Start event loop

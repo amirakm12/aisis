@@ -25,5 +25,13 @@
             1280,
             720
         ]
+    },
+    "eve": {
+        "user_name": "Creator",
+        "default_style": "cyber-sorceress",
+        "default_voice_pack": "cyber-sorceress",
+        "default_tone": "epic",
+        "styles": ["cyber-sorceress", "neon-painter", "gothic-muse", "cyber", "gothic", "neon", "style7", "style8", "style9", "style10", "style11", "style12", "style13", "style14", "style15", "style16"],
+        "voice_packs": ["cyber-sorceress", "neon-painter", "gothic-muse", "pack4", "pack5", "pack6", "pack7", "pack8", "pack9", "pack10", "pack11", "pack12"]
     }
 }

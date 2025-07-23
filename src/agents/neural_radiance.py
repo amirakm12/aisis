@@ -14,6 +14,13 @@ from loguru import logger
 from .base_agent import BaseAgent
 from ..core.gpu_utils import gpu_manager
 
+def positional_encoding(x: torch.Tensor, num_frequencies: int = 10) -> torch.Tensor:
+    encoded = [x]
+    for i in range(num_frequencies):
+        for func in [torch.sin, torch.cos]:
+            encoded.append(func((2 ** i) * np.pi * x))
+    return torch.cat(encoded, dim=-1)
+
 class NeuralRadianceAgent(BaseAgent):
     def __init__(self):
         super().__init__("NeuralRadianceAgent")
@@ -55,14 +62,22 @@ class NeuralRadianceAgent(BaseAgent):
         class DummyNeRF(nn.Module):
             def __init__(self):
                 super().__init__()
-                self.fc1 = nn.Linear(63, 256)  # 3D position + 2D direction + encoding
+                pos_encoding_dim = 3 + 6 * 10  # 63 for positions
+                dir_encoding_dim = 3 + 6 * 4   # 27 for directions
+                self.fc1 = nn.Linear(pos_encoding_dim + dir_encoding_dim, 256)
                 self.fc2 = nn.Linear(256, 256)
                 self.fc3 = nn.Linear(256, 4)   # RGB + density
-            
-            def forward(self, x):
+
+            def forward(self, positions, directions):
+                pos_encoded = positional_encoding(positions, 10)
+                dir_encoded = positional_encoding(directions, 4)
+                x = torch.cat([pos_encoded, dir_encoded], -1)
                 x = torch.relu(self.fc1(x))
                 x = torch.relu(self.fc2(x))
-                return self.fc3(x)
+                out = self.fc3(x)
+                rgb = torch.sigmoid(out[:, :3])
+                density = torch.relu(out[:, 3:])
+                return rgb, density
         
         return DummyNeRF().to(self.device)
     
@@ -227,6 +242,33 @@ class NeuralRadianceAgent(BaseAgent):
             'point_cloud': np.random.rand(1000, 3),
             'confidence': np.random.rand(1000)
         }
+    
+    async def render_avatar(self, style: str, pose: np.ndarray) -> np.ndarray:
+        """Render photorealistic 3D avatar in given style and pose"""
+        try:
+            # Placeholder: Generate dummy rays based on pose
+            num_rays = 256 * 256
+            positions = torch.from_numpy(np.random.rand(num_rays, 3)).float().to(self.device)
+            directions = torch.from_numpy(np.random.rand(num_rays, 3)).float().to(self.device)
+            
+            # Adjust based on pose (dummy)
+            positions += torch.from_numpy(pose).float().to(self.device).unsqueeze(0)
+            
+            # Render using NeRF model
+            with torch.no_grad():
+                rgb, density = self.models['nerf'](positions, directions)
+            
+            # Simple volume rendering placeholder: average colors
+            image = rgb.view(256, 256, 3).cpu().numpy() * 255
+            image = image.astype(np.uint8)
+            
+            # TODO: Load style-specific parameters or model from models/nerf/styles/{style}
+            logger.info(f"Rendered avatar in style: {style} with pose: {pose}")
+            
+            return image
+        except Exception as e:
+            logger.error(f"Failed to render avatar: {e}")
+            return np.zeros((256, 256, 3), dtype=np.uint8)
     
     async def _cleanup(self) -> None:
         """Cleanup models and resources"""

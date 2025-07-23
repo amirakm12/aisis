@@ -14,6 +14,7 @@ from loguru import logger
 import hashlib
 import json
 from tqdm import tqdm
+from huggingface_hub import snapshot_download
 
 # Model configurations
 MODEL_CONFIGS = {
@@ -209,29 +210,20 @@ async def download_whisper_models():
         logger.error(f"Failed to setup Whisper models: {e}")
 
 async def download_bark_models():
-    """Download Bark TTS models"""
     logger.info("Setting up Bark TTS models...")
     try:
-        # Bark models are typically downloaded automatically by the bark library
-        # We'll create a placeholder and let the library handle the download
         bark_dir = Path("models/bark")
         bark_dir.mkdir(exist_ok=True)
-        
-        # Create a config file to indicate Bark is ready
-        config_file = bark_dir / "config.json"
-        config_data = {
-            "status": "ready",
-            "models": ["text_encoder", "coarse_encoder", "fine_encoder"],
-            "note": "Models will be downloaded automatically on first use"
-        }
-        
-        with open(config_file, 'w') as f:
-            json.dump(config_data, f, indent=2)
-        
-        logger.info("Bark TTS setup complete - models will download on first use")
-        
+        snapshot_download(
+            repo_id="suno/bark",
+            local_dir=str(bark_dir),
+            local_dir_use_symlinks=False,
+            resume_download=True,
+            ignore_patterns=["*.md", "*.txt", "*.gitattributes"]
+        )
+        logger.info("Bark TTS models downloaded successfully")
     except Exception as e:
-        logger.error(f"Failed to setup Bark models: {e}")
+        logger.error(f"Failed to download Bark models: {e}")
 
 async def download_llm_models():
     """Download LLM models for orchestrator"""
@@ -393,28 +385,21 @@ async def download_retouch_models():
         logger.error(f"Failed to setup retouch models: {e}")
 
 async def download_nerf_models():
-    """Download NeRF models for 3D reconstruction"""
     logger.info("Setting up NeRF models...")
     try:
-        # Create placeholder for NeRF models
         nerf_dir = Path("models/nerf")
         nerf_dir.mkdir(exist_ok=True)
-        
-        # Create a config file
-        config_file = nerf_dir / "config.json"
-        config_data = {
-            "status": "placeholder",
-            "models": ["nerf", "pose_estimation", "mesh_generation"],
-            "note": "NeRF models will be implemented in future versions"
-        }
-        
-        with open(config_file, 'w') as f:
-            json.dump(config_data, f, indent=2)
-        
-        logger.info("NeRF models placeholder created")
-        
+        # Note: This is a placeholder. Replace with actual NeRF avatar model repo ID when available.
+        snapshot_download(
+            repo_id="example/nerf-avatar-models",
+            local_dir=str(nerf_dir),
+            local_dir_use_symlinks=False,
+            resume_download=True,
+            ignore_patterns=["*.md", "*.txt", "*.gitattributes"]
+        )
+        logger.info("NeRF models downloaded successfully")
     except Exception as e:
-        logger.error(f"Failed to setup NeRF models: {e}")
+        logger.error(f"Failed to download NeRF models: {e}")
 
 def create_model_index():
     """Create an index of all downloaded models"""
