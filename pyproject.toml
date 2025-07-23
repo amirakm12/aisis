@@ -35,6 +35,7 @@ dev = [
     "mypy>=1.7.0",
     "isort>=5.13.0",
     "flake8>=6.1.0",
+    "pytest-qt>=4.0.0",  # For UI automation tests
 ]
 
 [tool.black]
