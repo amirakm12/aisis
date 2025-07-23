@@ -6,6 +6,7 @@ Coordinates and manages all specialized restoration agents
 import asyncio
 from typing import Dict, Any, List, Optional
 from loguru import logger
+import torch
 
 from .base_agent import BaseAgent
 from .image_restoration import ImageRestorationAgent
@@ -31,6 +32,7 @@ from .forensic_analysis import ForensicAnalysisAgent
 from .context_aware_restoration import ContextAwareRestorationAgent
 from .adaptive_enhancement import AdaptiveEnhancementAgent
 from .hyper_orchestrator import HyperOrchestrator
+from .ai_powered_vector_optimizer import AIPoweredVectorOptimizer
 
 class ReasoningMode:
     TREE_OF_THOUGHT = 'tree_of_thought'
@@ -81,6 +83,7 @@ class OrchestratorAgent(BaseAgent):
             self.agents['text_recovery'] = TextRecoveryAgent()
             self.agents['feedback_loop'] = FeedbackLoopAgent()
             self.agents['perspective_correction'] = PerspectiveCorrectionAgent()
+            self.agents['vector_optimizer'] = AIPoweredVectorOptimizer()
             
             # Scientific and forensic agents
             self.agents['material_recognition'] = MaterialRecognitionAgent()
@@ -123,7 +126,8 @@ class OrchestratorAgent(BaseAgent):
                 'tile_stitching',              # Large image handling
                 'feedback_loop',               # Quality feedback
                 'self_critique',               # Self-assessment
-                'meta_correction'              # Final corrections
+                'meta_correction',              # Final corrections
+                'vector_optimizer'             # Vector optimization
             ]
             
             logger.info(f"Orchestrator initialized with {len(self.agents)} agents")
@@ -134,6 +138,31 @@ class OrchestratorAgent(BaseAgent):
     
     async def _process(self, task: Dict[str, Any]) -> Dict[str, Any]:
         """Process restoration task through comprehensive pipeline"""
+        # Memory monitoring
+        logger.info(f"Memory before: {torch.cuda.memory_allocated() / 1024**2:.2f} MB")
+        # Check GPU
+        if torch.cuda.is_available():
+            logger.info("Using GPU acceleration")
+        # Batch processing
+        if 'images' in task:
+            results = []
+            for img in task['images']:
+                sub_task = task.copy()
+                sub_task['image'] = img
+                result = await self._process_single(sub_task)
+                results.append(result)
+                # Progress callback if provided
+                if 'progress_callback' in task:
+                    task['progress_callback'](len(results) / len(task['images']))
+            logger.info(f"Memory after batch: {torch.cuda.memory_allocated() / 1024**2:.2f} MB")
+            return {'batch_results': results}
+        else:
+            result = await self._process_single(task)
+            logger.info(f"Memory after: {torch.cuda.memory_allocated() / 1024**2:.2f} MB")
+            return result
+
+    async def _process_single(self, task: Dict[str, Any]) -> Dict[str, Any]:
+        """Process a single restoration task through comprehensive pipeline"""
         try:
             input_image = task.get('image')
             restoration_type = task.get('restoration_type', 'comprehensive')

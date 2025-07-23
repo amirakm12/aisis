@@ -5,6 +5,7 @@ import time
 import json
 import torch
 import requests
+from .llm_client import LLMClient
 
 class WorkflowBuilder:
     """
@@ -13,6 +14,7 @@ class WorkflowBuilder:
     """
     def __init__(self, agent_registry: Dict[str, Any]):
         self.agent_registry = agent_registry
+        self.llm = LLMClient(api_type="llama", endpoint="http://localhost:8000/v1/completions")  # Assuming local Llama server
 
     def build_workflow(self, command: str, context: Dict[str, Any] = None) -> List[Dict[str, Any]]:
         """
@@ -21,23 +23,32 @@ class WorkflowBuilder:
         """
         context = context or {}
         command = command.lower()
-        workflow = []
-        # Simple rule-based parsing
-        if "restore" in command:
-            workflow.append({"agent": "image_restoration", "params": {}})
-        if "upscale" in command or "super-res" in command:
-            workflow.append({"agent": "super_resolution", "params": {}})
-        if "denoise" in command:
-            workflow.append({"agent": "denoising", "params": {}})
-        if "color" in command or "enhance color" in command:
-            workflow.append({"agent": "color_correction", "params": {}})
-        if "send to" in command:
-            m = re.search(r"send to ([\w@.]+)", command)
-            if m:
-                workflow.append({"agent": "integration", "params": {"recipient": m.group(1)}})
-        # TODO: Use LLM API for more complex parsing
-        # Example: tasks = llm_parse(command, context)
-        return workflow
+        # Use LLM for complex parsing
+        try:
+            workflow = self.llm.llm_parse(command, context)
+            # Validate workflow
+            valid_workflow = []
+            for step in workflow:
+                if step['agent'] in self.agent_registry:
+                    valid_workflow.append(step)
+            return valid_workflow
+        except Exception as e:
+            print(f"LLM parsing failed: {e}")
+            # Fallback to rule-based
+            workflow = []
+            if "restore" in command:
+                workflow.append({"agent": "image_restoration", "params": {}})
+            if "upscale" in command or "super-res" in command:
+                workflow.append({"agent": "super_resolution", "params": {}})
+            if "denoise" in command:
+                workflow.append({"agent": "denoising", "params": {}})
+            if "color" in command or "enhance color" in command:
+                workflow.append({"agent": "color_correction", "params": {}})
+            if "send to" in command:
+                m = re.search(r"send to ([\w@.]+)", command)
+                if m:
+                    workflow.append({"agent": "integration", "params": {"recipient": m.group(1)}})
+            return workflow
 
     def update_context_display(self):
         t0 = time.perf_counter()

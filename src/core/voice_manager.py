@@ -10,18 +10,31 @@ from .config import config
 from .voice.bark_tts import BarkTTS
 from .voice.faster_whisper_asr import FasterWhisperASR
 from typing import Callable, Optional
+import threading
+import time
+import numpy as np
+import sounddevice as sd
+import queue
+from .faster_whisper_asr import FasterWhisperASR
+from .bark_tts import BarkTTS
+from loguru import logger
+import torch  # for cuda check
 
 class VoiceManager:
     """Manages voice input/output and streaming ASR for AISIS."""
-    def __init__(self) -> None:
-        self.asr: Optional[FasterWhisperASR] = None
+    def __init__(self):
+        self.asr = FasterWhisperASR(model_size="small", device="cuda" if torch.cuda.is_available() else "cpu")
         self.tts = BarkTTS()
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.initialized = False
-        self.last_command: Optional[str] = None
-        self.is_listening = False
+        self.running = False
+        self.wake_word = "hey aisis"
+        self.audio_queue = queue.Queue()
+        self.sample_rate = 16000
+        self.chunk_size = int(self.sample_rate * 1.0)  # 1 second chunks
+        self.on_command = None
+        self.on_audio_level = None
+        self.on_partial_transcript = None
 
-    async def initialize(self) -> None:
+    async def initialize(self):
         """Initialize voice models asynchronously."""
         if not self.initialized:
             self.asr = FasterWhisperASR(
@@ -52,78 +65,67 @@ class VoiceManager:
         self.tts.save_audio(audio_array, str(output_path))
         return output_path
 
-    def start_voice_loop(
-        self,
-        on_command: Optional[Callable[[str], None]] = None,
-        on_audio_level: Optional[Callable[[float], None]] = None,
-        on_partial_transcript: Optional[Callable[[str], None]] = None
-    ) -> None:
+    def start_voice_loop(self, on_command, on_audio_level=None, on_partial_transcript=None):
         """
         Start a real-time voice command loop using streaming ASR.
         Calls on_command(text) for each recognized command.
         Optionally calls on_audio_level(level) and on_partial_transcript(partial)
         for UI feedback.
         """
-        import queue
-        import threading
-        import sounddevice as sd
-        import numpy as np
-        import time
+        self.on_command = on_command
+        self.on_audio_level = on_audio_level
+        self.on_partial_transcript = on_partial_transcript
+        self.running = True
+        # Start audio input thread (stub: use pyaudio or similar)
+        threading.Thread(target=self._audio_input_loop, daemon=True).start()
+        # Start processing thread
+        threading.Thread(target=self._process_loop, daemon=True).start()
 
-        self._check_dependencies()
-
-        if not self.initialized:
-            raise RuntimeError(
-                "Voice system not initialized. Call initialize() first."
-            )
-
-        self.is_listening = True
-        audio_queue = queue.Queue()
-        sample_rate = 16000  # TODO: Make configurable
-        chunk_size = int(sample_rate * 2.0)  # 2 seconds per chunk
-
+    def _audio_input_loop(self):
         def audio_callback(indata, frames, time_info, status):
-            audio_queue.put(indata.copy())
-            if on_audio_level:
-                level = float(np.linalg.norm(indata) / (len(indata) or 1))
-                level = min(level, 1.0)
-                on_audio_level(level)
+            self.audio_queue.put(indata.copy().flatten().astype(np.float32))
+            if self.on_audio_level:
+                level = np.max(np.abs(indata)) / 32768.0  # Normalize
+                self.on_audio_level(level)
+        with sd.InputStream(samplerate=self.sample_rate, channels=1, dtype='int16', blocksize=self.chunk_size, callback=audio_callback):
+            while self.running:
+                time.sleep(0.1)
 
-        def on_partial(partial: str):
-            if on_partial_transcript:
-                on_partial_transcript(partial)
-
-        def on_final(final: str):
-            if final and on_command:
-                on_command(final)
-
-        def listen_loop():
-            print("[Voice] Listening for commands. Press Ctrl+C to stop.")
-            self.asr.transcribe_stream(
-                audio_queue,
-                sample_rate,
-                chunk_size,
-                on_partial=on_partial,
-                on_final=on_final
-            )
-            with sd.InputStream(
-                samplerate=sample_rate,
-                channels=1,
-                callback=audio_callback,
-                blocksize=chunk_size
-            ):
-                while self.is_listening:
-                    time.sleep(0.1)
-
-        thread = threading.Thread(target=listen_loop, daemon=True)
-        thread.start()
+    def _process_loop(self):
+        buffer = np.array([])
+        while self.running:
+            try:
+                chunk = self.audio_queue.get(timeout=0.1)
+                buffer = np.concatenate([buffer, chunk])
+                if len(buffer) >= self.chunk_size * 3:  # Process larger buffers for context
+                    segments, info = self.asr.model.transcribe(buffer, beam_size=5, language="en")
+                    transcript = " ".join([seg.text.lower() for seg in segments])
+                    if self.on_partial_transcript:
+                        self.on_partial_transcript(transcript)
+                    if self.wake_word in transcript:
+                        command = transcript.split(self.wake_word, 1)[1].strip()
+                        if command and self.on_command:
+                            self.on_command(command)
+                            self.speak("Command received: " + command)
+                    buffer = buffer[-self.chunk_size:]  # Keep some history
+                # Audio level stub
+                level = np.max(np.abs(chunk))
+                if self.on_audio_level:
+                    self.on_audio_level(level)
+            except Exception as e:
+                logger.error(f"Voice processing error: {e}")
 
     def stop_voice_loop(self) -> None:
         """Stop the real-time voice command loop."""
-        self.is_listening = False
+        self.running = False
         if self.asr:
             self.asr.stop()
         print("[Voice] Voice loop stopped.")
+
+    def speak(self, text):
+        audio = self.tts.generate_speech(text)
+        sd.play(audio, samplerate=self.tts.sample_rate)
+        sd.wait()
 
     def cleanup(self) -> None:
         """Cleanup resources."""

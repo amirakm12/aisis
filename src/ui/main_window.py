@@ -834,8 +834,10 @@ class MainWindow(QMainWindow):
 
     def _run_workflow(self, workflow):
         # Sequentially execute agent tasks in the workflow
+        voice_manager.speak("Starting workflow")
         for task in workflow:
             agent_name = task["agent"]
+            voice_manager.speak(f"Executing {agent_name}")
             params = task.get("params", {})
             agent = self.orchestrator.agents.get(agent_name)
             if not agent:
@@ -846,6 +848,7 @@ class MainWindow(QMainWindow):
                 self.context_panel.log(f"[Result] {agent_name}: {result}")
             except Exception as e:
                 self.context_panel.log(f"[Error] {agent_name}: {e}")
+        voice_manager.speak("Workflow complete")
 
     def _toggle_auto_pilot(self):
         self.auto_pilot = not self.auto_pilot
