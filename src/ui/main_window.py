@@ -46,6 +46,26 @@ from src.agents.context_aware_restoration import ContextAwareRestorationAgent
 from src.agents.adaptive_enhancement import AdaptiveEnhancementAgent
 from src.agents.vision_language import VisionLanguageAgent
 from src.agents.style_transfer import StyleTransferAgent
+from src.agents.vector_mode.vector_conversion import VectorConversionAgent
+from src.agents.vector_mode.path_optimization import PathOptimizationAgent
+from src.agents.vector_mode.bezier_curve_handling import BezierCurveAgent
+from src.agents.vector_mode.svg_export import SVGExportAgent
+from src.agents.vector_mode.vector_editing import VectorEditingAgent
+from src.agents.vector_mode.shape_recognition import ShapeRecognitionAgent
+from src.agents.vector_mode.line_simplification import LineSimplificationAgent
+from src.agents.vector_mode.fill_pattern_handling import FillPatternAgent
+from src.agents.vector_mode.gradient_application import GradientApplicationAgent
+from src.agents.vector_mode.text_to_vector_conversion import TextToVectorAgent
+from src.agents.vector_mode.vector_denoising import VectorDenoisingAgent
+from src.agents.vector_mode.vector_super_resolution import VectorSuperResolutionAgent
+from src.agents.vector_mode.color_quantization import ColorQuantizationAgent
+from src.agents.vector_mode.layer_management import LayerManagementAgent
+from src.agents.vector_mode.boolean_operations import BooleanOperationsAgent
+from src.agents.vector_mode.vector_style_transfer import VectorStyleTransferAgent
+from src.agents.vector_mode.animation_preparation import AnimationPreparationAgent
+from src.agents.vector_mode.export_optimization import ExportOptimizationAgent
+from src.agents.vector_mode.vector_forensic_analysis import VectorForensicAgent
+from src.agents.vector_mode.meta_vector_operations import MetaVectorAgent
 from .context_panel import ContextPanel
 from .context_manager import ContextManager
 from src.agents.workflow_builder import WorkflowBuilder
@@ -194,6 +214,26 @@ class MainWindow(QMainWindow):
             self.orchestrator.register_agent("adaptive_enhancement", AdaptiveEnhancementAgent())
             self.orchestrator.register_agent("vision_language", VisionLanguageAgent())
             self.orchestrator.register_agent("style_transfer", StyleTransferAgent())
+            self.orchestrator.register_agent("vector_conversion", VectorConversionAgent())
+            self.orchestrator.register_agent("path_optimization", PathOptimizationAgent())
+            self.orchestrator.register_agent("bezier_curve", BezierCurveAgent())
+            self.orchestrator.register_agent("svg_export", SVGExportAgent())
+            self.orchestrator.register_agent("vector_editing", VectorEditingAgent())
+            self.orchestrator.register_agent("shape_recognition", ShapeRecognitionAgent())
+            self.orchestrator.register_agent("line_simplification", LineSimplificationAgent())
+            self.orchestrator.register_agent("fill_pattern", FillPatternAgent())
+            self.orchestrator.register_agent("gradient_application", GradientApplicationAgent())
+            self.orchestrator.register_agent("text_to_vector", TextToVectorAgent())
+            self.orchestrator.register_agent("vector_denoising", VectorDenoisingAgent())
+            self.orchestrator.register_agent("vector_super_resolution", VectorSuperResolutionAgent())
+            self.orchestrator.register_agent("color_quantization", ColorQuantizationAgent())
+            self.orchestrator.register_agent("layer_management", LayerManagementAgent())
+            self.orchestrator.register_agent("boolean_operations", BooleanOperationsAgent())
+            self.orchestrator.register_agent("vector_style_transfer", VectorStyleTransferAgent())
+            self.orchestrator.register_agent("animation_preparation", AnimationPreparationAgent())
+            self.orchestrator.register_agent("export_optimization", ExportOptimizationAgent())
+            self.orchestrator.register_agent("vector_forensic", VectorForensicAgent())
+            self.orchestrator.register_agent("meta_vector", MetaVectorAgent())
         except Exception as e:
             print(f"[ERROR] Failed to register agents: {e}")
         self.current_image: Optional[Path] = None

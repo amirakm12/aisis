@@ -5,6 +5,7 @@ Handles image repair, enhancement, and noise reduction with real AI models
 
 import torch
 import torch.nn as nn
+import torch.nn.utils.prune as prune
 import torchvision.transforms as T
 from PIL import Image
 import numpy as np
@@ -89,15 +90,21 @@ class ImageRestorationAgent(BaseAgent):
             
             # Load denoising model
             logger.info("Loading denoising model...")
-            self.models['denoising'] = await self._load_denoising_model()
+            model = await self._load_denoising_model()
+            self._prune_model(model)
+            self.models['denoising'] = model
             
             # Load super-resolution model
             logger.info("Loading super-resolution model...")
-            self.models['super_resolution'] = await self._load_super_resolution_model()
+            model = await self._load_super_resolution_model()
+            self._prune_model(model)
+            self.models['super_resolution'] = model
             
             # Load inpainting model
             logger.info("Loading inpainting model...")
-            self.models['inpainting'] = await self._load_inpainting_model()
+            model = await self._load_inpainting_model()
+            self._prune_model(model)
+            self.models['inpainting'] = model
             
             logger.info("Image restoration models initialized successfully")
             
@@ -615,3 +622,9 @@ class ImageRestorationAgent(BaseAgent):
     def is_ready(self):
         """Check if agent is ready"""
         return self.status == "READY" and len(self.models) > 0
+
+    def _prune_model(self, model: nn.Module):
+        for name, module in model.named_modules():
+            if isinstance(module, nn.Conv2d):
+                prune.l1_unstructured(module, name='weight', amount=0.3)
+                prune.remove(module, 'weight')

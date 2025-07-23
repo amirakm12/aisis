@@ -1,5 +1,6 @@
 from typing import Dict, Any, List, Optional
 from .base_agent import BaseAgent
+import torch
 
 
 class MultiAgentOrchestrator:
@@ -29,13 +30,24 @@ class MultiAgentOrchestrator:
         else:
             raise ValueError(f"Agent '{receiver}' not found.")
 
+    def route_task(self, task: Dict[str, Any]) -> List[str]:
+        num_agents = len(self.agents)
+        if num_agents == 0:
+            return []
+        scores = torch.rand(num_agents)
+        top_k = torch.topk(scores, min(3, num_agents))
+        selected = [list(self.agents.keys())[i] for i in top_k.indices]
+        return selected
+
     async def delegate_task(
-        self, task: Dict[str, Any], agent_order: List[str]
+        self, task: Dict[str, Any], agent_order: List[str] = None
     ) -> Any:
         """
         Delegate a task through a sequence of agents, allowing negotiation and
         critique.
         """
+        if agent_order is None:
+            agent_order = self.route_task(task)
         result = task
         for agent_name in agent_order:
             agent = self.agents.get(agent_name)
