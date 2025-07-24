@@ -1,0 +1,110 @@
+# Build directories
+build/
+bin/
+lib/
+obj/
+out/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+
+# Compiled Object files
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+aisis_main
+*_main
+
+# Debug files
+*.pdb
+*.ilk
+*.map
+*.dSYM/
+
+# Compiler-specific
+*.gch
+*.pch
+
+# IDE files
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+.vscode/*.log
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Package managers
+vcpkg_installed/
+.vcpkg-root
+vcpkg-configuration.json.user
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.bak
+
+# Test results
+test_results/
+*.xml
+*.json.test
+
+# Documentation generated
+docs/html/
+docs/latex/
+*.pdf
+
+# ARM/Embedded specific
+*.bin
+*.hex
+*.elf
+*.map
+*.lst
+
+# Backup files
+*~
+*.orig
+*.rej
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Coverage files
+*.gcno
+*.gcda
+*.gcov
+coverage/
+
+# Static analysis
+cppcheck-results.xml
+*.sarif
+
+# Local configuration
+local.properties
+config.local.*
