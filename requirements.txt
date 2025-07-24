@@ -59,15 +59,14 @@ pylint>=2.17.0
 mypy>=1.0.0
 
 # Specialized/Restoration
-basicsr>=1.4.2
-swinir>=0.0.1
-restormer>=0.1.0
-uformer>=0.1.0
-nafnet>=0.1.0
-swin2sr>=0.1.0
-ipt>=0.1.0
+# swinir>=0.0.1
+# restormer>=0.1.0
+# uformer>=0.1.0
+# nafnet>=0.1.0
+# swin2sr>=0.1.0
+# ipt>=0.1.0
 
-automerge-py>=0.2.0
+# automerge-py>=0.2.0
 
 # Optional: GPU acceleration
 # cuda-python>=12.0.0  # Uncomment if CUDA is available

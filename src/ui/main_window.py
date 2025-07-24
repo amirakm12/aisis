@@ -167,7 +167,9 @@ class MainWindow(QMainWindow):
         self.context_panel = ContextPanel(self.context_manager)
         
         # Use MultiAgentOrchestrator for advanced reasoning
-        self.orchestrator = MultiAgentOrchestrator(meta_agent=LLMMetaAgent())
+        self.orchestrator = MultiAgentOrchestrator(
+            meta_agent=LLMMetaAgent()
+        )
         # Register all real agents
         try:
             self.orchestrator.register_agent("image_restoration", ImageRestorationAgent())
