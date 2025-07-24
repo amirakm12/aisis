@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATHENA - Ultimate Greek Goddess Avatar</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Cinzel', serif;
+            background: radial-gradient(ellipse at center, #0a0f2e 0%, #000000 70%);
+            overflow: hidden;
+            height: 100vh;
+            cursor: none;
+        }
+        
+        #canvas-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        #avatar-canvas {
+            display: block;
+        }
+        
+        .ui-overlay {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            z-index: 100;
+            color: #00d4ff;
+            font-size: 28px;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.8), 0 0 40px rgba(0, 212, 255, 0.4);
+            letter-spacing: 3px;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            font-weight: 400;
+            margin-top: 10px;
+            color: #88ccff;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        @keyframes titleGlow {
+            0% { text-shadow: 0 0 20px rgba(0, 212, 255, 0.8), 0 0 40px rgba(0, 212, 255, 0.4); }
+            100% { text-shadow: 0 0 30px rgba(0, 212, 255, 1), 0 0 60px rgba(0, 212, 255, 0.6), 0 0 80px rgba(138, 43, 226, 0.3); }
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+        
+        .control-btn {
+            padding: 15px 30px;
+            background: linear-gradient(45deg, rgba(0, 212, 255, 0.1), rgba(138, 43, 226, 0.1));
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            color: #00d4ff;
+            border-radius: 30px;
+            cursor: pointer;
+            backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .control-btn:hover::before {
+            left: 100%;
+        }
+        
+        .control-btn:hover {
+            background: linear-gradient(45deg, rgba(0, 212, 255, 0.3), rgba(138, 43, 226, 0.3));
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5), 0 0 60px rgba(138, 43, 226, 0.3);
+            transform: translateY(-3px);
+            border: 2px solid rgba(0, 212, 255, 0.5);
+        }
+        
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #00d4ff;
+            font-size: 32px;
+            text-align: center;
+            z-index: 200;
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+        }
+        
+        .loading-text {
+            margin-top: 20px;
+            font-size: 18px;
+            letter-spacing: 2px;
+            animation: loadingPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes loadingPulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        
+        .divine-spinner {
+            width: 80px;
+            height: 80px;
+            border: 3px solid transparent;
+            border-top: 3px solid #00d4ff;
+            border-right: 3px solid #8a2be2;
+            border-radius: 50%;
+            animation: divineRotate 1.5s linear infinite;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+        
+        .divine-spinner::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border: 3px solid transparent;
+            border-bottom: 3px solid #ffd700;
+            border-left: 3px solid #ff69b4;
+            border-radius: 50%;
+            animation: divineRotate 2s linear infinite reverse;
+        }
+        
+        @keyframes divineRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .power-indicator {
+            position: absolute;
+            top: 50%;
+            right: 30px;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 200px;
+            background: linear-gradient(to top, #ff0000, #ff4500, #ffd700, #00ff00, #00ffff, #0080ff, #8000ff);
+            border-radius: 2px;
+            opacity: 0.7;
+            z-index: 100;
+        }
+        
+        .power-level {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 2px;
+            transition: height 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .stats-panel {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            color: #00d4ff;
+            font-family: 'Cinzel', serif;
+            font-size: 12px;
+            min-width: 200px;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+        }
+        
+        .stat-value {
+            color: #ffd700;
+            font-weight: 600;
+        }
+        
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.8), transparent);
+            border: 2px solid rgba(0, 212, 255, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.1s ease;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+        }
+        
+        .audio-visualizer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            display: flex;
+            align-items: end;
+            justify-content: center;
+            gap: 2px;
+            opacity: 0.6;
+            z-index: 50;
+        }
+        
+        .audio-bar {
+            width: 3px;
+            background: linear-gradient(to top, #00d4ff, #8a2be2);
+            border-radius: 2px;
+            animation: audioWave 1s ease-in-out infinite;
+        }
+        
+        @keyframes audioWave {
+            0%, 100% { height: 5px; }
+            50% { height: 30px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-cursor" id="cursor"></div>
+    
+    <div id="canvas-container">
+        <div class="loading" id="loading">
+            <div class="divine-spinner"></div>
+            <div class="loading-text">SUMMONING THE GODDESS...</div>
+        </div>
+        
+        <div class="ui-overlay">
+            ATHENA
+            <div class="subtitle">Goddess of Wisdom & War</div>
+        </div>
+        
+        <div class="power-indicator">
+            <div class="power-level" id="powerLevel"></div>
+        </div>
+        
+        <div class="stats-panel">
+            <div class="stat-row">
+                <span>Divine Power:</span>
+                <span class="stat-value" id="divinepower">∞</span>
+            </div>
+            <div class="stat-row">
+                <span>Wisdom Level:</span>
+                <span class="stat-value" id="wisdom">MAX</span>
+            </div>
+            <div class="stat-row">
+                <span>Beauty Index:</span>
+                <span class="stat-value" id="beauty">LEGENDARY</span>
+            </div>
+            <div class="stat-row">
+                <span>Animation FPS:</span>
+                <span class="stat-value" id="fps">60</span>
+            </div>
+            <div class="stat-row">
+                <span>Particles:</span>
+                <span class="stat-value" id="particles">2000+</span>
+            </div>
+        </div>
+        
+        <canvas id="avatar-canvas"></canvas>
+        
+        <div class="controls">
+            <button class="control-btn" id="animate-btn">🌟 ANIMATE</button>
+            <button class="control-btn" id="expression-btn">😊 EXPRESSION</button>
+            <button class="control-btn" id="lighting-btn">⚡ DIVINE LIGHT</button>
+            <button class="control-btn" id="powers-btn">🔥 POWERS</button>
+            <button class="control-btn" id="reset-btn">🔄 RESET</button>
+        </div>
+        
+        <div class="audio-visualizer">
+            <!-- Audio bars will be generated by JS -->
+        </div>
+    </div>
+    
+    <!-- Enhanced Three.js and libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r158/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <script>
+        class UltimateGoddessAvatar {
+            constructor() {
+                this.scene = null;
+                this.camera = null;
+                this.renderer = null;
+                this.avatar = null;
+                this.clock = new THREE.Clock();
+                this.frameCount = 0;
+                this.lastFpsUpdate = 0;
+                
+                // Enhanced animation states
+                this.isAnimating = false;
+                this.currentExpression = 'divine';
+                this.lightingMode = 'ethereal';
+                this.powerLevel = 100;
+                this.currentPowers = [];
+                
+                // Advanced effects
+                this.particleSystems = [];
+                this.magicOrbs = [];
+                this.lightningBolts = [];
+                this.divineAura = null;
+                
+                // Audio context for visualizer
+                this.audioContext = null;
+                this.audioAnalyser = null;
+                this.audioData = new Uint8Array(64);
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupCustomCursor();
+                this.createAudioVisualizer();
+                this.createScene();
+                this.createCamera();
+                this.createRenderer();
+                this.createAdvancedControls();
+                this.createDivineLighting();
+                this.createUltimateAvatar();
+                this.createMagicalEffects();
+                this.setupEventListeners();
+                this.animate();
+                
+                // Epic entrance
+                setTimeout(() => {
+                    this.performDivineEntrance();
+                }, 1000);
+            }
+            
+            setupCustomCursor() {
+                const cursor = document.getElementById('cursor');
+                document.addEventListener('mousemove', (e) => {
+                    cursor.style.left = e.clientX - 10 + 'px';
+                    cursor.style.top = e.clientY - 10 + 'px';
+                });
+            }
+            
+            createAudioVisualizer() {
+                const visualizer = document.querySelector('.audio-visualizer');
+                for (let i = 0; i < 50; i++) {
+                    const bar = document.createElement('div');
+                    bar.className = 'audio-bar';
+                    bar.style.animationDelay = `${i * 0.1}s`;
+                    bar.style.animationDuration = `${1 + Math.random()}s`;
+                    visualizer.appendChild(bar);
+                }
+            }
+            
+            createScene() {
+                this.scene = new THREE.Scene();
+                this.scene.background = new THREE.Color(0x000511);
+                
+                // Advanced fog with color transitions
+                this.scene.fog = new THREE.FogExp2(0x000511, 0.02);
+                
+                // Add starfield background
+                this.createStarfield();
+            }
+            
+            createStarfield() {
+                const starGeometry = new THREE.BufferGeometry();
+                const starCount = 3000;
+                const positions = new Float32Array(starCount * 3);
+                const colors = new Float32Array(starCount * 3);
+                const sizes = new Float32Array(starCount);
+                
+                for (let i = 0; i < starCount; i++) {
+                    const i3 = i * 3;
+                    positions[i3] = (Math.random() - 0.5) * 200;
+                    positions[i3 + 1] = (Math.random() - 0.5) * 200;
+                    positions[i3 + 2] = (Math.random() - 0.5) * 200;
+                    
+                    const intensity = Math.random();
+                    colors[i3] = intensity;
+                    colors[i3 + 1] = intensity * 0.8 + 0.2;
+                    colors[i3 + 2] = 1;
+                    
+                    sizes[i] = Math.random() * 3 + 1;
+                }
+                
+                starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                starGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                starGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+                
+                const starMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 }
+                    },
+                    vertexShader: `
+                        attribute float size;
+                        attribute vec3 color;
+                        varying vec3 vColor;
+                        uniform float time;
+                        
+                        void main() {
+                            vColor = color;
+                            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                            gl_PointSize = size * (300.0 / -mvPosition.z) * (1.0 + sin(time + position.x) * 0.5);
+                            gl_Position = projectionMatrix * mvPosition;
+                        }
+                    `,
+                    fragmentShader: `
+                        varying vec3 vColor;
+                        
+                        void main() {
+                            float r = distance(gl_PointCoord, vec2(0.5, 0.5));
+                            if (r > 0.5) discard;
+                            float alpha = 1.0 - r * 2.0;
+                            gl_FragColor = vec4(vColor, alpha);
+                        }
+                    `,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending
+                });
+                
+                this.starfield = new THREE.Points(starGeometry, starMaterial);
+                this.scene.add(this.starfield);
+            }
+            
+            createCamera() {
+                this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+                this.camera.position.set(0, 3, 10);
+            }
+            
+            createRenderer() {
+                const canvas = document.getElementById('avatar-canvas');
+                this.renderer = new THREE.WebGLRenderer({
+                    canvas: canvas,
+                    antialias: true,
+                    alpha: true,
+                    powerPreference: "high-performance"
+                });
+                
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                this.renderer.shadowMap.enabled = true;
+                this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+                this.renderer.toneMappingExposure = 1.5;
+                this.renderer.outputEncoding = THREE.sRGBEncoding;
+            }
+            
+            createAdvancedControls() {
+                let isMouseDown = false;
+                let mouseX = 0, mouseY = 0;
+                let targetRotationX = 0, targetRotationY = 0;
+                let rotationX = 0, rotationY = 0;
+                let targetDistance = 10, currentDistance = 10;
+                
+                const canvas = this.renderer.domElement;
+                
+                // Enhanced mouse controls with momentum
+                canvas.addEventListener('mousedown', (e) => {
+                    isMouseDown = true;
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                    canvas.style.cursor = 'grabbing';
+                });
+                
+                canvas.addEventListener('mousemove', (e) => {
+                    if (isMouseDown) {
+                        const deltaX = e.clientX - mouseX;
+                        const deltaY = e.clientY - mouseY;
+                        
+                        targetRotationY += deltaX * 0.008;
+                        targetRotationX += deltaY * 0.008;
+                        targetRotationX = Math.max(-Math.PI/3, Math.min(Math.PI/3, targetRotationX));
+                        
+                        mouseX = e.clientX;
+                        mouseY = e.clientY;
+                    }
+                });
+                
+                canvas.addEventListener('mouseup', () => {
+                    isMouseDown = false;
+                    canvas.style.cursor = 'grab';
+                });
+                
+                // Smooth zoom with limits
+                canvas.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    targetDistance += e.deltaY * 0.02;
+                    targetDistance = Math.max(5, Math.min(25, targetDistance));
+                });
+                
+                // Touch controls for mobile
+                let touchStartX = 0, touchStartY = 0;
+                canvas.addEventListener('touchstart', (e) => {
+                    if (e.touches.length === 1) {
+                        touchStartX = e.touches[0].clientX;
+                        touchStartY = e.touches[0].clientY;
+                    }
+                });
+                
+                canvas.addEventListener('touchmove', (e) => {
+                    if (e.touches.length === 1) {
+                        const deltaX = e.touches[0].clientX - touchStartX;
+                        const deltaY = e.touches[0].clientY - touchStartY;
+                        
+                        targetRotationY += deltaX * 0.01;
+                        targetRotationX += deltaY * 0.01;
+                        
+                        touchStartX = e.touches[0].clientX;
+                        touchStartY = e.touches[0].clientY;
+                    }
+                });
+                
+                this.updateAdvancedControls = () => {
+                    // Smooth camera movement with easing
+                    rotationX += (targetRotationX - rotationX) * 0.08;
+                    rotationY += (targetRotationY - rotationY) * 0.08;
+                    currentDistance += (targetDistance - currentDistance) * 0.1;
+                    
+                    // Calculate camera position with smooth orbiting
+                    const phi = Math.PI/2 - rotationX;
+                    const theta = rotationY;
+                    
+                    this.camera.position.x = currentDistance * Math.sin(phi) * Math.cos(theta);
+                    this.camera.position.y = 3 + currentDistance * Math.cos(phi);
+                    this.camera.position.z = currentDistance * Math.sin(phi) * Math.sin(theta);
+                    
+                    this.camera.lookAt(0, 2.5, 0);
+                };
+            }
+            
+            createDivineLighting() {
+                // Multiple advanced light sources
+                
+                // Main divine key light
+                this.keyLight = new THREE.DirectionalLight(0x00d4ff, 2.0);
+                this.keyLight.position.set(8, 12, 8);
+                this.keyLight.castShadow = true;
+                this.keyLight.shadow.mapSize.width = 4096;
+                this.keyLight.shadow.mapSize.height = 4096;
+                this.keyLight.shadow.camera.near = 0.1;
+                this.keyLight.shadow.camera.far = 50;
+                this.keyLight.shadow.camera.left = -20;
+                this.keyLight.shadow.camera.right = 20;
+                this.keyLight.shadow.camera.top = 20;
+                this.keyLight.shadow.camera.bottom = -20;
+                this.scene.add(this.keyLight);
+                
+                // Rim lighting for silhouette
+                this.rimLight1 = new THREE.DirectionalLight(0x8a2be2, 1.5);
+                this.rimLight1.position.set(-8, 5, -8);
+                this.scene.add(this.rimLight1);
+                
+                this.rimLight2 = new THREE.DirectionalLight(0xff69b4, 1.0);
+                this.rimLight2.position.set(8, 5, -8);
+                this.scene.add(this.rimLight2);
+                
+                // Ambient lighting with color
+                this.ambientLight = new THREE.AmbientLight(0x404080, 0.3);
+                this.scene.add(this.ambientLight);
+                
+                // Point lights for magical effects
+                this.magicLight1 = new THREE.PointLight(0x00ffff, 1.0, 15);
+                this.magicLight1.position.set(3, 4, 3);
+                this.scene.add(this.magicLight1);
+                
+                this.magicLight2 = new THREE.PointLight(0xff00ff, 1.0, 15);
+                this.magicLight2.position.set(-3, 4, 3);
+                this.scene.add(this.magicLight2);
+                
+                // Spot light for dramatic effect
+                this.spotLight = new THREE.SpotLight(0xffd700, 2.0, 30, Math.PI/6, 0.5, 1);
+                this.spotLight.position.set(0, 15, 0);
+                this.spotLight.target.position.set(0, 2, 0);
+                this.spotLight.castShadow = true;
+                this.scene.add(this.spotLight);
+                this.scene.add(this.spotLight.target);
+            }
+            
+            createUltimateAvatar() {
+                this.avatar = new THREE.Group();
+                
+                // Create all avatar parts with enhanced details
+                this.createDivineHead();
+                this.createGloriousHair();
+                this.createMysticalEyes();
+                this.createDivineAccessories();
+                this.createElegantBody();
+                this.createMagicalAura();
+                
+                this.scene.add(this.avatar);
+            }
+            
+            createDivineHead() {
+                // Ultra-detailed head geometry
+                const headGeometry = new THREE.SphereGeometry(1.2, 64, 64);
+                
+                // Advanced vertex manipulation for perfect feminine features
+                const positions = headGeometry.attributes.position.array;
+                for (let i = 0; i < positions.length; i += 3) {
+                    const x = positions[i];
+                    const y = positions[i + 1];
+                    const z = positions[i + 2];
+                    
+                    // Create elegant oval shape
+                    positions[i] = x * 0.82;
+                    positions[i + 1] = y * 1.15;
+                    
+                    // Add subtle cheekbone definition
+                    if (y > 0.1 && y < 0.7 && Math.abs(x) > 0.4) {
+                        positions[i + 2] = z * 1.08;
+                    }
+                    
+                    // Refine jawline
+                    if (y < -0.2 && Math.abs(x) > 0.3) {
+                        positions[i] = x * 0.9;
+                        positions[i + 2] = z * 1.05;
+                    }
+                }
+                
+                headGeometry.attributes.position.needsUpdate = true;
+                headGeometry.computeVertexNormals();
+                
+                // Advanced skin shader material
+                const skinMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 },
+                        glowColor: { value: new THREE.Color(0x00d4ff) },
+                        skinColor: { value: new THREE.Color(0xffd4a3) }
+                    },
+                    vertexShader: `
+                        varying vec3 vNormal;
+                        varying vec3 vPosition;
+                        uniform float time;
+                        
+                        void main() {
+                            vNormal = normalize(normalMatrix * normal);
+                            vPosition = position;
+                            
+                            vec3 pos = position;
+                            pos += normal * sin(time * 2.0 + position.y * 10.0) * 0.01;
+                            
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform float time;
+                        uniform vec3 glowColor;
+                        uniform vec3 skinColor;
+                        varying vec3 vNormal;
+                        varying vec3 vPosition;
+                        
+                        void main() {
+                            float fresnel = pow(1.0 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.0);
+                            vec3 glow = glowColor * fresnel * 0.3;
+                            
+                            float pulse = sin(time * 3.0) * 0.1 + 0.9;
+                            vec3 finalColor = skinColor * pulse + glow;
+                            
+                            gl_FragColor = vec4(finalColor, 1.0);
+                        }
+                    `
+                });
+                
+                this.head = new THREE.Mesh(headGeometry, skinMaterial);
+                this.head.castShadow = true;
+                this.head.receiveShadow = true;
+                this.head.position.y = 2.5;
+                
+                this.avatar.add(this.head);
+            }
+            
+            createGloriousHair() {
+                this.hairGroup = new THREE.Group();
+                
+                // Main hair volume with flowing animation
+                const hairGeometry = new THREE.SphereGeometry(1.4, 32, 32);
+                
+                // Modify for flowing hair shape
+                const positions = hairGeometry.attributes.position.array;
+                for (let i = 0; i < positions.length; i += 3) {
+                    const x = positions[i];
+                    const y = positions[i + 1];
+                    const z = positions[i + 2];
+                    
+                    // Create flowing hair silhouette
+                    if (z < 0) {
+                        positions[i + 2] = z * 1.3;
+                        positions[i + 1] = y * 0.9;
+                    }
+                }
+                
+                hairGeometry.attributes.position.needsUpdate = true;
+                
+                const hairMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 },
+                        hairColor: { value: new THREE.Color(0x2c1810) }
+                    },
+                    vertexShader: `
+                        varying vec3 vPosition;
+                        uniform float time;
+                        
+                        void main() {
+                            vPosition = position;
+                            vec3 pos = position;
+                            
+                            // Flowing hair animation
+                            pos.x += sin(time * 2.0 + position.y * 5.0) * 0.1;
+                            pos.z += cos(time * 1.5 + position.y * 3.0) * 0.05;
+                            
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform vec3 hairColor;
+                        varying vec3 vPosition;
+                        
+                        void main() {
+                            float highlight = smoothstep(-0.5, 0.5, vPosition.y) * 0.3;
+                            vec3 finalColor = hairColor + vec3(highlight * 0.5, highlight * 0.3, highlight * 0.1);
+                            gl_FragColor = vec4(finalColor, 0.95);
+                        }
+                    `,
+                    transparent: true
+                });
+                
+                const mainHair = new THREE.Mesh(hairGeometry, hairMaterial);
+                mainHair.position.set(0, 2.7, -0.3);
+                mainHair.scale.set(1, 0.85, 1.3);
+                this.hairGroup.add(mainHair);
+                
+                // Individual flowing hair strands
+                for (let i = 0; i < 30; i++) {
+                    const strandGeometry = new THREE.CylinderGeometry(0.015, 0.005, 2.5, 6);
+                    const strand = new THREE.Mesh(strandGeometry, hairMaterial);
+                    
+                    const angle = (i / 30) * Math.PI * 2;
+                    const radius = 0.9 + Math.random() * 0.3;
+                    strand.position.set(
+                        Math.cos(angle) * radius,
+                        1.8 - Math.random() * 0.5,
+                        Math.sin(angle) * radius - 0.4
+                    );
+                    strand.rotation.z = Math.random() * 0.6 - 0.3;
+                    strand.rotation.x = Math.random() * 0.4 - 0.2;
+                    
+                    this.hairGroup.add(strand);
+                }
+                
+                this.avatar.add(this.hairGroup);
+            }
+            
+            createMysticalEyes() {
+                // Enhanced eyes with magical glow
+                const eyeGeometry = new THREE.SphereGeometry(0.18, 24, 24);
+                
+                const eyeMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 },
+                        eyeColor: { value: new THREE.Color(0x00d4ff) }
+                    },
+                    vertexShader: `
+                        varying vec3 vNormal;
+                        varying vec3 vPosition;
+                        
+                        void main() {
+                            vNormal = normalize(normalMatrix * normal);
+                            vPosition = position;
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform float time;
+                        uniform vec3 eyeColor;
+                        varying vec3 vNormal;
+                        varying vec3 vPosition;
+                        
+                        void main() {
+                            float intensity = sin(time * 4.0) * 0.3 + 0.7;
+                            vec3 glow = eyeColor * intensity;
+                            
+                            float fresnel = pow(1.0 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 1.5);
+                            vec3 finalColor = mix(eyeColor * 0.5, glow, fresnel);
+                            
+                            gl_FragColor = vec4(finalColor, 1.0);
+                        }
+                    `
+                });
+                
+                this.leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+                this.leftEye.position.set(-0.3, 2.6, 0.8);
+                
+                this.rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+                this.rightEye.position.set(0.3, 2.6, 0.8);
+                
+                // Pupils with depth
+                const pupilGeometry = new THREE.SphereGeometry(0.1, 16, 16);
+                const pupilMaterial = new THREE.MeshBasicMaterial({ 
+                    color: 0x000000,
+                    transparent: true,
+                    opacity: 0.9
+                });
+                
+                const leftPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
+                leftPupil.position.set(-0.3, 2.6, 0.88);
+                
+                const rightPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
+                rightPupil.position.set(0.3, 2.6, 0.88);
+                
+                // Eye glow effects
+                const glowGeometry = new THREE.SphereGeometry(0.25, 16, 16);
+                const glowMaterial = new THREE.MeshBasicMaterial({
+                    color: 0x00d4ff,
+                    transparent: true,
+                    opacity: 0.2,
+                    blending: THREE.AdditiveBlending
+                });
+                
+                const leftGlow = new THREE.Mesh(glowGeometry, glowMaterial);
+                leftGlow.position.copy(this.leftEye.position);
+                
+                const rightGlow = new THREE.Mesh(glowGeometry, glowMaterial);
+                rightGlow.position.copy(this.rightEye.position);
+                
+                this.avatar.add(this.leftEye);
+                this.avatar.add(this.rightEye);
+                this.avatar.add(leftPupil);
+                this.avatar.add(rightPupil);
+                this.avatar.add(leftGlow);
+                this.avatar.add(rightGlow);
+                
+                this.eyeGlows = [leftGlow, rightGlow];
+            }
+            
+            createDivineAccessories() {
+                // Ultimate Greek goddess crown
+                this.crownGroup = new THREE.Group();
+                
+                // Main crown band with gems
+                const crownGeometry = new THREE.TorusGeometry(1.3, 0.08, 12, 48);
+                const crownMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 },
+                        goldColor: { value: new THREE.Color(0xffd700) }
+                    },
+                    vertexShader: `
+                        varying vec3 vPosition;
+                        uniform float time;
+                        
+                        void main() {
+                            vPosition = position;
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform float time;
+                        uniform vec3 goldColor;
+                        varying vec3 vPosition;
+                        
+                        void main() {
+                            float shimmer = sin(time * 5.0 + vPosition.x * 10.0) * 0.2 + 0.8;
+                            vec3 finalColor = goldColor * shimmer;
+                            gl_FragColor = vec4(finalColor, 1.0);
+                        }
+                    `
+                });
+                
+                const crown = new THREE.Mesh(crownGeometry, crownMaterial);
+                crown.position.set(0, 3.2, 0);
+                crown.rotation.x = Math.PI / 2;
+                this.crownGroup.add(crown);
+                
+                // Crown ornaments and gems
+                for (let i = 0; i < 12; i++) {
+                    const ornamentGeometry = new THREE.ConeGeometry(0.12, 0.4, 8);
+                    const ornament = new THREE.Mesh(ornamentGeometry, crownMaterial);
+                    
+                    const angle = (i / 12) * Math.PI * 2;
+                    ornament.position.set(
+                        Math.cos(angle) * 1.3,
+                        3.5,
+                        Math.sin(angle) * 1.3
+                    );
+                    
+                    this.crownGroup.add(ornament);
+                    
+                    // Add gems
+                    if (i % 3 === 0) {
+                        const gemGeometry = new THREE.OctahedronGeometry(0.08);
+                        const gemMaterial = new THREE.MeshPhysicalMaterial({
+                            color: i % 2 === 0 ? 0x00ffff : 0xff00ff,
+                            transmission: 0.9,
+                            opacity: 1,
+                            roughness: 0,
+                            metalness: 0,
+                            clearcoat: 1,
+                            clearcoatRoughness: 0,
+                            ior: 2.4,
+                            emissive: i % 2 === 0 ? 0x001133 : 0x330011,
+                            emissiveIntensity: 0.5
+                        });
+                        
+                        const gem = new THREE.Mesh(gemGeometry, gemMaterial);
+                        gem.position.copy(ornament.position);
+                        gem.position.y += 0.25;
+                        
+                        this.crownGroup.add(gem);
+                    }
+                }
+                
+                this.avatar.add(this.crownGroup);
+            }
+            
+            createElegantBody() {
+                // Enhanced body with perfect proportions
+                const shoulderGeometry = new THREE.CylinderGeometry(0.9, 1.3, 1.8, 24);
+                const bodyMaterial = new THREE.MeshPhysicalMaterial({
+                    color: 0xffd4a3,
+                    roughness: 0.1,
+                    metalness: 0.05,
+                    clearcoat: 0.4,
+                    clearcoatRoughness: 0.1,
+                    emissive: 0x001122,
+                    emissiveIntensity: 0.1
+                });
+                
+                const shoulders = new THREE.Mesh(shoulderGeometry, bodyMaterial);
+                shoulders.position.y = 0.7;
+                shoulders.castShadow = true;
+                shoulders.receiveShadow = true;
+                
+                // Divine Greek dress with flowing animation
+                const dressGeometry = new THREE.ConeGeometry(1.8, 2.5, 32);
+                const dressMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 },
+                        dressColor: { value: new THREE.Color(0xf0f8ff) }
+                    },
+                    vertexShader: `
+                        varying vec3 vPosition;
+                        varying vec3 vNormal;
+                        uniform float time;
+                        
+                        void main() {
+                            vPosition = position;
+                            vNormal = normalize(normalMatrix * normal);
+                            
+                            vec3 pos = position;
+                            pos.x += sin(time * 2.0 + position.y * 8.0) * 0.05;
+                            pos.z += cos(time * 1.8 + position.y * 6.0) * 0.03;
+                            
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform float time;
+                        uniform vec3 dressColor;
+                        varying vec3 vPosition;
+                        varying vec3 vNormal;
+                        
+                        void main() {
+                            float wave = sin(time * 3.0 + vPosition.y * 10.0) * 0.1 + 0.9;
+                            vec3 finalColor = dressColor * wave;
+                            
+                            float fresnel = pow(1.0 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.0);
+                            finalColor += vec3(0.2, 0.4, 0.8) * fresnel * 0.3;
+                            
+                            gl_FragColor = vec4(finalColor, 0.95);
+                        }
+                    `,
+                    transparent: true,
+                    side: THREE.DoubleSide
+                });
+                
+                const dress = new THREE.Mesh(dressGeometry, dressMaterial);
+                dress.position.y = -0.8;
+                dress.castShadow = true;
+                dress.receiveShadow = true;
+                
+                this.avatar.add(shoulders);
+                this.avatar.add(dress);
+                
+                this.dress = dress;
+            }
+            
+            createMagicalEffects() {
+                // Enhanced particle systems
+                this.createDivineParticles();
+                this.createMagicOrbs();
+                this.createEnergyField();
+                this.createLightningEffects();
+            }
+            
+            createDivineParticles() {
+                // Multiple particle systems for layered effects
+                const particleCount = 2000;
+                
+                // Main divine particles
+                const particleGeometry = new THREE.BufferGeometry();
+                const positions = new Float32Array(particleCount * 3);
+                const colors = new Float32Array(particleCount * 3);
+                const sizes = new Float32Array(particleCount);
+                const velocities = new Float32Array(particleCount * 3);
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const i3 = i * 3;
+                    
+                    // Spherical distribution around goddess
+                    const radius = 5 + Math.random() * 15;
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.random() * Math.PI;
+                    
+                    positions[i3] = radius * Math.sin(phi) * Math.cos(theta);
+                    positions[i3 + 1] = radius * Math.cos(phi) + 2;
+                    positions[i3 + 2] = radius * Math.sin(phi) * Math.sin(theta);
+                    
+                    // Color variations
+                    const colorType = Math.random();
+                    if (colorType < 0.4) {
+                        colors[i3] = 0; colors[i3 + 1] = 0.8; colors[i3 + 2] = 1; // Cyan
+                    } else if (colorType < 0.7) {
+                        colors[i3] = 0.5; colors[i3 + 1] = 0.2; colors[i3 + 2] = 0.9; // Purple
+                    } else {
+                        colors[i3] = 1; colors[i3 + 1] = 0.8; colors[i3 + 2] = 0; // Gold
+                    }
+                    
+                    sizes[i] = Math.random() * 0.2 + 0.1;
+                    
+                    // Random velocities
+                    velocities[i3] = (Math.random() - 0.5) * 0.02;
+                    velocities[i3 + 1] = Math.random() * 0.01;
+                    velocities[i3 + 2] = (Math.random() - 0.5) * 0.02;
+                }
+                
+                particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                particleGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+                
+                const particleMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 }
+                    },
+                    vertexShader: `
+                        attribute float size;
+                        attribute vec3 color;
+                        varying vec3 vColor;
+                        varying float vAlpha;
+                        uniform float time;
+                        
+                        void main() {
+                            vColor = color;
+                            
+                            vec3 pos = position;
+                            pos.y += sin(time * 2.0 + position.x * 0.1) * 2.0;
+                            pos.x += cos(time * 1.5 + position.z * 0.1) * 1.0;
+                            
+                            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                            
+                            float distanceToCenter = length(pos);
+                            vAlpha = 1.0 - smoothstep(10.0, 20.0, distanceToCenter);
+                            
+                            gl_PointSize = size * (300.0 / -mvPosition.z) * (1.0 + sin(time * 3.0 + position.x) * 0.5);
+                            gl_Position = projectionMatrix * mvPosition;
+                        }
+                    `,
+                    fragmentShader: `
+                        varying vec3 vColor;
+                        varying float vAlpha;
+                        
+                        void main() {
+                            float r = distance(gl_PointCoord, vec2(0.5, 0.5));
+                            if (r > 0.5) discard;
+                            
+                            float alpha = (1.0 - r * 2.0) * vAlpha;
+                            gl_FragColor = vec4(vColor, alpha * 0.8);
+                        }
+                    `,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending,
+                    vertexColors: true
+                });
+                
+                this.divineParticles = new THREE.Points(particleGeometry, particleMaterial);
+                this.scene.add(this.divineParticles);
+                
+                // Store for animation
+                this.particleVelocities = velocities;
+            }
+            
+            createMagicOrbs() {
+                this.magicOrbs = [];
+                
+                for (let i = 0; i < 8; i++) {
+                    const orbGeometry = new THREE.SphereGeometry(0.1, 16, 16);
+                    const orbMaterial = new THREE.MeshBasicMaterial({
+                        color: i % 2 === 0 ? 0x00ffff : 0xff00ff,
+                        transparent: true,
+                        opacity: 0.8,
+                        blending: THREE.AdditiveBlending
+                    });
+                    
+                    const orb = new THREE.Mesh(orbGeometry, orbMaterial);
+                    
+                    const angle = (i / 8) * Math.PI * 2;
+                    const radius = 3;
+                    orb.position.set(
+                        Math.cos(angle) * radius,
+                        3 + Math.sin(angle * 2) * 0.5,
+                        Math.sin(angle) * radius
+                    );
+                    
+                    this.scene.add(orb);
+                    this.magicOrbs.push({
+                        mesh: orb,
+                        angle: angle,
+                        baseY: 3,
+                        speed: 1 + Math.random() * 0.5
+                    });
+                }
+            }
+            
+            createEnergyField() {
+                const fieldGeometry = new THREE.RingGeometry(2, 4, 32, 8);
+                const fieldMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 }
+                    },
+                    vertexShader: `
+                        varying vec2 vUv;
+                        uniform float time;
+                        
+                        void main() {
+                            vUv = uv;
+                            vec3 pos = position;
+                            pos.z += sin(time * 2.0 + uv.x * 10.0) * 0.1;
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform float time;
+                        varying vec2 vUv;
+                        
+                        void main() {
+                            float wave = sin(time * 3.0 + vUv.x * 20.0) * 0.5 + 0.5;
+                            vec3 color = mix(vec3(0.0, 0.8, 1.0), vec3(0.5, 0.2, 1.0), wave);
+                            float alpha = (1.0 - vUv.y) * 0.3 * wave;
+                            gl_FragColor = vec4(color, alpha);
+                        }
+                    `,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending,
+                    side: THREE.DoubleSide
+                });
+                
+                this.energyField = new THREE.Mesh(fieldGeometry, fieldMaterial);
+                this.energyField.position.y = 0.1;
+                this.energyField.rotation.x = -Math.PI / 2;
+                this.scene.add(this.energyField);
+            }
+            
+            createLightningEffects() {
+                // Lightning will be created dynamically during power demonstrations
+                this.lightningBolts = [];
+            }
+            
+            createMagicalAura() {
+                const auraGeometry = new THREE.SphereGeometry(2.5, 32, 32);
+                const auraMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 }
+                    },
+                    vertexShader: `
+                        varying vec3 vNormal;
+                        varying vec3 vPosition;
+                        uniform float time;
+                        
+                        void main() {
+                            vNormal = normalize(normalMatrix * normal);
+                            vPosition = position;
+                            
+                            vec3 pos = position;
+                            pos += normal * sin(time * 3.0 + position.y * 5.0) * 0.05;
+                            
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform float time;
+                        varying vec3 vNormal;
+                        varying vec3 vPosition;
+                        
+                        void main() {
+                            float fresnel = pow(1.0 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 3.0);
+                            float pulse = sin(time * 2.0) * 0.3 + 0.7;
+                            
+                            vec3 color1 = vec3(0.0, 0.8, 1.0);
+                            vec3 color2 = vec3(0.5, 0.2, 1.0);
+                            vec3 finalColor = mix(color1, color2, sin(time + vPosition.y * 3.0) * 0.5 + 0.5);
+                            
+                            float alpha = fresnel * pulse * 0.2;
+                            gl_FragColor = vec4(finalColor, alpha);
+                        }
+                    `,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending,
+                    side: THREE.BackSide
+                });
+                
+                this.divineAura = new THREE.Mesh(auraGeometry, auraMaterial);
+                this.divineAura.position.y = 2;
+                this.avatar.add(this.divineAura);
+            }
+            
+            performDivineEntrance() {
+                // Hide loading screen with epic effect
+                const loading = document.getElementById('loading');
+                gsap.to(loading, {
+                    duration: 1,
+                    opacity: 0,
+                    scale: 0.8,
+                    ease: "power2.inOut",
+                    onComplete: () => {
+                        loading.style.display = 'none';
+                    }
+                });
+                
+                // Dramatic avatar entrance
+                this.avatar.scale.set(0.1, 0.1, 0.1);
+                this.avatar.position.y = -5;
+                
+                gsap.to(this.avatar.scale, {
+                    duration: 2,
+                    x: 1, y: 1, z: 1,
+                    ease: "elastic.out(1, 0.5)"
+                });
+                
+                gsap.to(this.avatar.position, {
+                    duration: 2,
+                    y: 0,
+                    ease: "power2.out"
+                });
+                
+                // Power level animation
+                gsap.to(this, {
+                    duration: 3,
+                    powerLevel: 100,
+                    ease: "power2.out",
+                    onUpdate: () => {
+                        document.getElementById('powerLevel').style.height = this.powerLevel + '%';
+                    }
+                });
+            }
+            
+            setupEventListeners() {
+                window.addEventListener('resize', () => {
+                    this.camera.aspect = window.innerWidth / window.innerHeight;
+                    this.camera.updateProjectionMatrix();
+                    this.renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+                
+                document.getElementById('animate-btn').addEventListener('click', () => {
+                    this.toggleAnimation();
+                });
+                
+                document.getElementById('expression-btn').addEventListener('click', () => {
+                    this.cycleExpression();
+                });
+                
+                document.getElementById('lighting-btn').addEventListener('click', () => {
+                    this.cycleLighting();
+                });
+                
+                document.getElementById('powers-btn').addEventListener('click', () => {
+                    this.demonstratePowers();
+                });
+                
+                document.getElementById('reset-btn').addEventListener('click', () => {
+                    this.resetAvatar();
+                });
+                
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    switch(e.key) {
+                        case ' ': this.toggleAnimation(); break;
+                        case 'e': this.cycleExpression(); break;
+                        case 'l': this.cycleLighting(); break;
+                        case 'p': this.demonstratePowers(); break;
+                        case 'r': this.resetAvatar(); break;
+                    }
+                });
+            }
+            
+            toggleAnimation() {
+                this.isAnimating = !this.isAnimating;
+                const btn = document.getElementById('animate-btn');
+                btn.innerHTML = this.isAnimating ? '⏸️ STOP' : '🌟 ANIMATE';
+            }
+            
+            cycleExpression() {
+                const expressions = ['divine', 'wise', 'powerful', 'serene', 'mystical'];
+                const currentIndex = expressions.indexOf(this.currentExpression);
+                this.currentExpression = expressions[(currentIndex + 1) % expressions.length];
+                
+                this.animateExpression();
+                
+                // Update button text
+                document.getElementById('expression-btn').innerHTML = `😊 ${this.currentExpression.toUpperCase()}`;
+            }
+            
+            animateExpression() {
+                switch (this.currentExpression) {
+                    case 'wise':
+                        gsap.to(this.leftEye.scale, { duration: 0.5, y: 0.8 });
+                        gsap.to(this.rightEye.scale, { duration: 0.5, y: 0.8 });
+                        gsap.to(this.head.rotation, { duration: 0.5, x: -0.1 });
+                        break;
+                    case 'powerful':
+                        gsap.to(this.leftEye.scale, { duration: 0.5, y: 1.3 });
+                        gsap.to(this.rightEye.scale, { duration: 0.5, y: 1.3 });
+                        gsap.to(this.head.rotation, { duration: 0.5, x: 0.1 });
+                        break;
+                    case 'serene':
+                        gsap.to(this.leftEye.scale, { duration: 0.5, y: 0.9 });
+                        gsap.to(this.rightEye.scale, { duration: 0.5, y: 0.9 });
+                        gsap.to(this.head.rotation, { duration: 0.5, x: -0.05 });
+                        break;
+                    case 'mystical':
+                        gsap.to(this.leftEye.scale, { duration: 0.5, y: 1.1 });
+                        gsap.to(this.rightEye.scale, { duration: 0.5, y: 1.1 });
+                        gsap.to(this.head.rotation, { duration: 0.5, x: 0.05 });
+                        break;
+                    default: // divine
+                        gsap.to(this.leftEye.scale, { duration: 0.5, y: 1 });
+                        gsap.to(this.rightEye.scale, { duration: 0.5, y: 1 });
+                        gsap.to(this.head.rotation, { duration: 0.5, x: 0 });
+                }
+            }
+            
+            cycleLighting() {
+                const modes = ['ethereal', 'divine', 'cosmic', 'infernal', 'celestial'];
+                const currentIndex = modes.indexOf(this.lightingMode);
+                this.lightingMode = modes[(currentIndex + 1) % modes.length];
+                
+                this.updateLighting();
+                
+                document.getElementById('lighting-btn').innerHTML = `⚡ ${this.lightingMode.toUpperCase()}`;
+            }
+            
+            updateLighting() {
+                switch (this.lightingMode) {
+                    case 'divine':
+                        gsap.to(this.keyLight.color, { duration: 1, r: 1, g: 0.84, b: 0 }); // Gold
+                        gsap.to(this.rimLight1.color, { duration: 1, r: 1, g: 1, b: 1 }); // White
+                        break;
+                    case 'cosmic':
+                        gsap.to(this.keyLight.color, { duration: 1, r: 0.5, g: 0, b: 1 }); // Purple
+                        gsap.to(this.rimLight1.color, { duration: 1, r: 0, g: 1, b: 1 }); // Cyan
+                        break;
+                    case 'infernal':
+                        gsap.to(this.keyLight.color, { duration: 1, r: 1, g: 0.27, b: 0 }); // Orange
+                        gsap.to(this.rimLight1.color, { duration: 1, r: 1, g: 0, b: 0 }); // Red
+                        break;
+                    case 'celestial':
+                        gsap.to(this.keyLight.color, { duration: 1, r: 0.53, g: 0.81, b: 0.92 }); // Sky blue
+                        gsap.to(this.rimLight1.color, { duration: 1, r: 1, g: 0.84, b: 0.84 }); // Light pink
+                        break;
+                    default: // ethereal
+                        gsap.to(this.keyLight.color, { duration: 1, r: 0, g: 0.83, b: 1 }); // Cyan
+                        gsap.to(this.rimLight1.color, { duration: 1, r: 0.54, g: 0.17, b: 0.89 }); // Purple
+                }
+            }
+            
+            demonstratePowers() {
+                // Epic power demonstration
+                this.createLightningBurst();
+                this.createEnergyWave();
+                this.enhanceParticles();
+                
+                // Screen shake effect
+                gsap.to(this.camera.position, {
+                    duration: 0.1,
+                    x: this.camera.position.x + (Math.random() - 0.5) * 0.2,
+                    y: this.camera.position.y + (Math.random() - 0.5) * 0.2,
+                    z: this.camera.position.z + (Math.random() - 0.5) * 0.2,
+                    repeat: 5,
+                    yoyo: true,
+                    ease: "power2.inOut"
+                });
+                
+                // Power level surge
+                gsap.to(this, {
+                    duration: 2,
+                    powerLevel: 150,
+                    ease: "power2.out",
+                    onUpdate: () => {
+                        document.getElementById('powerLevel').style.height = Math.min(this.powerLevel, 100) + '%';
+                    },
+                    onComplete: () => {
+                        gsap.to(this, {
+                            duration: 1,
+                            powerLevel: 100,
+                            ease: "power2.inOut",
+                            onUpdate: () => {
+                                document.getElementById('powerLevel').style.height = this.powerLevel + '%';
+                            }
+                        });
+                    }
+                });
+            }
+            
+            createLightningBurst() {
+                for (let i = 0; i < 6; i++) {
+                    setTimeout(() => {
+                        const lightning = this.createLightningBolt();
+                        this.scene.add(lightning);
+                        
+                        setTimeout(() => {
+                            this.scene.remove(lightning);
+                        }, 200);
+                    }, i * 100);
+                }
+            }
+            
+            createLightningBolt() {
+                const points = [];
+                const start = new THREE.Vector3(0, 4, 0);
+                const end = new THREE.Vector3(
+                    (Math.random() - 0.5) * 10,
+                    Math.random() * 2,
+                    (Math.random() - 0.5) * 10
+                );
+                
+                // Create jagged lightning path
+                const segments = 10;
+                for (let i = 0; i <= segments; i++) {
+                    const t = i / segments;
+                    const point = start.clone().lerp(end, t);
+                    
+                    if (i > 0 && i < segments) {
+                        point.add(new THREE.Vector3(
+                            (Math.random() - 0.5) * 2,
+                            (Math.random() - 0.5) * 2,
+                            (Math.random() - 0.5) * 2
+                        ));
+                    }
+                    
+                    points.push(point);
+                }
+                
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                const material = new THREE.LineBasicMaterial({
+                    color: 0x00ffff,
+                    linewidth: 3,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                
+                return new THREE.Line(geometry, material);
+            }
+            
+            createEnergyWave() {
+                const waveGeometry = new THREE.RingGeometry(0.1, 8, 32);
+                const waveMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 },
+                        opacity: { value: 1 }
+                    },
+                    vertexShader: `
+                        varying vec2 vUv;
+                        void main() {
+                            vUv = uv;
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform float time;
+                        uniform float opacity;
+                        varying vec2 vUv;
+                        
+                        void main() {
+                            float wave = sin(vUv.y * 20.0 + time * 10.0) * 0.5 + 0.5;
+                            vec3 color = mix(vec3(0.0, 1.0, 1.0), vec3(1.0, 0.0, 1.0), wave);
+                            gl_FragColor = vec4(color, opacity * (1.0 - vUv.y));
+                        }
+                    `,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending
+                });
+                
+                const wave = new THREE.Mesh(waveGeometry, waveMaterial);
+                wave.position.y = 0.1;
+                wave.rotation.x = -Math.PI / 2;
+                this.scene.add(wave);
+                
+                // Animate wave expansion and fade
+                gsap.to(wave.scale, {
+                    duration: 2,
+                    x: 3, y: 3, z: 3,
+                    ease: "power2.out"
+                });
+                
+                gsap.to(waveMaterial.uniforms.opacity, {
+                    duration: 2,
+                    value: 0,
+                    ease: "power2.out",
+                    onComplete: () => {
+                        this.scene.remove(wave);
+                    }
+                });
+            }
+            
+            enhanceParticles() {
+                // Temporarily increase particle intensity
+                if (this.divineParticles) {
+                    const originalOpacity = this.divineParticles.material.uniforms.opacity?.value || 1;
+                    gsap.to(this.divineParticles.material.uniforms, {
+                        duration: 0.5,
+                        opacity: { value: 2 },
+                        ease: "power2.out",
+                        onComplete: () => {
+                            gsap.to(this.divineParticles.material.uniforms, {
+                                duration: 1.5,
+                                opacity: { value: originalOpacity },
+                                ease: "power2.inOut"
+                            });
+                        }
+                    });
+                }
+            }
+            
+            resetAvatar() {
+                // Reset all transformations with smooth animations
+                gsap.to(this.camera.position, {
+                    duration: 1.5,
+                    x: 0, y: 3, z: 10,
+                    ease: "power2.inOut"
+                });
+                
+                gsap.to(this.avatar.rotation, {
+                    duration: 1,
+                    x: 0, y: 0, z: 0,
+                    ease: "power2.inOut"
+                });
+                
+                gsap.to(this.head.rotation, {
+                    duration: 1,
+                    x: 0, y: 0, z: 0,
+                    ease: "power2.inOut"
+                });
+                
+                // Reset states
+                this.currentExpression = 'divine';
+                this.lightingMode = 'ethereal';
+                this.isAnimating = false;
+                
+                this.animateExpression();
+                this.updateLighting();
+                
+                // Reset UI
+                document.getElementById('animate-btn').innerHTML = '🌟 ANIMATE';
+                document.getElementById('expression-btn').innerHTML = '😊 EXPRESSION';
+                document.getElementById('lighting-btn').innerHTML = '⚡ DIVINE LIGHT';
+                
+                // Reset power level
+                gsap.to(this, {
+                    duration: 1,
+                    powerLevel: 100,
+                    ease: "power2.inOut",
+                    onUpdate: () => {
+                        document.getElementById('powerLevel').style.height = this.powerLevel + '%';
+                    }
+                });
+            }
+            
+            updateStats() {
+                // Update FPS counter
+                this.frameCount++;
+                const now = performance.now();
+                if (now - this.lastFpsUpdate >= 1000) {
+                    document.getElementById('fps').textContent = this.frameCount;
+                    this.frameCount = 0;
+                    this.lastFpsUpdate = now;
+                }
+            }
+            
+            animate() {
+                requestAnimationFrame(() => this.animate());
+                
+                const time = this.clock.getElapsedTime();
+                
+                // Update controls
+                if (this.updateAdvancedControls) {
+                    this.updateAdvancedControls();
+                }
+                
+                // Update all shader uniforms
+                if (this.head?.material?.uniforms) {
+                    this.head.material.uniforms.time.value = time;
+                }
+                if (this.hairGroup?.children[0]?.material?.uniforms) {
+                    this.hairGroup.children[0].material.uniforms.time.value = time;
+                }
+                if (this.leftEye?.material?.uniforms) {
+                    this.leftEye.material.uniforms.time.value = time;
+                    this.rightEye.material.uniforms.time.value = time;
+                }
+                if (this.crownGroup?.children[0]?.material?.uniforms) {
+                    this.crownGroup.children[0].material.uniforms.time.value = time;
+                }
+                if (this.dress?.material?.uniforms) {
+                    this.dress.material.uniforms.time.value = time;
+                }
+                if (this.divineParticles?.material?.uniforms) {
+                    this.divineParticles.material.uniforms.time.value = time;
+                }
+                if (this.energyField?.material?.uniforms) {
+                    this.energyField.material.uniforms.time.value = time;
+                }
+                if (this.divineAura?.material?.uniforms) {
+                    this.divineAura.material.uniforms.time.value = time;
+                }
+                if (this.starfield?.material?.uniforms) {
+                    this.starfield.material.uniforms.time.value = time;
+                }
+                
+                // Animate particles
+                if (this.divineParticles && this.particleVelocities) {
+                    const positions = this.divineParticles.geometry.attributes.position.array;
+                    
+                    for (let i = 0; i < positions.length; i += 3) {
+                        positions[i] += this.particleVelocities[i];
+                        positions[i + 1] += this.particleVelocities[i + 1];
+                        positions[i + 2] += this.particleVelocities[i + 2];
+                        
+                        // Reset particles that go too far
+                        const distance = Math.sqrt(
+                            positions[i] * positions[i] + 
+                            positions[i + 1] * positions[i + 1] + 
+                            positions[i + 2] * positions[i + 2]
+                        );
+                        
+                        if (distance > 25) {
+                            const radius = 5 + Math.random() * 5;
+                            const theta = Math.random() * Math.PI * 2;
+                            const phi = Math.random() * Math.PI;
+                            
+                            positions[i] = radius * Math.sin(phi) * Math.cos(theta);
+                            positions[i + 1] = radius * Math.cos(phi) + 2;
+                            positions[i + 2] = radius * Math.sin(phi) * Math.sin(theta);
+                        }
+                    }
+                    
+                    this.divineParticles.geometry.attributes.position.needsUpdate = true;
+                }
+                
+                // Animate magic orbs
+                this.magicOrbs.forEach((orb, index) => {
+                    orb.angle += 0.02 * orb.speed;
+                    const radius = 3 + Math.sin(time * 2 + index) * 0.5;
+                    
+                    orb.mesh.position.x = Math.cos(orb.angle) * radius;
+                    orb.mesh.position.z = Math.sin(orb.angle) * radius;
+                    orb.mesh.position.y = orb.baseY + Math.sin(time * 3 + index) * 0.8;
+                    
+                    orb.mesh.rotation.x += 0.02;
+                    orb.mesh.rotation.y += 0.03;
+                });
+                
+                // Avatar animations when active
+                if (this.isAnimating && this.avatar) {
+                    // Gentle floating motion
+                    this.avatar.position.y = Math.sin(time * 1.5) * 0.15;
+                    
+                    // Subtle head movement
+                    this.head.rotation.y = Math.sin(time * 0.8) * 0.1;
+                    this.head.rotation.x += Math.sin(time * 1.2) * 0.02;
+                    
+                    // Hair flowing animation
+                    if (this.hairGroup) {
+                        this.hairGroup.rotation.y = Math.sin(time * 0.6) * 0.08;
+                        this.hairGroup.children.forEach((strand, index) => {
+                            if (index > 0) { // Skip main hair volume
+                                strand.rotation.z = Math.sin(time * 2 + index * 0.5) * 0.1;
+                            }
+                        });
+                    }
+                    
+                    // Crown rotation and glow
+                    if (this.crownGroup) {
+                        this.crownGroup.rotation.y += 0.008;
+                    }
+                    
+                    // Eye glow pulsing
+                    if (this.eyeGlows) {
+                        const glowIntensity = (Math.sin(time * 4) + 1) * 0.15 + 0.1;
+                        this.eyeGlows.forEach(glow => {
+                            glow.material.opacity = glowIntensity;
+                        });
+                    }
+                    
+                    // Dress flowing
+                    if (this.dress) {
+                        this.dress.rotation.y = Math.sin(time * 0.5) * 0.05;
+                    }
+                    
+                    // Energy field rotation
+                    if (this.energyField) {
+                        this.energyField.rotation.z += 0.01;
+                    }
+                }
+                
+                // Dynamic lighting animation
+                this.magicLight1.position.x = Math.cos(time * 2) * 4;
+                this.magicLight1.position.z = Math.sin(time * 2) * 4;
+                this.magicLight1.position.y = 4 + Math.sin(time * 3) * 1;
+                
+                this.magicLight2.position.x = Math.cos(time * 1.5 + Math.PI) * 3;
+                this.magicLight2.position.z = Math.sin(time * 1.5 + Math.PI) * 3;
+                this.magicLight2.position.y = 4 + Math.cos(time * 2.5) * 1;
+                
+                // Update stats
+                this.updateStats();
+                
+                // Render the scene
+                this.renderer.render(this.scene, this.camera);
+            }
+        }
+        
+        // Initialize the ultimate goddess avatar
+        window.addEventListener('DOMContentLoaded', () => {
+            new UltimateGoddessAvatar();
+        });
+    </script>
+</body>
+</html>
