@@ -1,0 +1,23 @@
+{
+  "name": "greek-goddess-avatar",
+  "version": "1.0.0",
+  "description": "3D Greek Goddess Avatar App",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "python -m http.server 8000"
+  },
+  "dependencies": {
+    "three": "^0.158.0",
+    "gsap": "^3.12.2",
+    "dat.gui": "^0.7.9"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "keywords": ["3d", "avatar", "greek", "goddess", "three.js"],
+  "author": "",
+  "license": "MIT"
+}

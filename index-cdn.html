@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greek Goddess Avatar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0c1445, #1a2980, #26d0ce);
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        #canvas-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        #avatar-canvas {
+            display: block;
+            cursor: grab;
+        }
+        
+        #avatar-canvas:active {
+            cursor: grabbing;
+        }
+        
+        .ui-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            color: white;
+            font-size: 18px;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+        
+        .control-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(0, 255, 255, 0.5);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+        
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            z-index: 200;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #00ffff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container">
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Awakening the Goddess...</p>
+        </div>
+        
+        <div class="ui-overlay">
+            <h1>Athena - Greek Goddess Avatar</h1>
+            <p>Drag to rotate • Scroll to zoom</p>
+        </div>
+        
+        <canvas id="avatar-canvas"></canvas>
+        
+        <div class="controls">
+            <button class="control-btn" id="animate-btn">Animate</button>
+            <button class="control-btn" id="expression-btn">Expression</button>
+            <button class="control-btn" id="lighting-btn">Lighting</button>
+            <button class="control-btn" id="reset-btn">Reset</button>
+        </div>
+    </div>
+    
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r158/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <script>
+        class GreekGoddessAvatar {
+            constructor() {
+                this.scene = null;
+                this.camera = null;
+                this.renderer = null;
+                this.controls = null;
+                this.avatar = null;
+                this.clock = new THREE.Clock();
+                
+                // Animation states
+                this.isAnimating = false;
+                this.currentExpression = 'neutral';
+                this.lightingMode = 'divine';
+                
+                this.init();
+            }
+            
+            init() {
+                this.createScene();
+                this.createCamera();
+                this.createRenderer();
+                this.createControls();
+                this.createLighting();
+                this.createAvatar();
+                this.setupEventListeners();
+                this.animate();
+                
+                // Hide loading screen
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                }, 2000);
+            }
+            
+            createScene() {
+                this.scene = new THREE.Scene();
+                this.scene.background = new THREE.Color(0x0a0a0a);
+                this.scene.fog = new THREE.Fog(0x0a0a0a, 10, 50);
+            }
+            
+            createCamera() {
+                this.camera = new THREE.PerspectiveCamera(
+                    75,
+                    window.innerWidth / window.innerHeight,
+                    0.1,
+                    1000
+                );
+                this.camera.position.set(0, 2, 8);
+            }
+            
+            createRenderer() {
+                const canvas = document.getElementById('avatar-canvas');
+                this.renderer = new THREE.WebGLRenderer({
+                    canvas: canvas,
+                    antialias: true,
+                    alpha: true
+                });
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setPixelRatio(window.devicePixelRatio);
+                this.renderer.shadowMap.enabled = true;
+                this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            }
+            
+            createControls() {
+                // Simple orbit controls implementation
+                let isMouseDown = false;
+                let mouseX = 0;
+                let mouseY = 0;
+                let targetRotationX = 0;
+                let targetRotationY = 0;
+                let rotationX = 0;
+                let rotationY = 0;
+                
+                const canvas = this.renderer.domElement;
+                
+                canvas.addEventListener('mousedown', (event) => {
+                    isMouseDown = true;
+                    mouseX = event.clientX;
+                    mouseY = event.clientY;
+                });
+                
+                canvas.addEventListener('mousemove', (event) => {
+                    if (isMouseDown) {
+                        const deltaX = event.clientX - mouseX;
+                        const deltaY = event.clientY - mouseY;
+                        
+                        targetRotationY += deltaX * 0.01;
+                        targetRotationX += deltaY * 0.01;
+                        
+                        mouseX = event.clientX;
+                        mouseY = event.clientY;
+                    }
+                });
+                
+                canvas.addEventListener('mouseup', () => {
+                    isMouseDown = false;
+                });
+                
+                canvas.addEventListener('wheel', (event) => {
+                    this.camera.position.z += event.deltaY * 0.01;
+                    this.camera.position.z = Math.max(3, Math.min(15, this.camera.position.z));
+                });
+                
+                this.updateControls = () => {
+                    rotationX += (targetRotationX - rotationX) * 0.05;
+                    rotationY += (targetRotationY - rotationY) * 0.05;
+                    
+                    const radius = this.camera.position.z;
+                    this.camera.position.x = Math.sin(rotationY) * radius;
+                    this.camera.position.y = 2 + Math.sin(rotationX) * 2;
+                    this.camera.position.z = Math.cos(rotationY) * radius;
+                    
+                    this.camera.lookAt(0, 2, 0);
+                };
+            }
+            
+            createLighting() {
+                // Ambient light
+                const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+                this.scene.add(ambientLight);
+                
+                // Main key light (divine glow)
+                this.keyLight = new THREE.DirectionalLight(0x00ffff, 1.5);
+                this.keyLight.position.set(5, 10, 5);
+                this.keyLight.castShadow = true;
+                this.scene.add(this.keyLight);
+                
+                // Rim light
+                this.rimLight = new THREE.DirectionalLight(0x8a2be2, 0.8);
+                this.rimLight.position.set(-5, 3, -5);
+                this.scene.add(this.rimLight);
+                
+                // Fill light
+                const fillLight = new THREE.PointLight(0xffffff, 0.5, 10);
+                fillLight.position.set(0, 5, 3);
+                this.scene.add(fillLight);
+                
+                // Ethereal particles
+                this.createParticles();
+            }
+            
+            createParticles() {
+                const particleCount = 500; // Reduced for better performance
+                const particles = new THREE.BufferGeometry();
+                const positions = new Float32Array(particleCount * 3);
+                
+                for (let i = 0; i < particleCount * 3; i += 3) {
+                    positions[i] = (Math.random() - 0.5) * 20;
+                    positions[i + 1] = (Math.random() - 0.5) * 20;
+                    positions[i + 2] = (Math.random() - 0.5) * 20;
+                }
+                
+                particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                
+                const particleMaterial = new THREE.PointsMaterial({
+                    size: 0.1,
+                    color: 0x00ffff,
+                    transparent: true,
+                    opacity: 0.6,
+                    blending: THREE.AdditiveBlending
+                });
+                
+                this.particleSystem = new THREE.Points(particles, particleMaterial);
+                this.scene.add(this.particleSystem);
+            }
+            
+            createAvatar() {
+                this.avatar = new THREE.Group();
+                
+                // Create head
+                this.createHead();
+                
+                // Create hair
+                this.createHair();
+                
+                // Create eyes
+                this.createEyes();
+                
+                // Create accessories
+                this.createAccessories();
+                
+                // Create body
+                this.createBody();
+                
+                this.scene.add(this.avatar);
+            }
+            
+            createHead() {
+                const headGeometry = new THREE.SphereGeometry(1, 32, 32);
+                
+                // Modify geometry for feminine features
+                const positions = headGeometry.attributes.position.array;
+                for (let i = 0; i < positions.length; i += 3) {
+                    const x = positions[i];
+                    const y = positions[i + 1];
+                    
+                    // Create oval shape
+                    positions[i] = x * 0.85;
+                    positions[i + 1] = y * 1.1;
+                }
+                
+                headGeometry.attributes.position.needsUpdate = true;
+                headGeometry.computeVertexNormals();
+                
+                const skinMaterial = new THREE.MeshLambertMaterial({
+                    color: 0xffd4a3,
+                    emissive: 0x001122,
+                    emissiveIntensity: 0.1
+                });
+                
+                this.head = new THREE.Mesh(headGeometry, skinMaterial);
+                this.head.castShadow = true;
+                this.head.receiveShadow = true;
+                this.head.position.y = 2;
+                
+                this.avatar.add(this.head);
+            }
+            
+            createHair() {
+                const hairGroup = new THREE.Group();
+                
+                // Main hair volume
+                const hairGeometry = new THREE.SphereGeometry(1.2, 16, 16);
+                const hairMaterial = new THREE.MeshLambertMaterial({
+                    color: 0x8b4513,
+                    transparent: true,
+                    opacity: 0.9
+                });
+                
+                const mainHair = new THREE.Mesh(hairGeometry, hairMaterial);
+                mainHair.position.set(0, 2.3, -0.2);
+                mainHair.scale.set(1, 0.8, 1.2);
+                hairGroup.add(mainHair);
+                
+                // Hair strands
+                for (let i = 0; i < 12; i++) {
+                    const strandGeometry = new THREE.CylinderGeometry(0.02, 0.01, 2, 4);
+                    const strand = new THREE.Mesh(strandGeometry, hairMaterial);
+                    
+                    const angle = (i / 12) * Math.PI * 2;
+                    strand.position.set(
+                        Math.cos(angle) * 0.8,
+                        1.5,
+                        Math.sin(angle) * 0.8 - 0.3
+                    );
+                    strand.rotation.z = Math.random() * 0.5 - 0.25;
+                    
+                    hairGroup.add(strand);
+                }
+                
+                this.avatar.add(hairGroup);
+                this.hair = hairGroup;
+            }
+            
+            createEyes() {
+                // Eyes
+                const eyeGeometry = new THREE.SphereGeometry(0.15, 16, 16);
+                const eyeMaterial = new THREE.MeshLambertMaterial({
+                    color: 0x87ceeb,
+                    emissive: 0x001144,
+                    emissiveIntensity: 0.3
+                });
+                
+                this.leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+                this.leftEye.position.set(-0.25, 2.1, 0.7);
+                
+                this.rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+                this.rightEye.position.set(0.25, 2.1, 0.7);
+                
+                // Pupils
+                const pupilGeometry = new THREE.SphereGeometry(0.08, 16, 16);
+                const pupilMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+                
+                const leftPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
+                leftPupil.position.set(-0.25, 2.1, 0.78);
+                
+                const rightPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
+                rightPupil.position.set(0.25, 2.1, 0.78);
+                
+                this.avatar.add(this.leftEye);
+                this.avatar.add(this.rightEye);
+                this.avatar.add(leftPupil);
+                this.avatar.add(rightPupil);
+            }
+            
+            createAccessories() {
+                // Greek goddess crown
+                const crownGroup = new THREE.Group();
+                
+                const crownGeometry = new THREE.TorusGeometry(1.1, 0.05, 8, 32);
+                const crownMaterial = new THREE.MeshLambertMaterial({
+                    color: 0xffd700,
+                    emissive: 0x221100,
+                    emissiveIntensity: 0.2
+                });
+                
+                const crown = new THREE.Mesh(crownGeometry, crownMaterial);
+                crown.position.set(0, 2.8, 0);
+                crown.rotation.x = Math.PI / 2;
+                crownGroup.add(crown);
+                
+                // Crown ornaments
+                for (let i = 0; i < 8; i++) {
+                    const ornamentGeometry = new THREE.ConeGeometry(0.1, 0.3, 6);
+                    const ornament = new THREE.Mesh(ornamentGeometry, crownMaterial);
+                    
+                    const angle = (i / 8) * Math.PI * 2;
+                    ornament.position.set(
+                        Math.cos(angle) * 1.1,
+                        3,
+                        Math.sin(angle) * 1.1
+                    );
+                    
+                    crownGroup.add(ornament);
+                }
+                
+                this.avatar.add(crownGroup);
+                this.crown = crownGroup;
+            }
+            
+            createBody() {
+                // Shoulders
+                const shoulderGeometry = new THREE.CylinderGeometry(0.8, 1.2, 1.5, 16);
+                const bodyMaterial = new THREE.MeshLambertMaterial({
+                    color: 0xffd4a3
+                });
+                
+                const shoulders = new THREE.Mesh(shoulderGeometry, bodyMaterial);
+                shoulders.position.y = 0.5;
+                shoulders.castShadow = true;
+                shoulders.receiveShadow = true;
+                
+                // Greek dress
+                const dressGeometry = new THREE.ConeGeometry(1.5, 2, 16);
+                const dressMaterial = new THREE.MeshLambertMaterial({
+                    color: 0xf0f8ff,
+                    transparent: true,
+                    opacity: 0.9,
+                    emissive: 0x001122,
+                    emissiveIntensity: 0.05
+                });
+                
+                const dress = new THREE.Mesh(dressGeometry, dressMaterial);
+                dress.position.y = -0.5;
+                dress.castShadow = true;
+                dress.receiveShadow = true;
+                
+                this.avatar.add(shoulders);
+                this.avatar.add(dress);
+            }
+            
+            setupEventListeners() {
+                window.addEventListener('resize', () => {
+                    this.camera.aspect = window.innerWidth / window.innerHeight;
+                    this.camera.updateProjectionMatrix();
+                    this.renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+                
+                document.getElementById('animate-btn').addEventListener('click', () => {
+                    this.toggleAnimation();
+                });
+                
+                document.getElementById('expression-btn').addEventListener('click', () => {
+                    this.cycleExpression();
+                });
+                
+                document.getElementById('lighting-btn').addEventListener('click', () => {
+                    this.cycleLighting();
+                });
+                
+                document.getElementById('reset-btn').addEventListener('click', () => {
+                    this.resetAvatar();
+                });
+            }
+            
+            toggleAnimation() {
+                this.isAnimating = !this.isAnimating;
+                const btn = document.getElementById('animate-btn');
+                btn.textContent = this.isAnimating ? 'Stop' : 'Animate';
+            }
+            
+            cycleExpression() {
+                const expressions = ['neutral', 'smile', 'wise', 'powerful'];
+                const currentIndex = expressions.indexOf(this.currentExpression);
+                this.currentExpression = expressions[(currentIndex + 1) % expressions.length];
+                this.animateExpression();
+            }
+            
+            animateExpression() {
+                switch (this.currentExpression) {
+                    case 'smile':
+                        this.leftEye.scale.y = 0.8;
+                        this.rightEye.scale.y = 0.8;
+                        break;
+                    case 'wise':
+                        this.leftEye.scale.y = 0.9;
+                        this.rightEye.scale.y = 0.9;
+                        this.head.rotation.x = -0.1;
+                        break;
+                    case 'powerful':
+                        this.leftEye.scale.y = 1.2;
+                        this.rightEye.scale.y = 1.2;
+                        this.head.rotation.x = 0.1;
+                        break;
+                    default:
+                        this.leftEye.scale.y = 1;
+                        this.rightEye.scale.y = 1;
+                        this.head.rotation.x = 0;
+                }
+            }
+            
+            cycleLighting() {
+                const modes = ['divine', 'ethereal', 'powerful', 'serene'];
+                const currentIndex = modes.indexOf(this.lightingMode);
+                this.lightingMode = modes[(currentIndex + 1) % modes.length];
+                this.updateLighting();
+            }
+            
+            updateLighting() {
+                switch (this.lightingMode) {
+                    case 'ethereal':
+                        this.keyLight.color.setHex(0x9370db);
+                        this.rimLight.color.setHex(0x00ffff);
+                        break;
+                    case 'powerful':
+                        this.keyLight.color.setHex(0xff4500);
+                        this.rimLight.color.setHex(0xffd700);
+                        break;
+                    case 'serene':
+                        this.keyLight.color.setHex(0x87ceeb);
+                        this.rimLight.color.setHex(0x98fb98);
+                        break;
+                    default: // divine
+                        this.keyLight.color.setHex(0x00ffff);
+                        this.rimLight.color.setHex(0x8a2be2);
+                }
+            }
+            
+            resetAvatar() {
+                this.camera.position.set(0, 2, 8);
+                this.avatar.rotation.set(0, 0, 0);
+                this.head.rotation.set(0, 0, 0);
+                this.currentExpression = 'neutral';
+                this.animateExpression();
+                this.lightingMode = 'divine';
+                this.updateLighting();
+                this.isAnimating = false;
+                document.getElementById('animate-btn').textContent = 'Animate';
+            }
+            
+            animate() {
+                requestAnimationFrame(() => this.animate());
+                
+                // Update controls
+                if (this.updateControls) {
+                    this.updateControls();
+                }
+                
+                // Animate particles
+                if (this.particleSystem) {
+                    this.particleSystem.rotation.y += 0.002;
+                    const positions = this.particleSystem.geometry.attributes.position.array;
+                    for (let i = 1; i < positions.length; i += 3) {
+                        positions[i] += Math.sin(Date.now() * 0.001 + i) * 0.01;
+                    }
+                    this.particleSystem.geometry.attributes.position.needsUpdate = true;
+                }
+                
+                // Avatar animations
+                if (this.isAnimating && this.avatar) {
+                    // Gentle floating motion
+                    this.avatar.position.y = Math.sin(Date.now() * 0.001) * 0.1;
+                    
+                    // Subtle head movement
+                    this.head.rotation.y = Math.sin(Date.now() * 0.0005) * 0.1;
+                    
+                    // Hair movement
+                    if (this.hair) {
+                        this.hair.rotation.y = Math.sin(Date.now() * 0.0003) * 0.05;
+                    }
+                    
+                    // Crown rotation
+                    if (this.crown) {
+                        this.crown.rotation.y += 0.005;
+                    }
+                    
+                    // Eye glow animation
+                    const glowIntensity = (Math.sin(Date.now() * 0.002) + 1) * 0.15 + 0.1;
+                    if (this.leftEye && this.rightEye) {
+                        this.leftEye.material.emissiveIntensity = glowIntensity;
+                        this.rightEye.material.emissiveIntensity = glowIntensity;
+                    }
+                }
+                
+                // Render
+                this.renderer.render(this.scene, this.camera);
+            }
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            new GreekGoddessAvatar();
+        });
+    </script>
+</body>
+</html>
