@@ -15,8 +15,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/ramin/OneDrive/Documents/MyProject/aisis",
-      "program": "c:/Users/ramin/OneDrive/Documents/MyProject/aisis/build/Debug/outDebug",
+      "cwd": "c:/Users/ramin/OneDrive/Documents/MyProject/AI-ARTWORKS",
+      "program": "c:/Users/ramin/OneDrive/Documents/MyProject/AI-ARTWORKS/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
