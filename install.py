@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AISIS Installation Script
+Al-artworks Installation Script
 Comprehensive setup for the AI Creative Studio
 """
 
@@ -15,7 +15,7 @@ import zipfile
 import json
 from typing import List, Dict, Optional
 
-class AISISInstaller:
+class AlArtworksInstaller:
     def __init__(self):
         self.system = platform.system().lower()
         self.architecture = platform.machine().lower()
@@ -307,7 +307,7 @@ cd "{self.project_root}"
                 return False
         
         print("\n" + "=" * 50)
-        print("🎉 AISIS Installation Complete!")
+        print("🎉 Al-artworks Installation Complete!")
         print("\n📖 Next Steps:")
         print("1. Run: python main.py (or use the startup script)")
         print("2. Check the README.md for usage instructions")

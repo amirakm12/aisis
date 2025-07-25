@@ -1,8 +1,8 @@
-# AISIS - AI Creative Studio
+# Al-artworks - AI Creative Studio
 
 🧠 **Next-Level AI Multi-Agent Creative Studio**
 
-AISIS is a fully offline, GPU-accelerated, voice-interactive AI creative studio that automates every imaginable image-editing task in one seamless app.
+Al-artworks is a fully offline, GPU-accelerated, voice-interactive AI creative studio that automates every imaginable image-editing task in one seamless app.
 
 > ⚠️ **Development Status**: This project is currently in early development (alpha). Many features are under active development and may not be fully functional. Contributors and testers are welcome!
 
@@ -49,8 +49,8 @@ AISIS is a fully offline, GPU-accelerated, voice-interactive AI creative studio 
 ### Quick Start
 ```bash
 # Clone repository
-git clone https://github.com/YOUR-USERNAME/aisis.git
-cd aisis
+git clone https://github.com/YOUR-USERNAME/al-artworks.git
+cd al-artworks
 
 # Create virtual environment
 python -m venv venv
@@ -120,9 +120,9 @@ AISIS aims to revolutionize digital image creation and editing by turning months
 ## 🤔 Need Help?
 
 - 📚 Check out our [Documentation](docs/)
-- 💬 Open a [GitHub Issue](https://github.com/YOUR-USERNAME/aisis/issues)
+- 💬 Open a [GitHub Issue](https://github.com/YOUR-USERNAME/al-artworks/issues)
 - 📧 Contact: YOUR-EMAIL (for maintainers)
 
 ---
 
-Built with ❤️ by the AISIS Team
+Built with ❤️ by the Al-artworks Team

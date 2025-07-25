@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-AISIS Comprehensive Launcher
-Main entry point for running AISIS in different modes
+Al-artworks Comprehensive Launcher
+Main entry point for running Al-artworks in different modes
 """
 
 import sys
@@ -67,18 +67,18 @@ def install_dependencies(packages: List[str]):
     print("All packages installed successfully!")
 
 def run_gui():
-    """Launch the AISIS GUI"""
-    print("Starting AISIS GUI...")
+    """Launch the Al-artworks GUI"""
+    print("Starting Al-artworks GUI...")
     try:
-        from aisis import aisis
-        aisis.initialize()
+        from alartworks import alartworks
+        alartworks.initialize()
         
         from PySide6.QtWidgets import QApplication
         app = QApplication.instance()
         if app is None:
             app = QApplication(sys.argv)
         
-        window = aisis.create_gui()
+        window = alartworks.create_gui()
         window.show()
         
         return app.exec()
@@ -88,9 +88,9 @@ def run_gui():
         return 1
 
 def run_cli(args: List[str]):
-    """Run AISIS CLI commands"""
+    """Run Al-artworks CLI commands"""
     try:
-        from aisis.cli import cli
+        from alartworks.cli import cli
         
         # Remove the 'cli' argument if present
         if args and args[0] == 'cli':
@@ -105,11 +105,11 @@ def run_cli(args: List[str]):
         return 1
 
 def run_api(host: str = "0.0.0.0", port: int = 8000):
-    """Start the AISIS API server"""
-    print(f"Starting AISIS API server on {host}:{port}")
+    """Start the Al-artworks API server"""
+    print(f"Starting Al-artworks API server on {host}:{port}")
     try:
         import uvicorn
-        from aisis.api import app
+                    from alartworks.api import app
         
         uvicorn.run(
             app,
@@ -124,7 +124,7 @@ def run_api(host: str = "0.0.0.0", port: int = 8000):
 
 def run_tests():
     """Run the test suite"""
-    print("Running AISIS test suite...")
+    print("Running Al-artworks test suite...")
     try:
         import pytest
         return pytest.main([
@@ -144,15 +144,15 @@ def run_tests():
 
 def run_health_check():
     """Run health check"""
-    print("Running AISIS health check...")
+    print("Running Al-artworks health check...")
     try:
-        from health_check import AISISHealthChecker
+        from health_check import AlArtworksHealthChecker
         
-        checker = AISISHealthChecker()
+        checker = AlArtworksHealthChecker()
         report = checker.run_full_check()
         
         print("\n" + "="*50)
-        print("AISIS HEALTH CHECK REPORT")
+        print("Al-artworks HEALTH CHECK REPORT")
         print("="*50)
         
         if report.get('issues'):
@@ -181,11 +181,11 @@ def run_health_check():
 
 def run_install():
     """Run installation script"""
-    print("Running AISIS installation...")
+    print("Running Al-artworks installation...")
     try:
-        from install import AISISInstaller
+        from install import AlArtworksInstaller
         
-        installer = AISISInstaller()
+        installer = AlArtworksInstaller()
         
         # Check system requirements
         if not installer.check_system_requirements():
@@ -198,7 +198,7 @@ def run_install():
         # Setup environment
         installer.setup_environment()
         
-        print("✅ AISIS installation completed successfully!")
+        print("✅ Al-artworks installation completed successfully!")
         return 0
         
     except Exception as e:
@@ -207,13 +207,13 @@ def run_install():
 
 def run_benchmark():
     """Run performance benchmarks"""
-    print("Running AISIS benchmarks...")
+    print("Running Al-artworks benchmarks...")
     try:
-        from aisis import aisis
-        aisis.initialize()
+        from alartworks import alartworks
+        alartworks.initialize()
         
         # Device benchmark
-        device_info = aisis.device_manager.get_device_info()
+        device_info = alartworks.device_manager.get_device_info()
         
         print("\n" + "="*40)
         print("DEVICE INFORMATION")
@@ -248,24 +248,24 @@ def run_benchmark():
 def main():
     """Main entry point"""
     parser = argparse.ArgumentParser(
-        description="AISIS - AI Creative Studio Launcher",
+        description="Al-artworks - AI Creative Studio Launcher",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python run_aisis.py gui                    # Launch GUI
-  python run_aisis.py cli agents             # List available agents
-  python run_aisis.py api                    # Start API server
-  python run_aisis.py test                   # Run tests
-  python run_aisis.py health                 # Run health check
-  python run_aisis.py install                # Run installation
-  python run_aisis.py benchmark              # Run benchmarks
+          python run_alartworks.py gui                    # Launch GUI
+        python run_alartworks.py cli agents             # List available agents
+        python run_alartworks.py api                    # Start API server
+        python run_alartworks.py test                   # Run tests
+        python run_alartworks.py health                 # Run health check
+        python run_alartworks.py install                # Run installation
+        python run_alartworks.py benchmark              # Run benchmarks
         """
     )
     
     parser.add_argument(
         'mode',
         choices=['gui', 'cli', 'api', 'test', 'health', 'install', 'benchmark'],
-        help='Mode to run AISIS in'
+        help='Mode to run Al-artworks in'
     )
     
     parser.add_argument(

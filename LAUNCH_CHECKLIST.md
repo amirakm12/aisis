@@ -1,4 +1,4 @@
-# 🚀 AISIS LAUNCH CHECKLIST
+# 🚀 Al-artworks LAUNCH CHECKLIST
 
 ## ✅ **PRE-LAUNCH VERIFICATION**
 
@@ -9,7 +9,7 @@
 - [x] `pyproject.toml` - Modern Python packaging
 - [x] `requirements.txt` - Dependencies (merged and deduplicated)
 - [x] `config.json` - Application configuration
-- [x] `aisis.env` - Environment variables
+- [x] `al-artworks.env` - Environment variables
 
 ### **Documentation**
 - [x] `README.md` - Main documentation
@@ -74,7 +74,7 @@
 
 ### **1. Download AI Models**
 ```bash
-cd aisis
+cd al-artworks
 python scripts/download_models.py
 ```
 

@@ -1,6 +1,6 @@
-# AISIS Advanced Features
+# Al-artworks Advanced Features
 
-This folder contains stubs and prototypes for advanced features in AISIS, such as:
+This folder contains stubs and prototypes for advanced features in Al-artworks, such as:
 - Predictive editing
 - Federated self-improvement
 - Cross-app automation

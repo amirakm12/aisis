@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import List, Dict, Tuple, Optional
 import json
 
-class AISISHealthChecker:
+class AlArtworksHealthChecker:
     def __init__(self):
         self.project_root = Path(__file__).parent
         self.issues = []
@@ -322,7 +322,7 @@ class AISISHealthChecker:
     
     def run_health_check(self) -> bool:
         """Run complete health check"""
-        print("🏥 AISIS Health Check Starting...")
+        print("🏥 Al-artworks Health Check Starting...")
         print("=" * 50)
         
         checks = [
@@ -371,7 +371,7 @@ def main():
         print("\n🚀 Ready to launch AISIS!")
         print("Run: python main.py")
     else:
-        print("\n🛠️  Please fix the issues above before running AISIS")
+        print("\n🛠️  Please fix the issues above before running Al-artworks")
     
     sys.exit(0 if success else 1)
 

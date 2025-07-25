@@ -1,11 +1,11 @@
-# 🚀 AISIS QUICK START GUIDE
+# 🚀 Al-artworks QUICK START GUIDE
 
 ## ⚡ **5-Minute Setup**
 
 ### **1. Install Dependencies**
 ```bash
 # Navigate to project directory
-cd aisis
+cd al-artworks
 
 # Install Python dependencies
 pip install -r requirements.txt
@@ -34,7 +34,7 @@ python -c "from src.core.config import config; print('✓ Config loaded')"
 
 ### **4. Launch Application**
 ```bash
-# Start AISIS
+# Start Al-artworks
 python main.py
 
 # Or use alternative launcher
@@ -124,7 +124,7 @@ asyncio.run(test())
 ## 🎯 **First Use**
 
 ### **1. Basic Image Processing**
-1. Launch AISIS
+1. Launch Al-artworks
 2. Load an image
 3. Select "Auto Enhancement"
 4. Wait for processing
@@ -159,10 +159,10 @@ export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
 ### **For Development**
 ```bash
 # Enable debug mode
-export AISIS_DEBUG=1
+export ALARTWORKS_DEBUG=1
 
 # Verbose logging
-export AISIS_LOG_LEVEL=DEBUG
+export ALARTWORKS_LOG_LEVEL=DEBUG
 
 # Test mode
 python main.py --test-mode
@@ -173,12 +173,12 @@ python main.py --test-mode
 ### **Reset Everything**
 ```bash
 # Clear all caches
-rm -rf .aisis_cache/
+rm -rf .al-artworks_cache/
 rm -rf models/
 rm -rf __pycache__/
 
 # Reinstall from scratch
-pip uninstall -y aisis
+pip uninstall -y al-artworks
 pip install -e .
 ```
 
@@ -202,9 +202,9 @@ python -m pytest tests/test_performance.py -v
 - [User Manual](docs/USER_MANUAL.md)
 
 ### **Support**
-- [GitHub Issues](https://github.com/your-repo/aisis/issues)
-- [Discussions](https://github.com/your-repo/aisis/discussions)
-- [Wiki](https://github.com/your-repo/aisis/wiki)
+- [GitHub Issues](https://github.com/your-repo/al-artworks/issues)
+- [Discussions](https://github.com/your-repo/al-artworks/discussions)
+- [Wiki](https://github.com/your-repo/al-artworks/wiki)
 
 ### **Community**
 - Join our Discord server

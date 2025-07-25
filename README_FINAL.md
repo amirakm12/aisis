@@ -1,8 +1,8 @@
-# AISIS - AI Creative Studio 🎨✨
+# Al-artworks - AI Creative Studio 🎨✨
 
 > **Complete AI-Powered Creative Studio with Advanced Image Processing and Restoration**
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/your-org/aisis)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/your-org/al-artworks)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://python.org)
 [![Status](https://img.shields.io/badge/status-Production%20Ready-brightgreen.svg)]()
@@ -13,19 +13,19 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/aisis.git
-cd aisis
+git clone https://github.com/your-org/al-artworks.git
+cd al-artworks
 
 # Install and launch (handles all dependencies automatically)
-python run_aisis.py install
-python run_aisis.py gui
+python run_alartworks.py install
+python run_alartworks.py gui
 ```
 
-**That's it!** AISIS will handle everything else automatically.
+**That's it!** Al-artworks will handle everything else automatically.
 
-## ✨ What is AISIS?
+## ✨ What is Al-artworks?
 
-AISIS (AI Creative Studio) is a comprehensive, production-ready AI-powered creative platform that combines cutting-edge machine learning models with an intuitive interface for advanced image processing, restoration, and creative workflows.
+Al-artworks (AI Creative Studio) is a comprehensive, production-ready AI-powered creative platform that combines cutting-edge machine learning models with an intuitive interface for advanced image processing, restoration, and creative workflows.
 
 ### 🎯 Key Features
 
@@ -40,7 +40,7 @@ AISIS (AI Creative Studio) is a comprehensive, production-ready AI-powered creat
 ## 🏗️ Architecture Overview
 
 ```
-AISIS/
+Al-artworks/
 ├── 🎯 Core System
 │   ├── Multi-Agent Orchestrator
 │   ├── Model Manager & Auto-Download
@@ -71,7 +71,7 @@ AISIS/
 
 ### Option 1: Automatic Installation (Recommended)
 ```bash
-python run_aisis.py install
+python run_alartworks.py install
 ```
 
 ### Option 2: Manual Installation
@@ -89,30 +89,30 @@ python run_aisis.py health
 
 ### Option 3: Docker Installation
 ```bash
-docker build -t aisis .
-docker run -p 8000:8000 aisis
+docker build -t al-artworks .
+docker run -p 8000:8000 al-artworks
 ```
 
 ## 🎮 Usage Examples
 
 ### Desktop GUI
 ```bash
-python run_aisis.py gui
+python run_alartworks.py gui
 ```
 
 ### Command Line Interface
 ```bash
 # List available agents
-python run_aisis.py cli agents
+python run_alartworks.py cli agents
 
 # Process an image
-python run_aisis.py cli process image.jpg --operations restore,enhance --quality high
+python run_alartworks.py cli process image.jpg --operations restore,enhance --quality high
 
 # Manage models
-python run_aisis.py cli models --download --validate
+python run_alartworks.py cli models --download --validate
 
 # Plugin management
-python run_aisis.py cli plugins --list
+python run_alartworks.py cli plugins --list
 ```
 
 ### REST API Server

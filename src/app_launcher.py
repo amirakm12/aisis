@@ -313,7 +313,7 @@ def create_aisis_app() -> AISISApplication:
     return AISISApplication()
 
 
-async def run_aisis_app() -> int:
+async def run_alartworks_app() -> int:
     """Run the complete AISIS application"""
     app = create_aisis_app()
     
@@ -339,7 +339,7 @@ def main():
     print("=" * 50)
     
     # Run the application
-    return asyncio.run(run_aisis_app())
+    return asyncio.run(run_alartworks_app())
 
 
 if __name__ == "__main__":

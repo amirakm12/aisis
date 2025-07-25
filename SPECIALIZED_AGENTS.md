@@ -1,4 +1,4 @@
-# AISIS Specialized Agents Documentation
+# Al-artworks Specialized Agents Documentation
 
 ## Overview
 
@@ -151,9 +151,9 @@ The **Hyper-Orchestrator** intelligently coordinates all agents based on:
 ### Usage Examples
 
 ```python
-# Initialize AISIS with all agents
-from src import AISIS
-studio = AISIS()
+# Initialize Al-artworks with all agents
+from src import AlArtworks
+studio = AlArtworks()
 await studio.initialize()
 
 # Tile stitching for large artwork

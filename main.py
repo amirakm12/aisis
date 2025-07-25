@@ -1,5 +1,5 @@
 """
-AISIS - AI Creative Studio
+Al-artworks - AI Creative Studio
 Main application entry point
 """
 
@@ -16,7 +16,7 @@ from src.core.config import config
 
 def setup_logging():
     """Setup logging configuration"""
-    log_path = Path.home() / ".aisis" / "logs" / "aisis.log"
+    log_path = Path.home() / ".al-artworks" / "logs" / "al-artworks.log"
     log_path.parent.mkdir(parents=True, exist_ok=True)
     
     logger.add(
@@ -30,7 +30,7 @@ def main():
     """Main application entry point"""
     # Setup logging
     setup_logging()
-    logger.info("Starting AISIS")
+    logger.info("Starting Al-artworks")
     
     # Enable high DPI scaling
     QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -38,8 +38,8 @@ def main():
     
     # Create Qt application
     app = QApplication(sys.argv)
-    app.setApplicationName("AISIS")
-    app.setOrganizationName("AISIS")
+    app.setApplicationName("Al-artworks")
+    app.setOrganizationName("Al-artworks")
     
     # Set application style
     app.setStyle("Fusion")
@@ -63,11 +63,11 @@ def main():
         return app.exec()
         
     except Exception as e:
-        logger.error(f"Failed to start AISIS: {e}")
+        logger.error(f"Failed to start Al-artworks: {e}")
         return 1
     
     finally:
-        logger.info("AISIS shutdown complete")
+        logger.info("Al-artworks shutdown complete")
 
 if __name__ == "__main__":
     sys.exit(main())

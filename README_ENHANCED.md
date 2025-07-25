@@ -1,4 +1,4 @@
-# 🚀 AISIS - Advanced AI Image System (Enhanced)
+# 🚀 Al-artworks - Advanced AI Image System (Enhanced)
 
 A cutting-edge, offline-first AI image processing application that rivals Adobe Photoshop and Toppers with advanced local AI models, modern UI, and intelligent agent orchestration.
 
@@ -40,8 +40,8 @@ A cutting-edge, offline-first AI image processing application that rivals Adobe 
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/your-org/aisis.git
-cd aisis
+git clone https://github.com/your-org/al-artworks.git
+cd al-artworks
 ```
 
 2. **Install dependencies**
@@ -285,10 +285,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 - **Documentation**: [docs/](docs/)
-- **Issues**: [GitHub Issues](https://github.com/your-org/aisis/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-org/aisis/discussions)
-- **Email**: support@aisis.ai
+- **Issues**: [GitHub Issues](https://github.com/your-org/al-artworks/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/your-org/al-artworks/discussions)
+- **Email**: support@al-artworks.ai
 
 ---
 
-**AISIS** - Pushing the boundaries of AI-powered image processing 🚀 
+**Al-artworks** - Pushing the boundaries of AI-powered image processing 🚀 

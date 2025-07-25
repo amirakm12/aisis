@@ -1,4 +1,4 @@
-# AISIS Changelog
+# Al-artworks Changelog
 
 All notable changes to this project will be documented in this file.
 
@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 - Ongoing improvements and new features.
 
 ## [1.0.0] - YYYY-MM-DD
-- Initial public release of AISIS.
+- Initial public release of Al-artworks.
 - Modular agent architecture.
 - Offline voice and LLM integration.
 - Modern UI with chat and image editing.
