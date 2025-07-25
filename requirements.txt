@@ -1,0 +1,91 @@
+# requirements.txt (auto-merged from requirements.txt and requirements_enhanced.txt)
+# All unique dependencies from both files are included. Optional dependencies are commented out.
+
+# Core dependencies
+loguru>=0.7.0
+numpy>=1.24.0
+Pillow>=10.0.0
+opencv-python>=4.8.0
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+psutil>=5.9.0
+tqdm>=4.65.0
+requests>=2.31.0
+cryptography>=41.0.0
+PyQt6>=6.6.0
+PyQt5
+PySide6>=6.5.0
+QtPy>=2.3.0
+
+# Voice processing
+whisper>=1.0.0
+soundfile>=0.12.0
+bark>=0.1.0
+
+# AI/ML frameworks
+langchain>=0.1.0
+autogen==0.9.4
+transformers>=4.36.0
+diffusers>=0.20.0
+accelerate>=0.20.0
+huggingface-hub>=0.15.0
+onnxruntime-gpu>=1.16.0
+
+# Async/network
+aiohttp>=3.8.0
+aiofiles>=23.1.0
+httpx>=0.24.0
+websockets>=11.0.0
+
+# Data/config
+pydantic>=2.0.0
+pyyaml>=6.0
+msgpack>=1.0.5
+orjson>=3.9.0
+semver>=3.0.0
+pathlib2>=2.3.7
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-qt>=4.2.0
+pytest-cov>=4.1.0
+
+# Development tools
+black>=23.0.0
+flake8>=6.0.0
+pylint>=2.17.0
+mypy>=1.0.0
+
+# Specialized/Restoration
+basicsr>=1.4.2
+swinir>=0.0.1
+restormer>=0.1.0
+uformer>=0.1.0
+nafnet>=0.1.0
+swin2sr>=0.1.0
+ipt>=0.1.0
+
+automerge-py>=0.2.0
+
+# Optional: GPU acceleration
+# cuda-python>=12.0.0  # Uncomment if CUDA is available
+
+# Optional: Advanced features
+# sentence-transformers>=2.2.0  # For text processing
+# openai-whisper>=20231117  # For audio processing
+# mediapipe>=0.10.0  # For face detection
+
+# Optional: Cloud integrations
+# google-cloud-storage>=2.10.0
+# boto3>=1.28.0  # AWS
+# azure-storage-blob>=12.17.0
+
+# Optional: Database support
+# sqlalchemy>=2.0.0
+# alembic>=1.11.0
+
+# Optional: Monitoring and metrics
+# prometheus-client>=0.17.0
+# structlog>=23.1.0
