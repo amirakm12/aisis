@@ -1,4 +1,4 @@
-# Advanced Pipeline Optimization Dependencies
+# AI Agent Swarm Dependencies
 # Core numerical and scientific computing
 numpy>=1.21.0
 numba>=0.56.0
@@ -17,17 +17,37 @@ concurrent-futures>=3.1.1
 # Memory management and weak references
 weakref2>=1.0.0
 
-# Optional: GPU acceleration (CUDA)
+# GPU acceleration (optional)
 # numba-cuda>=0.56.0  # Uncomment if CUDA is available
+# pynvml>=11.0.0      # For NVIDIA GPU monitoring
+# pyopencl>=2022.1    # For OpenCL GPU support
 
-# Optional: Additional performance monitoring
+# Performance monitoring and profiling
 # memory-profiler>=0.60.0  # For detailed memory profiling
 # line-profiler>=3.4.0     # For line-by-line profiling
+# py-spy>=0.3.0           # For production profiling
+
+# Machine learning and optimization
+scikit-learn>=1.0.0
+scipy>=1.7.0
+
+# Logging and monitoring
+structlog>=21.1.0
+
+# Configuration and serialization
+pyyaml>=6.0
+toml>=0.10.0
 
 # Development and testing dependencies
 pytest>=6.2.0
 pytest-asyncio>=0.15.0
 pytest-benchmark>=3.4.0
+pytest-cov>=3.0.0
+
+# Code quality
+black>=22.0.0
+flake8>=4.0.0
+mypy>=0.950
 
 # Documentation
 sphinx>=4.0.0
