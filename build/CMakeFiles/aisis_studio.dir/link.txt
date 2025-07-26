@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -DNDEBUG -march=native -Xlinker --dependency-file=CMakeFiles/aisis_studio.dir/link.d CMakeFiles/aisis_studio.dir/main.cpp.o -o bin/aisis_creative_studio
