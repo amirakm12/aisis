@@ -1,0 +1,2 @@
+/usr/bin/ar qc libvectordb.a CMakeFiles/vectordb.dir/src/vector_db.cpp.o CMakeFiles/vectordb.dir/src/embedding.cpp.o CMakeFiles/vectordb.dir/src/index.cpp.o CMakeFiles/vectordb.dir/src/similarity.cpp.o CMakeFiles/vectordb.dir/src/storage.cpp.o
+/usr/bin/ranlib libvectordb.a
