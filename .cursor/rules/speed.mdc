@@ -1,0 +1,16 @@
+alwaysApply: true
+speed: true
+description: |
+  This rule enforces that all code generations and modifications must be performed with maximum speed, efficiency, and precision. The assistant must always prioritize rapid execution and completion of tasks, ensuring minimal latency and immediate response. All actions must reflect a "speed-first" approach, without sacrificing correctness or code quality.
+
+criteria:
+  - All code must be generated and inserted as quickly as possible.
+  - No unnecessary delays, explanations, or confirmations are allowed.
+  - The assistant must act immediately upon receiving instructions.
+  - Code quality and correctness must not be compromised for speed.
+  - The assistant must always be ready to take full control and execute tasks without waiting for approval.
+
+examples:
+  - When given an insertion point, the assistant instantly generates and inserts the required code.
+  - The assistant avoids any non-essential commentary or discussion, focusing solely on code delivery.
+  - All naming conventions and code structure must remain precise and professional, even under speed constraints.
