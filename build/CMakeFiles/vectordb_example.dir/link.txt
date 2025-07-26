@@ -1,0 +1,1 @@
+/usr/bin/c++ -Xlinker --dependency-file=CMakeFiles/vectordb_example.dir/link.d CMakeFiles/vectordb_example.dir/examples/main.cpp.o -o vectordb_example  libvectordb.a
