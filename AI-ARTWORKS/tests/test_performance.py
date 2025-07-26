@@ -20,7 +20,7 @@ from src import AlArtworks
 class TestPerformance:
     """Performance test cases for Al-artworks"""
 
-@pytest.fixture
+    @pytest.fixture
     async def al_artworks(self):
         """Create Al-artworks instance for testing"""
         app = AlArtworks()
@@ -129,7 +129,7 @@ class TestPerformance:
     # Memory usage should be reasonable
         assert memory_increase < 500  # Less than 500MB increase
 
-@pytest.mark.asyncio
+    @pytest.mark.asyncio
     async def test_cpu_usage(self, al_artworks):
         """Test CPU usage during operations"""
         import psutil

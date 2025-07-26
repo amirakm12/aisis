@@ -218,7 +218,7 @@ class TestOnboardingDialog:
     
     def test_onboarding_flow(self, app):
         """Test onboarding dialog flow"""
-    dialog = OnboardingDialog()
+        dialog = OnboardingDialog()
         
         # Test that dialog has multiple steps
         # (This would depend on the actual implementation)
