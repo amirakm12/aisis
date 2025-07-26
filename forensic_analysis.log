@@ -1,0 +1,56 @@
+2025-07-26 07:36:17,093 - ForensicFramework - INFO - Registered agent: Network Forensic Agent
+2025-07-26 07:36:17,093 - ForensicFramework - INFO - Registered agent: Malware Analysis Agent
+2025-07-26 07:36:17,093 - ForensicFramework - INFO - Registered agent: Memory Forensic Agent
+2025-07-26 07:36:17,093 - ForensicFramework - INFO - Registered agent: Behavioral Analysis Agent
+2025-07-26 07:36:17,093 - ForensicFramework - INFO - Starting Forensic Framework
+2025-07-26 07:36:17,093 - Agent.Network Forensic Agent - INFO - Loaded 4 suspicious IPs and 4 malicious domains
+2025-07-26 07:36:17,093 - Agent.Network Forensic Agent - INFO - Network Forensic Agent initialized successfully
+2025-07-26 07:36:17,093 - Agent.Network Forensic Agent - INFO - Agent Network Forensic Agent started
+2025-07-26 07:36:17,093 - Agent.Malware Analysis Agent - INFO - Loaded 5 malware signatures
+2025-07-26 07:36:17,093 - Agent.Malware Analysis Agent - INFO - Loaded 9 behavioral pattern categories
+2025-07-26 07:36:17,093 - Agent.Malware Analysis Agent - INFO - Loaded 4 YARA-like rules
+2025-07-26 07:36:17,093 - Agent.Malware Analysis Agent - INFO - Malware Analysis Agent initialized successfully
+2025-07-26 07:36:17,093 - Agent.Malware Analysis Agent - INFO - Agent Malware Analysis Agent started
+2025-07-26 07:36:17,093 - Agent.Memory Forensic Agent - INFO - Loaded 5 injection signature types
+2025-07-26 07:36:17,093 - Agent.Memory Forensic Agent - INFO - Loaded 5 rootkit detection patterns
+2025-07-26 07:36:17,093 - Agent.Memory Forensic Agent - INFO - Loaded 6 memory patterns
+2025-07-26 07:36:17,094 - Agent.Memory Forensic Agent - INFO - Memory Forensic Agent initialized successfully
+2025-07-26 07:36:17,094 - Agent.Memory Forensic Agent - INFO - Agent Memory Forensic Agent started
+2025-07-26 07:36:17,094 - Agent.Behavioral Analysis Agent - INFO - Initialized behavioral baselines
+2025-07-26 07:36:17,094 - Agent.Behavioral Analysis Agent - INFO - Loaded 4 ML models
+2025-07-26 07:36:17,094 - Agent.Behavioral Analysis Agent - INFO - Initialized anomaly detection thresholds
+2025-07-26 07:36:17,094 - Agent.Behavioral Analysis Agent - INFO - Behavioral Analysis Agent initialized successfully
+2025-07-26 07:36:17,094 - Agent.Behavioral Analysis Agent - INFO - Agent Behavioral Analysis Agent started
+2025-07-26 07:36:17,094 - ForensicFramework - INFO - Forensic Framework started successfully
+2025-07-26 07:36:17,098 - ForensicFramework - INFO - Evidence submitted: 66bf9843-b1e9-4eeb-9870-b7d920134cd7
+2025-07-26 07:36:17,107 - ForensicFramework - INFO - Finding recorded: Communication with Known Malicious IP
+2025-07-26 07:36:17,113 - ForensicFramework - INFO - Finding recorded: Communication with Known Malicious IP
+2025-07-26 07:36:17,121 - ForensicFramework - INFO - Finding recorded: Abnormal Network Connection Rate
+2025-07-26 07:36:17,128 - ForensicFramework - INFO - Finding recorded: Behavioral Clustering Anomaly
+2025-07-26 07:36:17,603 - ForensicFramework - INFO - Evidence submitted: 06368103-403f-41b1-9809-fa25ddb324c4
+2025-07-26 07:36:17,615 - ForensicFramework - INFO - Finding recorded: Suspicious DNS Query Pattern
+2025-07-26 07:36:18,111 - ForensicFramework - INFO - Evidence submitted: d336b5e6-2dac-46bc-9a9a-baea7a6333bb
+2025-07-26 07:36:18,116 - ForensicFramework - INFO - Finding recorded: Communication with Known Malicious IP
+2025-07-26 07:36:18,619 - ForensicFramework - INFO - Evidence submitted: f05daeed-26ea-48b5-949e-a59089d2f926
+2025-07-26 07:36:18,626 - ForensicFramework - INFO - Finding recorded: Known Malware Hash Detected
+2025-07-26 07:36:18,631 - ForensicFramework - INFO - Finding recorded: Behavioral Clustering Anomaly
+2025-07-26 07:36:19,127 - ForensicFramework - INFO - Evidence submitted: 6d206a59-b51e-457b-9472-a545b63f7a71
+2025-07-26 07:36:19,136 - ForensicFramework - INFO - Finding recorded: Suspicious Parent-Child Process Relationship
+2025-07-26 07:36:19,140 - ForensicFramework - INFO - Finding recorded: Suspicious Command Line Pattern
+2025-07-26 07:36:19,145 - ForensicFramework - INFO - Finding recorded: Behavioral Clustering Anomaly
+2025-07-26 07:36:19,633 - ForensicFramework - INFO - Evidence submitted: 3d3d6fc3-d1c6-4eda-a998-07e8b8d6e6e3
+2025-07-26 07:36:20,136 - ForensicFramework - INFO - Evidence submitted: c134ac97-1b44-45b6-ad35-e8bdfd1859b8
+2025-07-26 07:36:20,140 - ForensicFramework - INFO - Finding recorded: Dll Injection Detected
+2025-07-26 07:36:20,142 - ForensicFramework - INFO - Finding recorded: Suspicious Memory Permissions
+2025-07-26 07:36:20,647 - ForensicFramework - INFO - Evidence submitted: 73c6b378-f916-40b3-8415-683362ef4304
+2025-07-26 07:36:21,155 - ForensicFramework - INFO - Evidence submitted: 0690f11a-1714-41eb-9ebd-6b7f8d189fdc
+2025-07-26 07:36:21,160 - ForensicFramework - INFO - Finding recorded: Unusual Time Activity
+2025-07-26 07:36:21,664 - ForensicFramework - INFO - Evidence submitted: d39e124e-aa31-46d7-acb7-13ec2ae7f67f
+2025-07-26 07:36:21,667 - ForensicFramework - INFO - Finding recorded: High File Entropy Detected
+2025-07-26 07:36:21,669 - ForensicFramework - INFO - Finding recorded: Behavioral Clustering Anomaly
+2025-07-26 07:36:26,670 - ForensicFramework - INFO - Stopping Forensic Framework
+2025-07-26 07:36:26,670 - Agent.Network Forensic Agent - INFO - Agent Network Forensic Agent stopped
+2025-07-26 07:36:26,670 - Agent.Malware Analysis Agent - INFO - Agent Malware Analysis Agent stopped
+2025-07-26 07:36:26,670 - Agent.Memory Forensic Agent - INFO - Agent Memory Forensic Agent stopped
+2025-07-26 07:36:26,670 - Agent.Behavioral Analysis Agent - INFO - Agent Behavioral Analysis Agent stopped
+2025-07-26 07:36:26,670 - ForensicFramework - INFO - Forensic Framework stopped
