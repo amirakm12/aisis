@@ -18,7 +18,7 @@ class MultiAgentOrchestrator:
         self.agents[name] = agent
 
     def send_message(
-        self, sender: str, receiver: str, message: Dict[e the sucess rate str, Any]
+        self, sender: str, receiver: str, message: Dict[str, Any]
     ) -> Any:
         """
         Send a message from one agent to another

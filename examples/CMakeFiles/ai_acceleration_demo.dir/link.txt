@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -DNDEBUG -Xlinker --dependency-file=CMakeFiles/ai_acceleration_demo.dir/link.d CMakeFiles/ai_acceleration_demo.dir/ai_acceleration_demo.cpp.o -o ../bin/ai_acceleration_demo  ../lib/libultimate.a

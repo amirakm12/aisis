@@ -1,0 +1,2 @@
+/usr/bin/ar qc lib/libultimate.a CMakeFiles/ultimate_core.dir/src/ai/AIAccelerator.cpp.o
+/usr/bin/ranlib lib/libultimate.a

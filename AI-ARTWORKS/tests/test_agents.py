@@ -114,7 +114,8 @@ async def test_orchestrator_tree_of_thought(orchestrator):
     assert analysis["reasoning_mode"] == "tree_of_thought"
 
 @pytest.mark.skip(reason="ImageRestorationAgent not implemented yet")
-def test_restoration_agent_processing(restoration_agent, sample_image):
+@pytest.mark.asyncio
+async def test_restoration_agent_processing(restoration_agent, sample_image):
     """Test image restoration agent processing"""
     input_data = {
         "image": sample_image,

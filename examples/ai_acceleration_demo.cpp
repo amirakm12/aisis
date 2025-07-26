@@ -172,12 +172,12 @@ private:
             // Generate random training data
             for (auto& sample : trainingData) {
                 for (auto& val : sample) {
-                    val = static_cast<float>(rand()) / RAND_MAX;
+                    val = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
                 }
             }
             
             for (auto& label : labels) {
-                label[0] = static_cast<float>(rand()) / RAND_MAX;
+                label[0] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
             }
             
             std::cout << "   🚀 Training with " << trainingData.size() << " samples..." << std::endl;
@@ -222,7 +222,7 @@ private:
             // Simulate workload
             std::vector<float> input(1000);
             for (auto& val : input) {
-                val = static_cast<float>(rand()) / RAND_MAX;
+                val = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
             }
             
             std::vector<float> output;
@@ -249,7 +249,7 @@ private:
         for (int i = 0; i < 5; ++i) {
             std::vector<float> input(100);
             for (auto& val : input) {
-                val = static_cast<float>(rand()) / RAND_MAX;
+                val = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
             }
             
             std::vector<float> output;
@@ -277,7 +277,7 @@ private:
         std::vector<std::vector<float>> batchInputs(100, std::vector<float>(50));
         for (auto& input : batchInputs) {
             for (auto& val : input) {
-                val = static_cast<float>(rand()) / RAND_MAX;
+                val = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
             }
         }
         
@@ -307,7 +307,7 @@ private:
             // Perform continuous inference
             std::vector<float> input(100);
             for (auto& val : input) {
-                val = static_cast<float>(rand()) / RAND_MAX;
+                val = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
             }
             
             std::vector<float> output;
