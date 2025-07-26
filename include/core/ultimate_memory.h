@@ -25,26 +25,9 @@ extern "C" {
 #define ULTIMATE_MEMORY_ALIGNMENT           8
 #define ULTIMATE_MEMORY_ALIGN(size)         (((size) + ULTIMATE_MEMORY_ALIGNMENT - 1) & ~(ULTIMATE_MEMORY_ALIGNMENT - 1))
 
-/* Memory pool types */
-typedef enum {
-    ULTIMATE_POOL_TYPE_FIXED = 0,
-    ULTIMATE_POOL_TYPE_VARIABLE,
-    ULTIMATE_POOL_TYPE_STACK
-} ultimate_pool_type_t;
+/* Forward declarations - types defined in ultimate_types.h */
 
-/* Memory pool handle */
-typedef struct ultimate_memory_pool* ultimate_pool_handle_t;
-
-/* Memory pool configuration */
-typedef struct {
-    void* start_addr;
-    size_t total_size;
-    size_t block_size;
-    uint32_t max_blocks;
-    ultimate_pool_type_t type;
-    const char* name;
-    bool thread_safe;
-} ultimate_pool_config_t;
+/* Memory pool configuration - use type from ultimate_types.h */
 
 /* Memory statistics */
 typedef struct {
