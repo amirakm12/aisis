@@ -18,6 +18,7 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include "ultimate_config.h"
 #include "ultimate_types.h"
 #include "ultimate_errors.h"
 
